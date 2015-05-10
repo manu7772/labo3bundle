@@ -1,5 +1,5 @@
 parameters:
-    # labo_3_bundle.example.class: laboBundle\Example
+    # labo_bundle.example.class: laboBundle\Example
 
 services:
 
@@ -8,39 +8,39 @@ services:
 #     ###################################
 
     # Fonctions textes utiles et pratiques pour utilisation dans TWIG
-    labo3bundle.textutilities:
+    labobundle.textutilities:
         class: laboBundle\services\aetools\twigAetools
         arguments: [@service_container]
         tags:
             - { name: twig.extension }
 
     # Fonctionnalités sur les textes (notamment l'entité richtext)
-    labo3bundle.texttools:
+    labobundle.texttools:
         class: laboBundle\services\aetools\richtextsAetools
         arguments: [@service_container]
 
     # Fonctionnalités de requêtes et dossiers/fichiers
-    labo3bundle.aetools:
+    labobundle.aetools:
         class: laboBundle\services\aetools\aetools
         arguments: [@service_container]
 
 #     # Fonctionnalités de dates/heures
-#     labo3bundle.aedates:
+#     labobundle.aedates:
 #         class: laboBundle\services\aetools\aedates
 #         arguments: [@service_container]
 
 #     # Fonctionnalités de parametres du site
-#     labo3bundle.parametre:
+#     labobundle.parametre:
 #         class: laboBundle\services\aetools\parametre
 #         arguments: [@service_container]
 
     # Fonctionnalités de manipulations d'images
-    labo3bundle.imagetools:
+    labobundle.imagetools:
         class: laboBundle\services\aetools\imageAetools
         arguments: [@service_container]
 
 #     # Fonctionnalités de parsage XML
-#     labo3bundle.XMLparser:
+#     labobundle.XMLparser:
 #         class: laboBundle\services\aetools\XMLparser
 #         arguments: []
 
@@ -49,88 +49,88 @@ services:
 #     ###################################
 
     # Fonctionnalités de base pour les entités
-    labo3bundle.entities:
+    labobundle.entities:
         class: laboBundle\services\entitiesServices\entitiesGeneric
         arguments: [@service_container]
 
     # Fonctionnalités de gestion des versions (sociétés)
-    labo3bundle.version:
+    labobundle.version:
         class: laboBundle\services\entitiesServices\version
         arguments: [@service_container]
 
 #     # Fonctionnalités de gestion des pages web
-#     labo3bundle.pageweb:
+#     labobundle.pageweb:
 #         class: laboBundle\services\entitiesServices\pageweb
 #         arguments: [@service_container]
 
 #     # Fonctionnalités de gestion des collections
-#     labo3bundle.collection:
+#     labobundle.collection:
 #         class: laboBundle\services\entitiesServices\collection
 #         arguments: [@service_container]
 
 #     # Fonctionnalités de gestion des votes
-#     labo3bundle.votes:
+#     labobundle.votes:
 #         class: laboBundle\services\entitiesServices\votes
 #         arguments: [@service_container]
 
 #     # Fonctionnalités de gestion des visites sur le site
-#     labo3bundle.visite:
+#     labobundle.visite:
 #         class: laboBundle\services\entitiesServices\visite
 #         arguments: [@service_container]
 
 #     # Fonctionnalités de categorie
-#     labo3bundle.categorie:
+#     labobundle.categorie:
 #         class: laboBundle\services\entitiesServices\categorie
 #         arguments: [@service_container]
 
 #     # Fonctionnalités pour articles
-#     labo3bundle.article:
+#     labobundle.article:
 #         class: laboBundle\services\entitiesServices\article
 #         arguments: [@service_container]
 
 #     # Atelier créatif et fiches
-#     labo3bundle.atelierCreatif:
+#     labobundle.atelierCreatif:
 #         class: laboBundle\services\entitiesServices\atelierCreatif
 #         arguments: [@service_container]
 
 #     # magasins
-#     labo3bundle.magasin:
+#     labobundle.magasin:
 #         class: laboBundle\services\entitiesServices\magasin
 #         arguments: [@service_container]
 
 #     # videos
-#     labo3bundle.video:
+#     labobundle.video:
 #         class: laboBundle\services\entitiesServices\video
 #         arguments: [@service_container]
 
 #     # évènements
-#     labo3bundle.events:
+#     labobundle.events:
 #         class: laboBundle\services\entitiesServices\evenement
 #         arguments: [@service_container]
 
 #     # presse
-#     labo3bundle.presse:
+#     labobundle.presse:
 #         class: laboBundle\services\entitiesServices\presse
 #         arguments: [@service_container]
 
 #     # factures
-#     labo3bundle.facture:
+#     labobundle.facture:
 #         class: laboBundle\services\entitiesServices\facture
 #         arguments: [@service_container]
 
 #     # aelogs
-#     labo3bundle.aelog:
+#     labobundle.aelog:
 #         class: laboBundle\services\entitiesServices\aelog
 #         arguments: [@service_container]
 
 #     # Fonctionnalités de gestion du panier d'achat
 #     # -> synthèses, ajouts, suppressions, etc. de produits dans le panier
-#     labo3bundle.panier:
+#     labobundle.panier:
 #         class: laboBundle\services\entitiesServices\panier
 #         arguments: [@service_container]
 #         # scope: request
 
-#     labo3bundle.directeditor:
+#     labobundle.directeditor:
 #         class: laboBundle\services\entitiesServices\directeditor
 #         arguments: [@service_container]
 #         tags:
@@ -141,7 +141,7 @@ services:
 #     ###################################
 
 #     # EventListerner sur paramètres généraux du site
-#     labo3bundle.site_listener:
+#     labobundle.site_listener:
 #         class: laboBundle\eventListeners\siteListener\siteListener
 #         arguments: [@service_container]
 #         tags:
@@ -153,7 +153,7 @@ services:
     ###################################
 
     # Utilitaire de gestion sur les entités
-    labo3bundle.entityUtils:
+    labobundle.entityUtils:
         class: laboBundle\services\entitiesServices\entityListener
         arguments: [@service_container]
         tags:

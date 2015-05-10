@@ -21,19 +21,18 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('labo_bundle');
 
-        $rootNode
-            ->children()
-                ->scalarNode('default_menu')
-                    ->defaultValue('menu_01')
-                    ->info('Slug du menu par défaut du site')
-                    ->example('Exemple de paramètre')
-                ->end()
-                ->scalarNode('user_class')
-                    ->defaultValue('AcmeGroup\UserBundle\Entity\User')
-                    ->info('Classe FOS/User')
-                ->end()
-            ->end()
-        ;
+        // $rootNode
+        //     ->children()
+        //         ->scalarNode('default_menu')
+        //             ->defaultValue('menu_01')
+        //             ->info('Slug du menu par défaut du site')
+        //         ->end()
+        //         ->scalarNode('user_class')
+        //             ->defaultValue('AcmeGroup\UserBundle\Entity\User')
+        //             ->info('Classe FOS/User')
+        //         ->end()
+        //     ->end()
+        // ;
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for
         // more information on that topic.
