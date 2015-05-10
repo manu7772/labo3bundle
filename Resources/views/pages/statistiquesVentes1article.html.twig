@@ -1,0 +1,70 @@
+{% extends "LaboTestmanuBundle::sitePage.html.twig" %}
+{% block title %}{{ parent() }} - Statistiques ventes d'articles{% endblock %}
+
+{% block main_contain %}
+
+<div class="row">
+	<!-- Corps complet -->
+	<h2 class="well well-sm">
+		{%- if article.imagePpale.fichierNom is defined -%}
+		<a href="{{ asset('images/optim/' ~ article.imagePpale.fichierNom) }}" data-fancybox-group="gallery{{ article.id }}" class="fancybox" title="{{ article.imagePpale.nom }}">
+			<img class="img-thumbnail" src="{{ asset('images/optim/' ~ article.imagePpale.fichierNom) }}" width="128" style="float:left;margin-right:20px;">
+		</a>
+		{%- for image in article.images if article.images is iterable -%}
+		<a style="display:none;" href="{{ asset('images/optim/' ~ image.fichierNom) }}" data-fancybox-group="gallery{{ article.id }}" class="fancybox vignette_fiche_produit" title="{{ image.nom }}"></a>
+		{%- endfor -%}
+		{%- else -%}
+		<img class="img-thumbnail" src="{{ asset('bundles/acmegroupsite/images/no_article.png') }}" width="250" style="float:left;margin-right:20px;">
+		{%- endif -%}
+		Ventes de {{ article.nom }}<br><small><a href="{{ url('labo_stats_generic', {stat: 'ventes'}) }}">Retour à la liste des articles</a></small>
+		<div style="clear:both;"></div>
+	</h2>
+	<div class="well well-sm">
+		<h4>Vendus par e-Boutique<br><small>Données valables depuis la création du site</small></h4>
+		<table class="table table-striped table-hover table-condensed table-bordered">
+			<tr>
+				<th>&nbsp;</th>
+				<th style="text-align:center;">Ventes</th>
+				<!-- <th style="text-align:center;">Ventes enregistrées</th> -->
+				<th style="text-align:right;">Ventes totales HT</th>
+				<th style="text-align:right;">Ventes totales TTC</th>
+			</tr>
+			<tr class="active">
+				<td>Période</td>
+				<td style="text-align:center;">{{ ventescalc }}</td>
+				<!-- <td style="text-align:center;">Ventes enregistrées</td> -->
+				<td style="text-align:right;">{{ caventesht|number_format(2, ',', '') }} €</td>
+				<td style="text-align:right;">{{ caventettc|number_format(2, ',', '') }} €</td>
+			</tr>
+		</table>
+		<h4>Evolution des ventes<br><small> sur {{ info.arriere }} {{ info.tempo }}</small></h4>
+		{% if periodes|length > 0 %}
+		<table class="table table-striped table-hover table-condensed table-bordered">
+			<tr>
+				{% for date,per in periodes %}
+				<th style="text-align:center;">{{ date }}</th>
+				{% endfor %}
+			</tr>
+			<tr>
+				{% for date,per in periodes %}
+				<th style="text-align:center;">{{ per }}</th>
+				{% endfor %}
+			</tr>
+		</table>
+		{% else %}
+		<div class="well well-sm>">Aucune vente enregistrée sur cette période…</div>
+		{% endif %}
+	</div>
+	{% if is_granted("ROLE_SUPER_ADMIN") %}
+	<div class="well well-sm">
+		<h4>Nous sommes : </h4>
+		<p>Jour de l'année : {{ date.jourDeLannee }}</p>
+		<p>Jour de la semaine : {{ date.jourDeSemaine }}</p>
+		<p>Semaine en cours : {{ date.semaineEnCours }}</p>
+		<p>Mois en cours : {{ date.moisEnCours }}</p>
+		<p>Année en cours : {{ date.anneeEnCours }}</p>
+	</div>
+	{% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "LaboTestmanuBundle::sitePage.html.twig" %}
+{% block title %}{{ parent() }} - Statistiques site{% endblock %}
+
+{% block main_contain %}
+
+<div class="row">
+	<!-- Corps complet -->
+	{{ include('LaboTestmanuBundle:bloc:statListOptions.html.twig') }}
+	{{ include('LaboTestmanuBundle:bloc:statListOptionsCategories.html.twig') }}
+	{% if pageStat is defined %}
+	<div class="well well-sm">
+		{{ pageStat.nom }}
+	</div>
+	{% else %}
+	<div class="well well-sm">
+		{{ error }}
+	</div>
+	{% endif %}
+</div>
+
+{% endblock %}

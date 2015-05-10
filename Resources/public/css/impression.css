@@ -1,0 +1,117 @@
+@charset "utf-8";
+/* CSS Document */
+body{
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	color:#000;	
+	background-color:#FFF;
+}
+/*div#logo a img{
+	display:none;
+}*/
+div#logo{
+	height:58px;
+	width:270px;
+	overflow:hidden;
+	display:none;
+	background:url(../images/logo_singer_impression.png);
+}
+div#logo a img{
+	height:58px;
+	width:270px;
+display:none;
+	/*background-color:#000;*/
+}
+div#cadre_header, div#container_menu, div.footer, div#container_menu_produits_G, .produit_fiche_article_contenu_haut, .titre_produit_fiche_interne_gris h1, span.btn_imprime, #produit_fiche_article_menu{
+	display:none;
+}
+div.produit_fiche_interne{
+	display:block;
+	border-top:1px solid #ccc;
+	border-bottom:1px solid #ccc;
+	overflow:hidden;
+	padding-top: 3px;
+}
+div.produit_fiche_interne_prix{
+	font-size:24px;
+	font-style:normal;
+	font-weight:bold;
+	line-height:24px;
+	margin-top:0px;
+	margin-bottom:0px;
+	float:right;
+}
+div.produit_fiche_interne_prix span.fiche_interne_indic{
+	font-size:9px;
+}
+div.produit_fiche_interne_prix span.fiche_interne_prix {
+	font-size:24px;
+	font-style:normal;
+	font-weight:bold;
+	line-height:24px;
+}
+.produit_fiche_interne span.titre_produit_fiche_interne h1{
+	font-size:24px;
+	font-style:normal;
+	font-weight:bold;
+	line-height:24px;
+	margin-top:0px;
+	margin-bottom:0px;
+	float:left;
+}
+div.produit_fiche_article_gauche{
+	height:auto;
+	width:300px;
+	display:inline-block;
+	float:left;
+	margin-left:auto;
+	margin-right:auto;
+	text-align:center;	
+}
+div.produit_fiche_article_gauche div.img_produit_fiche_article{
+	text-align:center;
+	margin-left:auto;
+	margin-right:auto;
+	margin-top:1px;
+	margin-bottom:5px;
+	border-bottom:1px solid #ccc;
+	width:250px;
+}
+div.produit_fiche_article_gauche div.img_produit_fiche_article img{
+	width:250px;
+	height:auto;
+}
+.vignette_fiche_produit{
+	display: inline-block;
+    margin: 0 5px;
+    text-align: left;
+}
+.vignette_fiche_produit img{
+	width:75px;
+	height:auto;
+}
+div.produit_fiche_article_droite {
+	display:inline-block;
+	width:250px;
+	height:auto;
+	margin:0px;
+	padding:0px;
+}
+#fiche_caracteristiques{
+margin-left: 0px;
+padding-left:0px;
+}
+div#caracteristiques div#fiche_caracteristiques div#txt_fiche_caract{
+	width:399px;
+	border-left:1px solid #ccc;
+	}
+div.vignette_produit_fiche_article{
+	text-align:left;
+	margin-left:auto;
+	margin-right:auto;
+	padding-top:5px;
+}
+
+div.produit_fiche_article_interne div.produit_fiche_article_droite div#caracteristiques div#fiche_caracteristiques div#txt_fiche_caract{
+	padding-left:0px;
+	margin-left:0px;
+}

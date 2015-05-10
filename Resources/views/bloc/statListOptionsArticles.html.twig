@@ -1,0 +1,6 @@
+<div class="well well-sm">
+	{% for listeArticle in listeArticles %}
+	<a href="{{ url('labo_stats_articles', {articleSlug: listeArticle.slug}) }}" type="button" class="btn btn-{% if listeArticle.id == id %}warning{% else %}default{% endif %} btn-xs col-lg-2 col-md-2 col-sm-4 col-xs-6">{{ listeArticle.nom }}</a>
+	{% endfor %}
+	<div style="clear:both;height:0px;width:100%;visible:none;"></div>
+</div>

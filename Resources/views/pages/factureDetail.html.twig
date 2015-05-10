@@ -1,0 +1,37 @@
+{% extends "LaboTestmanuBundle::sitePage.html.twig" %}
+{% block title %}{{ parent() }} - Détail {{ entite }} {{ facture.reference }}{% endblock %}
+
+{% block main_contain %}
+{% set entiteName = "Détail de commande " ~ facture.reference %}
+{% set ssentiteName = entite %}
+{% include "LaboTestmanuBundle:bloc:page-header.html.twig" %}
+<a href="{{ url('labo_page_vente', {type: comefrom}) }}"><button type="button" class="btn btn-primary btn-md"><span class="glyphicon glyphicon-arrow-left"></span> Retour</button></a>
+<div style="clear:both;height:12px;"></div>
+<div class="row">
+	<!-- Corps complet -->
+	<div class="list-group">
+		<a class="list-group-item active">Détail de commande&nbsp;{{ facture.reference }}</a>
+		<div class="list-group-item list-group-item-success">
+			{% if facture.stade == 0 %}
+			<button type="button" class="btn btn-danger btn-sm" style="cursor:default;">Nouvelle commande à traiter</button>
+			{% elseif facture.stade == 1 %}
+			<button type="button" class="btn btn-warning btn-sm" style="cursor:default;">Commande en acheminement</button>
+			{% elseif facture.stade == 2 %}
+			<button type="button" class="btn btn-success btn-sm" style="cursor:default;">Commande terminée</button>
+			{% elseif facture.stade == 3 %}
+			<button type="button" class="btn btn-default btn-sm" style="cursor:default;"><span class="glyphicon glyphicon-exclamation-sign"></span> Commande annulée</button>
+			{% elseif facture.stade == 100 %}
+			<button type="button" class="btn btn-default btn-sm" style="cursor:default;"><span class="glyphicon glyphicon-exclamation-sign"></span> Paiement échoué (erreur {{ facture.bankresponsecode }} de la banque)</button>
+			{% endif %}
+			{% if facture.stade < 3 %}
+			<button type="button" class="btn btn-default btn-sm" onclick="window.open('{{ url('acme_facture_pdf', {facture: facture.id}) }}')" title="Télécharger la facture {{ facture.reference }} en PDF"><span class="glyphicon glyphicon-download-alt"></span></button>
+			{% endif %}
+			<span>&nbsp;Date de la commande : {{ facture.dateCreation|date('d/m/Y \\à H:i:s') }}</span>
+		</div>
+		<div class="list-group-item list-group-item-info">
+			<p><span class="glyphicon glyphicon-circle-arrow-right"></span>&nbsp;{{ facture.articles|length }} article{{ plur(facture.articles, "s") }} commandé{{ plur(facture.articles, "s") }}</p>
+		</div>
+		{% include 'AcmeGroupSiteBundle:bloc:detailFactureCorps.html.twig' with {'typeliste': 'commande'} %}
+	</div>
+</div>
+{% endblock %}

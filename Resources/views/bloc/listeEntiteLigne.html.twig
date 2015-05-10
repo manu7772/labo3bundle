@@ -1,0 +1,26 @@
+<tr class="ajxu-{{ entite.bundleName }}Bundle{{ entiteName }}{{ ligne.id }}" data-prototype="{{ url('listeEntiteLigne', {'classEntite': Url_encode(classEntite), 'id': ligne.id}) }}">
+	{% include "LaboTestmanuBundle:tableau:col_actions.html.twig" with {"ligne": ligne} %}
+	{% if entiteName == "pageweb" %}
+	<td>
+		{% if ligne.richtexts|length > 0 %}
+		<div class="btn-group">
+			<button type="button" class="btn btn-xs btn-default dropdown-toggle" data-toggle="dropdown">
+			Editer <span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu" role="menu">
+				{% for texte in ligne.richtexts %}
+				<li><a href="{{ url(ROUTE, {action: 'edit', classEntite: Url_encode('richtext'), element: texte.id}) }}">{{ texte.nom }}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+		{% endif %}
+	</td>
+	{% endif %}
+	{% for nom,MI in metaInfo if nom != "id" %}
+	{% if champs is defined %}{% if MI.libelle in champs %}
+	{% include "LaboTestmanuBundle:tableau:" ~ MI.colbloc ~ ".html.twig" with {"ligne": ligne, "value": valueOfObject(ligne, nom)} %}
+	{% endif %}{% else %}
+	{% include "LaboTestmanuBundle:tableau:" ~ MI.colbloc ~ ".html.twig" with {"ligne": ligne, "value": valueOfObject(ligne, nom)} %}
+	{% endif %}
+	{% endfor %}
+</tr>

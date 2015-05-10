@@ -1,0 +1,63 @@
+{% extends "LaboTestmanuBundle::sitePage.html.twig" %}
+{% block title %}{{ parent() }} - {{ action|capitalize }} {{ entiteName }}{% endblock %}
+
+{% block main_contain %}
+{% set ROUTE = 'labo_page_User' %}
+<div class="row">
+	{% if action != 'liste' %}{% set action2 = 'annule' %}{% else %}{% set action2 = action %}{% endif %}
+	{% set ssentiteName = role %}
+	{% include "LaboTestmanuBundle:bloc:page-header.html.twig" %}
+	<!-- DEBUT : Corps complet -->
+	{% if action == "liste" %}
+	{% include ":common:pagination.html.twig" with {"liste": ["nom","prix"]} %}
+	<div class="panel panel-default table-responsive">
+	<!-- Default panel contents -->
+		<div class="panel-heading">
+			<span class="badge">{{ pag.nbtot }}</span> {{ entiteName }}{{ plur(dataEntite) }} trouvé{{ plur(dataEntite) }}{% if pag.nbpage > 0 %} - page {{ pag.page }}/{{ pag.nbpage }} - {{ pag.lignes }} {{ entiteName }}s par page{% endif %}
+			<a class="btn btn-warning btn-xs" href="{{ url(ROUTE, {classEntite: Url_encode(entiteName), action: 'creation'}) }}">Créer nouveau : {{ entiteName }}</a>
+		</div>
+		{% if pag.nbpage > 0 %}
+		<table class="table table-bordered table-striped">
+			<thead>
+				<tr>
+					<th>Actions</th>
+					{% if entiteName == "pageweb" %}
+					<th>Richtexts</th>
+					{% endif %}
+					{% set champs = ['username', 'nom', 'prenom', 'email', 'tel', 'last_login', 'cp', 'ville'] %}
+					{% for MI in metaInfo if MI.libelle in champs %}
+					<th>{{ MI.libelle }}</th>
+					{% endfor %}
+				</tr>
+			</thead>
+			<tbody>
+			{% for ligne in dataEntite %}
+				{% include "LaboTestmanuBundle:bloc:listeEntiteLigne.html.twig" with {"ligne": ligne} %}
+			{% endfor %}
+			</tbody>
+		</table>
+		{% endif %}
+	</div>
+
+	{% else %}
+
+	{% form_theme form 'LaboTestmanuBundle:Form:bootstrap-override.html.twig' %}
+
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<form method="post" class="form" role="form" {{ form_enctype(form) }}>
+					{{ form_widget(form) }}
+					<div class="row col-md-12">
+						<input type="submit" class="btn btn-primary btn-lg btn-block" value="Enregistrer" />
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	{% endif %}
+	<!-- FIN : Corps complet -->
+
+</div>
+{% endblock %}

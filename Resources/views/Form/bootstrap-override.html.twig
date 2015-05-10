@@ -1,0 +1,97 @@
+{% extends 'form_div_layout.html.twig' %}
+
+{% block form_widget %}
+	{{ parent() }}
+{% endblock form_widget %}
+
+{% block form_widget_simple %}
+	{% set type = type|default('text') %}
+	<input type="{{ type }}" class="form-control" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+{% endblock form_widget_simple %}
+
+{% block form_widget_compound %}
+<div {{ block('widget_container_attributes') }} class="row col-md-12">
+	{% if form.parent is empty %}
+		{{ form_errors(form) }}
+	{% endif %}
+	{{ block('form_rows') }}
+	{{ form_rest(form) }}
+</div>
+{% endblock form_widget_compound %}
+
+{% block choice_widget %}
+	{% if expanded %}
+		{% if multiple %}
+			{% for child in form %}
+				<label class="checkbox-inline">
+					{{ form_widget(child) }}
+					{{ form_label(child) }}
+				</label>
+			{% endfor %}
+		{% else %}
+			{% for child in form %}
+				<div class="radio">
+					<label>
+						{{ form_widget(child) }}
+						{{ form_label(child) }}
+					</label>
+				</div>
+			{% endfor %}
+		{% endif %}
+	{% else %}
+		<select class="form-control" {{ block('widget_attributes') }}{% if multiple %} multiple="multiple"{% endif %}>
+			{% if empty_value is not none %}
+				<option value="">{{ empty_value|trans({}, translation_domain) }}</option>
+			{% endif %}
+			{% if preferred_choices|length > 0 %}
+				{% set options = preferred_choices %}
+				{{ block('choice_widget_options') }}
+				{% if choices|length > 0 and separator is not none %}
+					<option disabled="disabled">{{ separator }}</option>
+				{% endif %}
+			{% endif %}
+			{% set options = choices %}
+			{{ block('choice_widget_options') }}
+		</select>
+	{% endif %}
+{% endblock choice_widget %}
+ 
+{% block checkbox_label %}
+{{ label }}
+{% endblock checkbox_label %}
+ 
+{% block radio_label %}
+{{ label }}
+{% endblock radio_label %}
+
+{% block form_errors %}
+{% if errors|length > 0 %}
+	<div class="panel panel-danger">
+	{% for error in errors %}
+		{{ error.messageTemplate|trans(error.messageParameters, 'validators') }}<br />
+	{% endfor %}
+	</div>
+{% endif %}
+{% endblock form_errors %}
+
+{% block textarea_widget %}
+<textarea class="form-control" {{ block('widget_attributes') }}>{{ value }}</textarea>
+{% endblock textarea_widget %}
+
+
+{% block form_row %}
+<div class="col-md-6">
+	<div class="panel panel-default">
+		<div class="panel-heading">
+		{{ form_label(form)|raw }}
+		</div>
+		<div class="panel-body">
+		{{ form_widget(form) }}
+		</div>
+		{{ form_errors(form) }}
+	</div>
+</div>
+{% endblock form_row %}
+
+
+

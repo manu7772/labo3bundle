@@ -1,0 +1,5 @@
+{% if short is defined %}
+	<td class="richtexts">{{ phraseCut(value|striptags, short)|raw }}</td>
+{% else %}
+	<td class="richtexts">{{ value|striptags|raw }}</td>
+{% endif %}

@@ -1,0 +1,6 @@
+<div class="well well-sm">
+	{% for page in pages %}
+	<a href="{{ url('labo_stats_page', {pageSlug: page.slug}) }}" title="{{ page.title }}"  type="button" class="btn btn-default btn-xs col-lg-2 col-md-2 col-sm-4 col-xs-6">{{ page.nom }}</a>
+	{% endfor %}
+	<div style="clear:both;height:0px;width:100%;visible:none;"></div>
+</div>

@@ -1,0 +1,104 @@
+{% extends "LaboTestmanuBundle::sitePage.html.twig" %}
+{% block title %}{{ parent() }} - Checking pour {{ entite }}{% endblock %}
+
+{% block main_contain %}
+{% set entiteName = "Commandes e-boutique" %}
+{% set ssentiteName = entite %}
+{% include "LaboTestmanuBundle:bloc:page-header.html.twig" %}
+<div class="row">
+	<!-- Corps complet -->
+	<div class="list-group">
+		<a class="list-group-item active">Liste des commandes : {{ comefrom }}</a>
+		<a class="list-group-item list-group-item-info">
+				<span class="glyphicon glyphicon-circle-arrow-right"></span>&nbsp;{{ factures|length }} commande{{ plur(factures, "s") }} affichées
+		</a>
+	</div>
+	{% if factures|length > 0 %}
+	<a href="{{ url('labo_export_cvs_vente', {type: comefrom}) }}" title="Exporter cette liste dans un fichier CSV.">
+		<button type="button" class="btn btn-warning btn-sm" style="display:inline;"><span class="glyphicon glyphicon-export"></span> Exporter cette liste en CSV</button>
+	</a>
+	<div style="clear:both;height:4px;"></div>
+	<table class="table table-bordered table-hover table-condensed" style="background-color:#fff;">
+		<tr>
+			<th>Référence</th>
+			<th class="center">Actions</th>
+			<th>date</th>
+			<th>Client</th>
+			<th class="center">Nb art.</th>
+			<th>Total € TTC</th>
+			<th>Livraison</th>
+			<th class="center">code tr.</th>
+			<th>Concessionnaire réf. (cp)</th>
+			<th>Action</th>
+		</tr>
+		{% for facture in factures %}
+		<tr{% if facture.stade > 2 %} style="color:#ccc;"{% endif %}>
+			<td><strong>{{ facture.reference }}</strong></td>
+			<td class="center">
+				<div class="btn-group">
+					<button type="button" class="btn btn-default btn-xs" onclick="javascript:document.location = '{{ url('labo_page_venteaction', {id: facture.id, action: 'detail', comefrom: comefrom}) }}'" style="Voir le détail de la commande {{ facture.reference }}."><span class="glyphicon glyphicon-eye-open"></span></button>
+					{% if facture.stade < 3 %}
+					<button type="button" class="btn btn-default btn-xs" onclick="window.open('{{ url('acme_facture_pdf', {facture: facture.id}) }}')" title="Télécharger la facture {{ facture.reference }} en PDF"><span class="glyphicon glyphicon-download-alt"></span></button>
+					{% else %}
+					<button type="button" class="btn btn-default btn-xs" disabled="disabled" title="Commande annulée ou échouée : facture non disponible"><span class="glyphicon glyphicon-download-alt"></span></button>
+					{% endif %}
+				</div>
+			</td>
+			<td title="{{ facture.dateCreation|date('d/m/Y \\- H:i:s') }}">{{ facture.dateCreation|date('d/m/Y') }}</td>
+			<td>{{ facture.nom }}</td>
+			<td class="center">{{ facture.nbArticles }}</td>
+			<td class="right">{{ facture.prixtotal|number_format(2, ",", "") }}&nbsp;€</td>
+			<td>{{ facture.livraisonTxt }}</td>
+			<td class="center">{{ facture.bankresponsecode }} / {{ facture.responsecode }}</td>
+			{% if facture.propUser.magasin is not null %}
+			{% if facture.propUser.magasin.email is not null %}
+				{% set mail = ' ><a href="mailto:' ~ facture.propUser.magasin.email ~ '"><span class="glyphicon glyphicon-envelope"></span></a> ' ~ facture.propUser.magasin.email %}
+			{% else %}
+				{% set mail = ' style="color:red;"><a href="' ~ url('labo_page_entite', {classEntite: Url_encode('magasin'), action: 'edit', element: facture.propUser.magasin.id }) ~ '" title="Editer le concessionnaire pour ajouter le mail"><span class="glyphicon glyphicon-exclamation-sign"></span></a> Pas de mail' %}
+			{% endif %}
+			<td title="{{ facture.propUser.magasin.nommagasin }} / {{ facture.propUser.magasin.adresse }} {{ facture.propUser.magasin.cp }} {{ facture.propUser.magasin.ville }}">
+				{{ facture.propUser.magasin.nommagasin }} ({{ facture.propUser.magasin.cp }})<br /><span{{ mail|raw }}</span>
+			</td>
+			{% else %}
+			<td>(aucun concessionnaire)</td>
+			{% endif %}
+			<td>
+				<!-- <div class="btn-group"> -->
+					{% if facture.stade == 0 %}
+					<div class="btn-group">
+						<button type="button" class="btn btn-danger btn-xs" onclick="javascript:document.location = '{{ url('labo_page_venteaction', {id: facture.id, action: 'envoyer-mail', comefrom: comefrom}) }}'" title="Passer cette commande comme en cours d'expédition.">Envoyer commande</button>
+						<button type="button" class="btn btn-danger btn-xs dropdown-toggle" data-toggle="dropdown">
+							<span class="caret"></span>
+							<span class="sr-only">Toggle Dropdown</span>
+						</button>
+						<ul class="dropdown-menu" role="menu">
+							<li><a href="{{ url('labo_page_venteaction', {id: facture.id, action: 'envoyer', comefrom: comefrom}) }}">Envoyer sans mail au client</a></li>
+						</ul>
+					</div>
+					{% elseif facture.stade == 1 %}
+					<a href="{{ url('labo_page_venteaction', {id: facture.id, action: 'terminer', comefrom: comefrom}) }}" title="Passer cette commande comme terminée.">
+						<button type="button" class="btn btn-warning btn-xs">Terminer commande</button>
+					</a>
+					{% elseif facture.stade == 2 %}
+					<button type="button" class="btn btn-success btn-xs" style="cursor:default;">Commande terminée</button>
+					{% elseif facture.stade == 3 %}
+					<button type="button" class="btn btn-default btn-xs" style="cursor:default;"><span class="glyphicon glyphicon-exclamation-sign"></span> Commande annulée</button>
+					<a href="{{ url('labo_page_venteaction', {id: facture.id, action: 'retablir', comefrom: comefrom}) }}" title="Rétablir la commande.">
+						<button type="button" class="btn btn-default btn-xs">Rétablir…</button>
+					</a>
+					{% elseif facture.stade == 100 %}
+					<button type="button" class="btn btn-default btn-xs" style="cursor:default;"><span class="glyphicon glyphicon-exclamation-sign"></span> Echec paiement ({{ facture.bankresponsecode }}/{{ facture.responsecode }})</button>
+					{% endif %}
+					{% if facture.stade < 3 %}
+					<a href="{{ url('labo_page_venteaction', {id: facture.id, action: 'annuler', comefrom: comefrom}) }}" title="Annuler cette commande.">
+						<button type="button" class="btn btn-default btn-xs">Annuler</button>
+					</a>
+					{% endif %}
+				<!-- </div> -->
+			</td>
+		</tr>
+		{% endfor %}
+	</table>
+	{% endif %}
+</div>
+{% endblock %}

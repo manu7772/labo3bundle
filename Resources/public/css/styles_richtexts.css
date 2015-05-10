@@ -1,0 +1,162 @@
+/* 
+COULEURS :
+-----------------
+titre gris : 333333(normal)
+paragraphe : 000000
+lien rouge : E20016
+*/
+
+.richtexts * {
+	background-color: transparent;
+	font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+	margin: 0px;
+	padding: 0px;
+	color: #333;
+	text-align: left;
+	/*font-size: 14px;*/
+	/*line-height: 14px;*/
+	font-style: normal;
+}
+
+.richtexts h1:first-child,
+.richtexts h2:first-child,
+.richtexts h3:first-child,
+.richtexts h4:first-child,
+.richtexts h5:first-child,
+.richtexts h6:first-child {
+	margin-top: 0px;
+	padding-top: 0px;
+}
+
+
+.richtexts h1 {
+	font-weight: normal;
+	color: #333333;
+	font-size: 24px;
+	line-height: 24px;
+	padding: 8px 0px 2px;
+}
+.richtexts h2 {
+	font-weight: bold;
+	color: #666666;
+	font-size: 22px;
+	line-height: 22px;
+	padding: 8px 0px 2px;
+}
+.richtexts h3 {
+	font-weight: normal;
+	color: #666666;
+	font-size: 20px;
+	line-height: 20px;
+	padding: 8px 0px 2px;
+}
+.richtexts h4 {
+	font-weight: normal;
+	color: #999999;
+	font-size: 18px;
+	line-height: 18px;
+	padding: 8px 0px 2px;
+}
+.richtexts h5 {
+	font-weight: normal;
+	color: #E20016;;
+	font-size: 16px;
+	line-height:16px;
+	margin-bottom: 10px;
+    margin-top: 10px;
+	padding: 2px 0px;
+}
+.richtexts h6 {
+	font-weight: normal;
+	font-style: italic;
+	color: #666;
+	font-size: 10px;
+	line-height:10px;
+	padding: 2px 0px;
+}
+.richtexts br {
+		line-height:14px;
+}
+.richtexts p {
+    color: #000000;
+    font-size: 13px;
+    font-weight: normal;
+	line-height:14px;
+    margin: 5px 0;
+    text-align: justify;
+}
+.richtexts p a, .richtexts p a:visited {
+    color: #E20016;
+    font-size: 13px;
+    font-weight: normal;
+	/*line-height:14px;*/
+}
+.richtexts p a:hover, .richtexts p a:active, .richtexts p a:focus {
+    color: #E20016;
+    font-size: 13px;
+    font-weight: normal;
+	line-height:14px;
+	text-decoration:underline;
+}
+.richtexts ul {
+    color: #000000;
+    font-size: 13px;
+    font-weight: normal;
+    line-height: 14px;
+    /*list-style-type: none;*/
+}
+
+.richtexts li {
+	font-size: 13px;
+    font-weight: normal;
+	line-height:14px;
+	color: #000000;
+	margin-left: 15px;
+}
+.richtexts ul a, .richtexts ul a:visited, .richtexts li a, .richtexts li a:visited{
+	font-size: 13px;
+	color: #E20016;
+	text-decoration:none;
+}
+.richtexts ul a:hover, .richtexts ul a:active, .richtexts ul a:focus, .richtexts li a:hover, .richtexts li a:active, .richtexts li a:focus {
+	color: #E20016;
+	font-size: 13px;
+	text-decoration:underline;
+}
+.richtexts a, .richtexts a:visited{
+	color: #E20016;
+    font-size: 14px;
+    margin: 0px;
+	text-decoration:none;
+	line-height:16px;
+}
+.richtexts a:hover, .richtexts a:active, .richtexts a:focus{
+	color: #E20016;
+    /*font-size: 14px;*/
+	text-decoration:underline;
+	/*line-height:16px;*/
+}
+.richtexts strong {
+	color: #000000;
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 14px;
+}
+
+/* Style pour bouton "retour à la page précédente" */
+.richtexts .backpage {
+	display: inline-block;
+	width: auto;
+	/*height: 11px;*/
+	/*line-height: 14px;*/
+	margin: 0px 4px 8px 0px;
+	background-color: #888;
+	color: #fff;
+	font-size: 10px;
+	font-weight: normal;
+	padding: 1px 6px;
+	cursor: pointer;
+	border-radius: 2px;
+}
+
+

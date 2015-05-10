@@ -1,0 +1,24 @@
+{
+    "name": "labo/labo-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony laboBundle",
+    "keywords": ["bundle", "labo", "symfony"],
+    "license": "GPL-3.0+",
+    "authors": [
+        {
+            "name": "Emmanuel Dujardin",
+            "email": "manu7772@gmail.com"
+        }
+    ],
+    "require": {
+        "php":                              ">=5.3.3",
+        "symfony/symfony" :                 "2.*",
+        "twig/twig":                        "*",
+        "doctrine/doctrine-bundle":         "*"
+    },
+    "autoload": {
+        "psr-0": { "laboBundle": "" }
+    },
+    "target-dir": "laboBundle",
+    "minimum-stability": "dev"
+}

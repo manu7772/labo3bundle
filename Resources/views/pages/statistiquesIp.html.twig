@@ -1,0 +1,30 @@
+{% extends "LaboTestmanuBundle::sitePage.html.twig" %}
+{% block title %}{{ parent() }} - Statistiques site{% endblock %}
+
+{% block main_contain %}
+
+<div class="row">
+	<!-- Corps complet -->
+	{{ include('LaboTestmanuBundle:bloc:statListOptions.html.twig') }}
+	<div class="well well-sm">
+		<h4>Liste des pages visitées par {{ ip }} ({{ statistiques|length }} <small>page{{ plur(statistiques, "s") }})</small></h4>
+		<table class="table table-striped table-hover table-condensed">
+			<tr>
+				<th>IP</th>
+				<th>Date et heure</th>
+				<th>Page</th>
+				<th>Utilis. <small>si connect.</small></th>
+			</tr>
+			{% for stat in statistiques %}
+			<tr>
+				<td>{{ stat.ip }}</td>
+				<td>{{ stat.dateCreation|date('d/m/Y \\- H:i:s') }}</td>
+				<td>{{ stat.nom }}</td>
+				<td>{% if stat.user is not null %}{{ stat.user.username }}{% endif %}</td>
+			</tr>
+			{% endfor %}
+		</table>
+	</div>
+</div>
+
+{% endblock %}

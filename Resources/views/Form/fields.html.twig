@@ -1,0 +1,62 @@
+{# src/AcmeGroup/LaboBundle/Resources/views/Form/fields.html.twig #}
+
+
+{% block gender_widget %}
+	{% if expanded %}
+		<ul {{ block('widget_container_attributes') }}>
+		{% for child in form %}
+			<li>
+				{{ form_widget(child) }}
+				{{ form_label(child) }}
+			</li>
+		{% endfor %}
+		</ul>
+	{% else %}
+		{# laisse le widget choice afficher la balise select #}
+		{{ block('choice_widget') }}
+	{% endif %}
+{% endblock gender_widget %}
+
+
+
+{% block routes_widget %}
+	{% if expanded %}
+		<ul {{ block('widget_container_attributes') }}>
+		{% for child in form %}
+			<li>
+				{{ form_widget(child) }}
+				{{ form_label(child) }}
+			</li>
+		{% endfor %}
+		</ul>
+	{% else %}
+		{# laisse le widget choice afficher la balise select #}
+		{{ block('choice_widget') }}
+	{% endif %}
+{% endblock routes_widget %}
+
+{% block magasins_widget %}
+	<!-- {{ block('choice_widget') }} -->
+	{{ block('choice_widget') }}
+{% endblock magasins_widget %}
+
+
+
+{% block datepicker_widget %}
+	<input {{ block('widget_attributes') }} class="datepicker form-control" value="{{ value }}" />
+{% endblock %}
+
+{% block datepicker2_widget %}
+	<input {{ block('widget_attributes') }} class="datepicker" value="{{ value }}" />
+{% endblock %}
+
+{% block datepicker2alldates_widget %}
+	<input {{ block('widget_attributes') }} class="datepickerAll" value="{{ value }}" />
+{% endblock %}
+
+
+
+{% block richtext_widget %}
+	<textarea {{ block('widget_attributes') }} class="richtexts">{{ value|raw }}</textarea>
+{% endblock richtext_widget %}
+

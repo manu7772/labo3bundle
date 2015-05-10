@@ -1,0 +1,8 @@
+{% if statut.nom == "Actif" %}{% set label = "success" %}
+{% elseif statut.nom == "Banni" %}{% set label = "danger" %}
+{% else %}{% set label = "warning" %}{% endif %}
+<td>
+	<!-- <a href="{{ url('labo_entite_action', {'action': 'statut:_toogle', 'classEntite': Url_encode(entiteName), 'id': ligne.id}) }}" title="Activer/désactiver" target="uploadFrame"> -->
+		<span class="label label-{{ label }}">{{ statut.nom }}</span>
+	<!-- </a> -->
+</td>

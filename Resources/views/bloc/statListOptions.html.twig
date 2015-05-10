@@ -1,0 +1,10 @@
+<div class="well well-sm">
+	{% for type in listtypes %}
+		{% if typedata is defined %}
+	<a href="{{ url('labo_stats_generic', {stat: type}) }}" type="button" class="btn btn-xs btn-{% if type == typedata %}warning{% else %}default{% endif %} col-lg-2 col-md-2 col-sm-4 col-xs-6">{{ type }}</a>
+		{% else %}
+	<a href="{{ url('labo_stats_generic', {stat: type}) }}" type="button" class="btn btn-xs btn-default col-lg-2 col-md-2 col-sm-4 col-xs-6">{{ type }}</a>
+		{% endif %}
+	{% endfor %}
+	<div style="clear:both;height:0px;width:100%;visible:none;"></div>
+</div>

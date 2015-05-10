@@ -1,0 +1,5 @@
+{% if short is defined %}
+	<td style="text-align:center;">{{ phraseCut(value|striptags, short)|raw }}</td>
+{% else %}
+	<td style="text-align:center;">{{ value|striptags|raw }}</td>
+{% endif %}

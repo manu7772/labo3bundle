@@ -1,0 +1,10 @@
+{% if value is iterable %}
+<td>{% for valu in value %}
+	<span class="label label-default">{{ valu.nom }}</span>
+	{% endfor %}
+</td>
+{% else %}
+<td>
+	<span class="label label-default">{{ value.nom }}</span>
+</td>
+{% endif %}

@@ -1,0 +1,28 @@
+
+  /***************************/
+ /* STRUCTURE DE PAGE       */
+/***************************/
+body {
+	padding-top: 70px;
+	padding-bottom: 70px;
+	background-color: #dddddd;
+}
+*:focus	{outline: none;}
+
+a:hover {
+	text-decoration: none;
+}
+
+table td {
+	vertical-align: middle;
+}
+
+.left {
+	text-align: left;
+}
+.right {
+	text-align: right;
+}
+.center {
+	text-align: center;
+}

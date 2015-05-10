@@ -1,0 +1,33 @@
+{% extends "LaboTestmanuBundle::sitePage.html.twig" %}
+{% block title %}{{ parent() }} - Statistiques site{% endblock %}
+
+{% block main_contain %}
+
+<div class="row">
+	<!-- Corps complet -->
+	{{ include('LaboTestmanuBundle:bloc:statListOptions.html.twig') }}
+	{% if listeArticles is defined %}
+	{{ include('LaboTestmanuBundle:bloc:statListOptionsArticles.html.twig') }}
+	{% else %}
+	{{ include('LaboTestmanuBundle:bloc:statListOptionsCategories.html.twig') }}
+	{% endif %}
+	<div class="well well-sm">
+		<h4>Page d'accueil <small>(acme_site_home)</small></h4>
+		<table class="table table-striped table-hover table-condensed">
+			<tr>
+				<th>IP</th>
+				<th>Date et heure</th>
+				<th>Utilisateur</th>
+			</tr>
+			{% for stat in statistiques %}
+			<tr>
+				<td><a href="{{ url('labo_stats_suiviIP', {ip: stat.ip}) }}">{{ stat.ip }}</a></td>
+				<td>{{ stat.dateCreation|date('d/m/Y \\- H:i:s') }}</td>
+				<td>{% if stat.user is not null %}{{ stat.user.username }}{% endif %}</td>
+			</tr>
+			{% endfor %}
+		</table>
+	</div>
+</div>
+
+{% endblock %}

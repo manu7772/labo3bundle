@@ -1,0 +1,13 @@
+<tr class="ajxu-{{ bundleNameEntiteName }}{{ ligne.id }}" data-prototype="{{ url('listeEntiteLigne', {'classEntite': bundleNameEntiteName, 'id': ligne.id}) }}">
+	{% include "LaboTestmanuBundle:tableau:col_texteCentre.html.twig" with {"texte": ligne.id} %}
+	<td>{% if ligne.imagePpale != null %}
+		<a href="{{ asset('images/original/' ~ ligne.imagePpale.fichierNom) }}" class="fancybox" title="{{ ligne.imagePpale.nom }}">
+			<img src="{{ asset('images/tn64/' ~ ligne.imagePpale.fichierNom) }}" width="32" height="32" class="img-thumbnail" />
+		</a>{% endif %}
+	</td>
+	{% include "LaboTestmanuBundle:tableau:col_actions.html.twig" %}
+	{% include "LaboTestmanuBundle:tableau:col_texte.html.twig" with {"ligne": ligne, "value": ligne.nom} %}
+	{% set TVA = ligne.prix * ligne.tauxTVA.taux / 100 %}
+	{% include "LaboTestmanuBundle:tableau:col_texteCentre.html.twig" with {"ligne": ligne, "value": ligne.notation} %}
+	{% include "LaboTestmanuBundle:tableau:col_texteCentre.html.twig" with {"ligne": ligne, "value": ligne.rank} %}
+</tr>
