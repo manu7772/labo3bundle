@@ -29,7 +29,7 @@ class Configuration implements ConfigurationInterface
                     ->example('Exemple de paramètre')
                 ->end()
                 ->scalarNode('user_class')
-                    ->defautlValue('AcmeGroup\UserBundle\Entity\User')
+                    ->defaultValue('AcmeGroup\UserBundle\Entity\User')
                     ->info('Classe FOS/User')
                 ->end()
             ->end()
