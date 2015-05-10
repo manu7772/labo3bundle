@@ -1,7 +1,7 @@
-# parameters:
-# # labo_3_bundle.example.class: laboBundle\Example
+parameters:
+    # labo_3_bundle.example.class: laboBundle\Example
 
-# services:
+services:
 
 #     ###################################
 #     ### OUTILS GÉNÉRIQUES
