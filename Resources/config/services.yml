@@ -1,5 +1,5 @@
 # parameters:
-# # acme_group_labo.example.class: labo\Bundle\TestmanuBundle\Example
+# # labo_3_bundle.example.class: labo\Bundle\TestmanuBundle\Example
 
 # services:
 
@@ -8,39 +8,39 @@
 #     ###################################
 
     # Fonctions textes utiles et pratiques pour utilisation dans TWIG
-    acmeGroup.textutilities:
+    labo3bundle.textutilities:
         class: labo\Bundle\TestmanuBundle\services\aetools\twigAetools
         arguments: [@service_container]
         tags:
             - { name: twig.extension }
 
     # Fonctionnalités sur les textes (notamment l'entité richtext)
-    acmeGroup.texttools:
+    labo3bundle.texttools:
         class: labo\Bundle\TestmanuBundle\services\aetools\richtextsAetools
         arguments: [@service_container]
 
     # Fonctionnalités de requêtes et dossiers/fichiers
-    acmeGroup.aetools:
+    labo3bundle.aetools:
         class: labo\Bundle\TestmanuBundle\services\aetools\aetools
         arguments: [@service_container]
 
 #     # Fonctionnalités de dates/heures
-#     acmeGroup.aedates:
+#     labo3bundle.aedates:
 #         class: labo\Bundle\TestmanuBundle\services\aetools\aedates
 #         arguments: [@service_container]
 
 #     # Fonctionnalités de parametres du site
-#     acmeGroup.parametre:
+#     labo3bundle.parametre:
 #         class: labo\Bundle\TestmanuBundle\services\aetools\parametre
 #         arguments: [@service_container]
 
     # Fonctionnalités de manipulations d'images
-    acmeGroup.imagetools:
+    labo3bundle.imagetools:
         class: labo\Bundle\TestmanuBundle\services\aetools\imageAetools
         arguments: [@service_container]
 
 #     # Fonctionnalités de parsage XML
-#     acmeGroup.XMLparser:
+#     labo3bundle.XMLparser:
 #         class: labo\Bundle\TestmanuBundle\services\aetools\XMLparser
 #         arguments: []
 
@@ -49,88 +49,88 @@
 #     ###################################
 
     # Fonctionnalités de base pour les entités
-    acmeGroup.entities:
+    labo3bundle.entities:
         class: labo\Bundle\TestmanuBundle\services\entitiesServices\entitiesGeneric
         arguments: [@service_container]
 
     # Fonctionnalités de gestion des versions (sociétés)
-    acmeGroup.version:
+    labo3bundle.version:
         class: labo\Bundle\TestmanuBundle\services\entitiesServices\version
         arguments: [@service_container]
 
 #     # Fonctionnalités de gestion des pages web
-#     acmeGroup.pageweb:
+#     labo3bundle.pageweb:
 #         class: labo\Bundle\TestmanuBundle\services\entitiesServices\pageweb
 #         arguments: [@service_container]
 
 #     # Fonctionnalités de gestion des collections
-#     acmeGroup.collection:
+#     labo3bundle.collection:
 #         class: labo\Bundle\TestmanuBundle\services\entitiesServices\collection
 #         arguments: [@service_container]
 
 #     # Fonctionnalités de gestion des votes
-#     acmeGroup.votes:
+#     labo3bundle.votes:
 #         class: labo\Bundle\TestmanuBundle\services\entitiesServices\votes
 #         arguments: [@service_container]
 
 #     # Fonctionnalités de gestion des visites sur le site
-#     acmeGroup.visite:
+#     labo3bundle.visite:
 #         class: labo\Bundle\TestmanuBundle\services\entitiesServices\visite
 #         arguments: [@service_container]
 
 #     # Fonctionnalités de categorie
-#     acmeGroup.categorie:
+#     labo3bundle.categorie:
 #         class: labo\Bundle\TestmanuBundle\services\entitiesServices\categorie
 #         arguments: [@service_container]
 
 #     # Fonctionnalités pour articles
-#     acmeGroup.article:
+#     labo3bundle.article:
 #         class: labo\Bundle\TestmanuBundle\services\entitiesServices\article
 #         arguments: [@service_container]
 
 #     # Atelier créatif et fiches
-#     acmeGroup.atelierCreatif:
+#     labo3bundle.atelierCreatif:
 #         class: labo\Bundle\TestmanuBundle\services\entitiesServices\atelierCreatif
 #         arguments: [@service_container]
 
 #     # magasins
-#     acmeGroup.magasin:
+#     labo3bundle.magasin:
 #         class: labo\Bundle\TestmanuBundle\services\entitiesServices\magasin
 #         arguments: [@service_container]
 
 #     # videos
-#     acmeGroup.video:
+#     labo3bundle.video:
 #         class: labo\Bundle\TestmanuBundle\services\entitiesServices\video
 #         arguments: [@service_container]
 
 #     # évènements
-#     acmeGroup.events:
+#     labo3bundle.events:
 #         class: labo\Bundle\TestmanuBundle\services\entitiesServices\evenement
 #         arguments: [@service_container]
 
 #     # presse
-#     acmeGroup.presse:
+#     labo3bundle.presse:
 #         class: labo\Bundle\TestmanuBundle\services\entitiesServices\presse
 #         arguments: [@service_container]
 
 #     # factures
-#     acmeGroup.facture:
+#     labo3bundle.facture:
 #         class: labo\Bundle\TestmanuBundle\services\entitiesServices\facture
 #         arguments: [@service_container]
 
 #     # aelogs
-#     acmeGroup.aelog:
+#     labo3bundle.aelog:
 #         class: labo\Bundle\TestmanuBundle\services\entitiesServices\aelog
 #         arguments: [@service_container]
 
 #     # Fonctionnalités de gestion du panier d'achat
 #     # -> synthèses, ajouts, suppressions, etc. de produits dans le panier
-#     acmeGroup.panier:
+#     labo3bundle.panier:
 #         class: labo\Bundle\TestmanuBundle\services\entitiesServices\panier
 #         arguments: [@service_container]
 #         # scope: request
 
-#     acmeGroup.directeditor:
+#     labo3bundle.directeditor:
 #         class: labo\Bundle\TestmanuBundle\services\entitiesServices\directeditor
 #         arguments: [@service_container]
 #         tags:
@@ -141,7 +141,7 @@
 #     ###################################
 
 #     # EventListerner sur paramètres généraux du site
-#     acmeGroup.site_listener:
+#     labo3bundle.site_listener:
 #         class: labo\Bundle\TestmanuBundle\eventListeners\siteListener\siteListener
 #         arguments: [@service_container]
 #         tags:
@@ -153,7 +153,7 @@
     ###################################
 
     # Utilitaire de gestion sur les entités
-    acmeGroup.entityUtils:
+    labo3bundle.entityUtils:
         class: labo\Bundle\TestmanuBundle\services\entitiesServices\entityListener
         arguments: [@service_container]
         tags:

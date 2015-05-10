@@ -8,6 +8,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use labo\Bundle\TestmanuBundle\services\entitiesServices\entitiesGeneric;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 // use Symfony\Component\Form\FormFactoryInterface;
+use \Exception;
 
 class version extends entitiesGeneric {
 	protected $service = array();
@@ -178,8 +179,10 @@ class version extends entitiesGeneric {
 	public function defaultVersion() {
 		$ver = $this->getRepo()->defaultVersion(); // Récupère version par défaut
 		if(!is_object($ver)) { // sinon récupère le premier trouvé
-			$a = $this->getRepo()->findAll();
-			$ver = $a[0];
+			$ver = reset($this->getRepo()->findAll());
+		}
+		if(!is_object($ver)) {
+			throw new Exception("Service version : aucune version trouvée.");
 		}
 		return $ver;
 	}

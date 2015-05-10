@@ -1,8 +1,7 @@
-{% extends "LaboTestmanuBundle::sitePage.html.twig" %}
-{% block title %}{{ parent() }} - Administration site{% endblock %}
+{% extends "labo3bundle::laboHomepage.html.twig" %}
 
-{% block main_contain %}
+{% block navbar %}{{ parent() }}{% endblock navbar %}
 
-{% include "LaboTestmanuBundle:bloc:jumbotron.html.twig" %}
-
-{% endblock %}
+{% block body_container %}
+	<p>BONJOUR labo3bundle</p>
+{% endblock body_container %}

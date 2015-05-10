@@ -1,0 +1,20 @@
+<!DOCTYPE html> <!-- HTML 5 -->
+<html lang="fr">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>{% block title %}Labo{% endblock %}</title>
+		<link rel="icon" type="image/x-icon" href="{{ asset(app.session.get('version').favicon) }}" />
+		{% stylesheets filter='cssrewrite, lessphp, ?yui_css'
+		 %}
+		<link rel="stylesheet" href="{{ asset_url }}" type="text/css" />
+		{% endstylesheets %}
+	</head>
+	<body>
+		{% block body %}
+		{% endblock body %}
+		{% javascripts filter='?yui_js'
+		 %}
+		<script type="text/javascript" src="{{ asset_url }}"></script>
+		{% endjavascripts %}
+	</body>
+</html>

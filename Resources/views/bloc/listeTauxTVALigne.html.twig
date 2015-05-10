@@ -1,7 +1,0 @@
-<tr class="ajxu-{{ bundle }}Bundle{{ entite }}{{ ligne.id }}" data-prototype="{{ url('listeEntiteLigne', {'entite': bundle ~ 'Bundle' ~ entite, 'id': ligne.id}) }}">
-	{% include "LaboTestmanuBundle:tableau:col_texteCentre.html.twig" with {"texte": ligne.id} %}
-	{% include "LaboTestmanuBundle:tableau:col_actions.html.twig" %}
-	{% include "LaboTestmanuBundle:tableau:col_texte.html.twig" with {"obj": ligne, "texte": 'nom'} %}
-	{% include "LaboTestmanuBundle:tableau:col_texte.html.twig" with {"obj": ligne, "texte": 'descriptif', "short": 50} %}
-	{% include "LaboTestmanuBundle:tableau:col_taux.html.twig" with {"taux": ligne.taux} %}
-</tr>

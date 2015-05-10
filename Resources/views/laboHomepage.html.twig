@@ -1,0 +1,10 @@
+{% extends "labo3bundle::laboBasepage.html.twig" %}
+{% block body %}
+	{% block navbar %}
+		{{ render(controller("labo3bundle:Labo:navbar")) }}
+	{% endblock navbar %}
+	<!-- DEBUT : CONTENU DE LA PAGE -->
+	{% block body_container %}
+	{% endblock body_container %}
+	<!-- FIN : CONTENU DE LA PAGE -->
+{% endblock body %}
