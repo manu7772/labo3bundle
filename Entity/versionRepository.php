@@ -1,10 +1,10 @@
 <?php
 
-namespace labo\Bundle\TestmanuBundle\Entity;
+namespace laboBundle\Entity;
 
-use labo\Bundle\TestmanuBundle\Entity\base_laboRepository;
+use laboBundle\Entity\base_laboRepository;
 // aeReponse
-use labo\Bundle\TestmanuBundle\services\aetools\aeReponse;
+use laboBundle\services\aetools\aeReponse;
 
 /**
  * versionRepository

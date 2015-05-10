@@ -1,12 +1,12 @@
 <?php
-// labo/Bundle/TestmanuBundle/services/entitiesServices/categorie.php
+// laboBundle/services/entitiesServices/categorie.php
 
-namespace labo\Bundle\TestmanuBundle\services\entitiesServices;
+namespace laboBundle\services\entitiesServices;
 
 use Symfony\Component\Templating\EngineInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use labo\Bundle\TestmanuBundle\services\entitiesServices\entitiesGeneric;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
+use laboBundle\services\entitiesServices\entitiesGeneric;
 // use Symfony\Component\Form\FormFactoryInterface;
 
 class categorie extends entitiesGeneric {
@@ -22,9 +22,13 @@ class categorie extends entitiesGeneric {
 		$this->container = $container;
 		parent::__construct($this->container);
 		// récupération du paramètre de menu dans parameters.yml si existant
-		if($this->container->hasParameter('menu_slug')) {
-			$this->menuSlug = $this->container->getParameter("menu_slug");
+		// tester : $this->container->getParameter( 'labo_3_bundle.default_menu' );
+		if($this->container->hasParameter('labo_3_bundle.default_menu')) {
+			$this->menuSlug = $this->container->getParameter("labo_3_bundle.default_menu");
 		} else $this->menuSlug = null;
+		// if($this->container->hasParameter('menu_slug')) {
+		// 	$this->menuSlug = $this->container->getParameter("menu_slug");
+		// } else $this->menuSlug = null;
 		if(($this->init["categorie"] === false) || ($this->modeFixtures === true)) $this->defineEntity("categorie");
 	}
 

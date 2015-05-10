@@ -1,6 +1,6 @@
 <?php
 
-namespace labo\Bundle\TestmanuBundle\Entity;
+namespace laboBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -8,16 +8,16 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 // Slug
 use Gedmo\Mapping\Annotation as Gedmo;
-use labo\Bundle\TestmanuBundle\Entity\baseL0_entity;
+use laboBundle\Entity\baseL0_entity;
 // aeReponse
-use labo\Bundle\TestmanuBundle\services\aetools\aeReponse;
+use laboBundle\services\aetools\aeReponse;
 
 /**
  * statut
  *
  * @ORM\Entity
  * @ORM\Table(name="statut")
- * @ORM\Entity(repositoryClass="labo\Bundle\TestmanuBundle\Entity\statutRepository")
+ * @ORM\Entity(repositoryClass="laboBundle\Entity\statutRepository")
  * @UniqueEntity(fields={"nom"}, message="Ce statut existe déjà.")
  */
 class statut extends baseL0_entity {

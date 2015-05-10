@@ -1,6 +1,6 @@
 <?php
 
-namespace labo3bundle\Controller;
+namespace laboBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,11 +19,11 @@ class laboController extends Controller {
 
 	// Page d'accueil de l'admin (labo)
 	public function homeAction() {
-		return $this->render('labo3bundle:pages:index.html.twig');
+		return $this->render('laboBundle:pages:index.html.twig');
 	}
 
 	public function navbarAction() {
-		return $this->render('labo3bundle:menus:navbar.html.twig');
+		return $this->render('laboBundle:menus:navbar.html.twig');
 	}
 
 }

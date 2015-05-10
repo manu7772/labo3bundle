@@ -1,6 +1,6 @@
 <?php
 
-namespace labo\Bundle\TestmanuBundle\Entity;
+namespace laboBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -10,7 +10,7 @@ use \DateTime;
 // Slug
 use Gedmo\Mapping\Annotation as Gedmo;
 // aeReponse
-use labo\Bundle\TestmanuBundle\services\aetools\aeReponse;
+use laboBundle\services\aetools\aeReponse;
 
 /**
  * @ORM\MappedSuperclass

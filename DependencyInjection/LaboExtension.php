@@ -1,6 +1,6 @@
 <?php
 
-namespace labo3Bundle\DependencyInjection;
+namespace laboBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;

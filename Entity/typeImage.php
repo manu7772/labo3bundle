@@ -1,6 +1,6 @@
 <?php
 
-namespace labo\Bundle\TestmanuBundle\Entity;
+namespace laboBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -8,18 +8,18 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 // Slug
 use Gedmo\Mapping\Annotation as Gedmo;
-use labo\Bundle\TestmanuBundle\Entity\base_type;
+use laboBundle\Entity\base_type;
 // Repositories
-use labo\Bundle\TestmanuBundle\Entity\typeImageRepository;
+use laboBundle\Entity\typeImageRepository;
 // aeReponse
-use labo\Bundle\TestmanuBundle\services\aetools\aeReponse;
+use laboBundle\services\aetools\aeReponse;
 
 /**
  * typeImage
  *
  * @ORM\Entity
  * @ORM\Table(name="typeImage")
- * @ORM\Entity(repositoryClass="labo\Bundle\TestmanuBundle\Entity\typeImageRepository")
+ * @ORM\Entity(repositoryClass="laboBundle\Entity\typeImageRepository")
  * @UniqueEntity(fields={"nom"}, message="Ce type d'image existe déjà")
  */
 class typeImage extends base_type {

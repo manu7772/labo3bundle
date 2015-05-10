@@ -1,11 +1,12 @@
 <?php
-// labo/Bundle/TestmanuBundle/services/aetools/twigAetools.php
+// laboBundle/services/aetools/twigAetools.php
 
-namespace labo\Bundle\TestmanuBundle\services\aetools;
+namespace laboBundle\services\aetools;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use \Twig_Extension;
 
-class twigAetools extends \Twig_Extension {
+class twigAetools extends Twig_Extension {
 
 	private $decal;
 	private $html;

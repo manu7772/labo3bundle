@@ -1,7 +1,7 @@
 <?php
-// labo/Bundle/TestmanuBundle/services/aetools/aeReponse.php
+// laboBundle/services/aetools/aeReponse.php
 
-namespace labo\Bundle\TestmanuBundle\services\aetools;
+namespace laboBundle\services\aetools;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

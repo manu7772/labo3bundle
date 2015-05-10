@@ -1,6 +1,6 @@
 <?php
 
-namespace labo\Bundle\TestmanuBundle\DependencyInjection;
+namespace laboBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -19,7 +19,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('labo_3_bundle');
+        $rootNode = $treeBuilder->root('labo_bundle');
 
         $rootNode
             ->children()

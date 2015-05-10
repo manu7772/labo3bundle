@@ -1,6 +1,6 @@
 <?php
 
-namespace labo\Bundle\TestmanuBundle\Entity;
+namespace laboBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -9,19 +9,19 @@ use Doctrine\Common\Collections\ArrayCollection;
 // Slug
 use Gedmo\Mapping\Annotation as Gedmo;
 // Repositories
-use labo\Bundle\TestmanuBundle\Entity\versionRepository;
+use laboBundle\Entity\versionRepository;
 // Entities
-use labo\Bundle\TestmanuBundle\Entity\baseL0_entity;
-use labo\Bundle\TestmanuBundle\Entity\version;
+use laboBundle\Entity\baseL0_entity;
+use laboBundle\Entity\version;
 // aeReponse
-use labo\Bundle\TestmanuBundle\services\aetools\aeReponse;
+use laboBundle\services\aetools\aeReponse;
 
 /**
  * entitiesrights
  *
  * @ORM\Entity
  * @ORM\Table(name="entitiesrights")
- * @ORM\Entity(repositoryClass="labo\Bundle\TestmanuBundle\Entity\entitiesrightsRepository")
+ * @ORM\Entity(repositoryClass="laboBundle\Entity\entitiesrightsRepository")
  * @UniqueEntity(fields={"nom"}, message="Cette entitiesrights existe déjà")
  */
 class entitiesrights extends baseL0_entity {
@@ -29,7 +29,7 @@ class entitiesrights extends baseL0_entity {
 	/**
 	 * @var integer
 	 *
-	 * @ORM\ManyToOne(targetEntity="labo\Bundle\TestmanuBundle\Entity\version")
+	 * @ORM\ManyToOne(targetEntity="laboBundle\Entity\version")
 	 * @ORM\JoinColumn(nullable=false, unique=false)
 	 */
 	protected $version;

@@ -1,12 +1,12 @@
 <?php
-// labo/Bundle/TestmanuBundle/TestmanuBundle/services/entitiesServices/version.php
+// laboBundle/services/entitiesServices/version.php
 
-namespace labo\Bundle\TestmanuBundle\services\entitiesServices;
+namespace laboBundle\services\entitiesServices;
 
 use Symfony\Component\Templating\EngineInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use labo\Bundle\TestmanuBundle\services\entitiesServices\entitiesGeneric;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
+use laboBundle\services\entitiesServices\entitiesGeneric;
 // use Symfony\Component\Form\FormFactoryInterface;
 use \Exception;
 

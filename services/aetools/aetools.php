@@ -1,11 +1,11 @@
 <?php
-// labo/Bundle/TestmanuBundle/services/aetools/aetools.php
+// laboBundle/services/aetools/aetools.php
 
-namespace labo\Bundle\TestmanuBundle\services\aetools;
+namespace laboBundle\services\aetools;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
-use labo\Bundle\TestmanuBundle\services\aetools\aeReponse;
+use laboBundle\services\aetools\aeReponse;
 
 define("ALL_FILES",	"^.+$");
 

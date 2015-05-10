@@ -1,6 +1,6 @@
 <?php
 
-namespace labo\Bundle\TestmanuBundle\Entity;
+namespace laboBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -10,10 +10,10 @@ use Doctrine\ORM\QueryBuilder;
 
 use \Exception;
 
-use labo\Bundle\TestmanuBundle\Entity\version;
-use labo\Bundle\TestmanuBundle\Entity\statut;
+use laboBundle\Entity\version;
+use laboBundle\Entity\statut;
 // aeReponse
-use labo\Bundle\TestmanuBundle\services\aetools\aeReponse;
+use laboBundle\services\aetools\aeReponse;
 
 /**
  * base_laboRepository

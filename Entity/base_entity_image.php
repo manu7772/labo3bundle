@@ -1,6 +1,6 @@
 <?php
 
-namespace labo\Bundle\TestmanuBundle\Entity;
+namespace laboBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -12,11 +12,11 @@ use \Imagick;
 // Slug
 use Gedmo\Mapping\Annotation as Gedmo;
 // Base
-use labo\Bundle\TestmanuBundle\Entity\baseL1_entity;
+use laboBundle\Entity\baseL1_entity;
 // Entities
-use labo\Bundle\TestmanuBundle\Entity\typeImage;
+use laboBundle\Entity\typeImage;
 // aeReponse
-use labo\Bundle\TestmanuBundle\services\aetools\aeReponse;
+use laboBundle\services\aetools\aeReponse;
 
 /**
  * @ORM\MappedSuperclass
@@ -32,7 +32,7 @@ abstract class base_entity_image extends baseL1_entity {
 
 	/**
 	 *
-	 * @ORM\ManyToMany(targetEntity="labo\Bundle\TestmanuBundle\Entity\typeImage")
+	 * @ORM\ManyToMany(targetEntity="laboBundle\Entity\typeImage")
 	 * @ORM\JoinColumn(nullable=false, unique=false)
 	 */
 	protected $typeImages;

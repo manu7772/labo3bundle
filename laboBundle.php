@@ -1,6 +1,6 @@
 <?php
 
-namespace labo3bundle;
+namespace laboBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

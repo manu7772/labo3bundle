@@ -1,7 +1,7 @@
 <?php
-// labo/Bundle/TestmanuBundle/services/entitiesServices/entitiesGeneric.php
+// laboBundle/services/entitiesServices/entitiesGeneric.php
 
-nameSpace labo\Bundle\TestmanuBundle\services\entitiesServices;
+nameSpace laboBundle\services\entitiesServices;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;

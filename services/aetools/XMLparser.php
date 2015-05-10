@@ -1,7 +1,7 @@
 <?php
-// labo/Bundle/TestmanuBundle/services/aetools/XMLparser.php
+// laboBundle/services/aetools/XMLparser.php
 
-namespace labo\Bundle\TestmanuBundle\services\aetools;
+namespace laboBundle\services\aetools;
 
 class XMLparser {
 

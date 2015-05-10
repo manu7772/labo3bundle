@@ -1,6 +1,6 @@
 <?php
 
-namespace labo\Bundle\TestmanuBundle\Entity;
+namespace laboBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -8,20 +8,20 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 // Slug
 use Gedmo\Mapping\Annotation as Gedmo;
-use labo\Bundle\TestmanuBundle\Entity\baseL0_entity;
+use laboBundle\Entity\baseL0_entity;
 // Entities
-use labo\Bundle\TestmanuBundle\Entity\adresse;
-use labo\Bundle\TestmanuBundle\Entity\image;
-use labo\Bundle\TestmanuBundle\Entity\reseausocial;
+use laboBundle\Entity\adresse;
+use laboBundle\Entity\image;
+use laboBundle\Entity\reseausocial;
 // aeReponse
-use labo\Bundle\TestmanuBundle\services\aetools\aeReponse;
+use laboBundle\services\aetools\aeReponse;
 
 /**
  * version
  *
  * @ORM\Entity
  * @ORM\Table(name="version")
- * @ORM\Entity(repositoryClass="labo\Bundle\TestmanuBundle\Entity\versionRepository")
+ * @ORM\Entity(repositoryClass="laboBundle\Entity\versionRepository")
  * @UniqueEntity(fields={"siren"}, message="Cette version existe déjà")
  */
 class version extends baseL0_entity {
@@ -52,7 +52,7 @@ class version extends baseL0_entity {
 	/**
 	 * @var array
 	 *
-     * @ORM\OneToOne(targetEntity="labo\Bundle\TestmanuBundle\Entity\reseausocial", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="laboBundle\Entity\reseausocial", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true, unique=false)
 	 */
 	protected $reseausocial;
@@ -136,7 +136,7 @@ class version extends baseL0_entity {
 	/**
 	 * @var integer
 	 *
-	 * @ORM\ManyToOne(targetEntity="labo\Bundle\TestmanuBundle\Entity\image", cascade={"persist", "remove"})
+	 * @ORM\ManyToOne(targetEntity="laboBundle\Entity\image", cascade={"persist", "remove"})
 	 * @ORM\JoinColumn(nullable=true, unique=false)
 	 */
 	protected $logo;
@@ -144,7 +144,7 @@ class version extends baseL0_entity {
 	/**
 	 * @var integer
 	 *
-	 * @ORM\OneToOne(targetEntity="labo\Bundle\TestmanuBundle\Entity\image", cascade={"persist", "remove"})
+	 * @ORM\OneToOne(targetEntity="laboBundle\Entity\image", cascade={"persist", "remove"})
 	 * @ORM\JoinColumn(nullable=true, unique=false)
 	 */
 	protected $favicon;
@@ -152,7 +152,7 @@ class version extends baseL0_entity {
 	/**
 	 * @var integer
 	 *
-	 * @ORM\ManyToOne(targetEntity="labo\Bundle\TestmanuBundle\Entity\image", cascade={"persist", "remove"})
+	 * @ORM\ManyToOne(targetEntity="laboBundle\Entity\image", cascade={"persist", "remove"})
 	 * @ORM\JoinColumn(nullable=true, unique=false)
 	 */
 	protected $imageEntete;
@@ -174,7 +174,7 @@ class version extends baseL0_entity {
     /**
      * @var string
      *
-     * @ORM\ManyToOne(targetEntity="labo\Bundle\TestmanuBundle\Entity\adresse", cascade={"persist", "remove"})
+     * @ORM\ManyToOne(targetEntity="laboBundle\Entity\adresse", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=true, unique=false)
      */
     protected $adresse;

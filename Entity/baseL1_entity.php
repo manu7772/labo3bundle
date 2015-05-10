@@ -1,6 +1,6 @@
 <?php
 
-namespace labo\Bundle\TestmanuBundle\Entity;
+namespace laboBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -9,15 +9,15 @@ use Doctrine\Common\Collections\ArrayCollection;
 use \DateTime;
 // Slug
 use Gedmo\Mapping\Annotation as Gedmo;
-use labo\Bundle\TestmanuBundle\Entity\baseL0_entity;
+use laboBundle\Entity\baseL0_entity;
 // Repositories
-use labo\Bundle\TestmanuBundle\Entity\statutRepository;
-use labo\Bundle\TestmanuBundle\Entity\versionRepository;
+use laboBundle\Entity\statutRepository;
+use laboBundle\Entity\versionRepository;
 // Entities
-use labo\Bundle\TestmanuBundle\Entity\statut;
-use labo\Bundle\TestmanuBundle\Entity\version;
+use laboBundle\Entity\statut;
+use laboBundle\Entity\version;
 // aeReponse
-use labo\Bundle\TestmanuBundle\services\aetools\aeReponse;
+use laboBundle\services\aetools\aeReponse;
 
 /**
  * @ORM\MappedSuperclass
@@ -26,7 +26,7 @@ use labo\Bundle\TestmanuBundle\services\aetools\aeReponse;
 abstract class baseL1_entity extends baseL0_entity {
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="labo\Bundle\TestmanuBundle\Entity\statut")
+	 * @ORM\ManyToOne(targetEntity="laboBundle\Entity\statut")
 	 * @ORM\JoinColumn(nullable=false, unique=false)
 	 */
 	protected $statut;
@@ -34,7 +34,7 @@ abstract class baseL1_entity extends baseL0_entity {
 	/**
 	 * @var integer
 	 *
-	 * @ORM\ManyToOne(targetEntity="labo\Bundle\TestmanuBundle\Entity\version")
+	 * @ORM\ManyToOne(targetEntity="laboBundle\Entity\version")
 	 * @ORM\JoinColumn(nullable=false, unique=false)
 	 */
 	protected $version;

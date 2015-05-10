@@ -1,46 +1,13 @@
 <?php
-// labo/Bundle/TestmanuBundle/services/entitiesServices/entityListener.php
+// laboBundle/services/entitiesServices/entityListener.php
 
-namespace labo\Bundle\TestmanuBundle\services\entitiesServices;
+namespace laboBundle\services\entitiesServices;
 
 use Doctrine\Common\EventSubscriber; 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-## entités
-use AcmeGroup\LaboBundle\Entity\adresse;
-use AcmeGroup\LaboBundle\Entity\article;
-use AcmeGroup\LaboBundle\Entity\atelier;
-use AcmeGroup\LaboBundle\Entity\bonLivraison;
-use AcmeGroup\LaboBundle\Entity\categorie;
-use AcmeGroup\LaboBundle\Entity\commande;
-use AcmeGroup\LaboBundle\Entity\demandeFinancement;
-use AcmeGroup\LaboBundle\Entity\dureeMensualite;
-use AcmeGroup\LaboBundle\Entity\evenement;
-use AcmeGroup\LaboBundle\Entity\facture;
-use AcmeGroup\LaboBundle\Entity\ficheCreative;
-use AcmeGroup\LaboBundle\Entity\fichierPdf;
-use AcmeGroup\LaboBundle\Entity\fournisseur;
-use AcmeGroup\LaboBundle\Entity\image;
-use AcmeGroup\LaboBundle\Entity\magasin;
-use AcmeGroup\LaboBundle\Entity\marque;
-use AcmeGroup\LaboBundle\Entity\panier;
-use AcmeGroup\LaboBundle\Entity\pays;
-use AcmeGroup\LaboBundle\Entity\reseau;
-use AcmeGroup\LaboBundle\Entity\statut;
-use AcmeGroup\LaboBundle\Entity\tauxTVA;
-use AcmeGroup\LaboBundle\Entity\typeImage;
-use AcmeGroup\LaboBundle\Entity\typeRemise;
-use AcmeGroup\LaboBundle\Entity\typeRichtext;
-use AcmeGroup\LaboBundle\Entity\userStatus;
-use AcmeGroup\LaboBundle\Entity\version;
-use AcmeGroup\LaboBundle\Entity\video;
-use AcmeGroup\LaboBundle\Entity\villesFrance;
-use AcmeGroup\LaboBundle\Entity\visite;
-use AcmeGroup\LaboBundle\Entity\voteArticle;
-use AcmeGroup\LaboBundle\Entity\voteArticleBlack;
-use AcmeGroup\UserBundle\Entity\User; // !!! UserBundle !!!
 
 class entityListener implements EventSubscriber {
 

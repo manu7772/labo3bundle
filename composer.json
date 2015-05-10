@@ -2,7 +2,7 @@
     "name": "labo/labo-bundle",
     "type": "symfony-bundle",
     "description": "Symfony laboBundle",
-    "keywords": ["bundle", "labo", "symfony"],
+    "keywords": ["bundle", "labo", "symfony", "entity"],
     "license": "GPL-3.0+",
     "authors": [
         {
