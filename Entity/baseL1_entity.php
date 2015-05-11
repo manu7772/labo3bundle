@@ -94,10 +94,21 @@ abstract class baseL1_entity extends baseL0_entity {
 
 	/**
 	 * Complète les données avant enregistrement
-	 * @return boolean
+	 * @ORM/PreUpdate
+	 * @ORM/PrePersist
 	 */
 	public function verifBaseL1_entity() {
-		return true;
+		$verif = true;
+		$verifMethod = 'verif'.ucfirst($this->getParentName());
+		if(method_exists($this, $verifMethod)) {
+			// opérations parents
+			$verif = $this->$verifMethod();
+		}
+		if($verif === true) {
+			// opérations pour cette entité
+			// …
+		}
+		return $verif;
 	}
 
 

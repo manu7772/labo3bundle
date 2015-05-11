@@ -108,7 +108,7 @@ class entitiesrights extends baseL0_entity {
 		}
 		if($verif === true) {
 			// opérations pour cette entité
-			$verif = $this->defineNomCourt();
+			// …
 		}
 		return $verif;
 	}

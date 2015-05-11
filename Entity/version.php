@@ -32,9 +32,9 @@ class version extends baseL0_entity {
 	/**
 	 * @var boolean
 	 *
-	 * @ORM\Column(name="defaut", type="boolean", nullable=false, unique=false)
+	 * @ORM\Column(name="defaultVersion", type="boolean", nullable=false, unique=false)
 	 */
-	protected $defaut;
+	protected $defaultVersion;
 
 	/**
 	 * @var string
@@ -179,13 +179,21 @@ class version extends baseL0_entity {
      */
     protected $adresse;
 
+	/**
+	 * @var array
+	 *
+	 * @ORM\OneToMany(targetEntity="AcmeGroup\UserBundle\Entity\User", inversedBy="user")
+	 * @ORM\JoinColumn(nullable=false, unique=false)
+	 */
+	protected $users;
 
 	public function __construct() {
 		parent::__construct();
-		$this->defaut 			= false;
+		$this->defaultVersion 			= false;
 		$this->couleurFond 		= self::COULEUR_FOND;
 		$this->templateIndex 	= self::TEMPLATE;
 		$this->reseausocial 	= new ArrayCollection;
+		$this->users 			= new ArrayCollection;
 	}
 
 	/**
@@ -240,10 +248,21 @@ class version extends baseL0_entity {
 
 	/**
 	 * Complète les données avant enregistrement
-	 * @return boolean
+	 * @ORM/PreUpdate
+	 * @ORM/PrePersist
 	 */
-	public function verifBase_entity() {
-		return true;
+	public function verifVersion() {
+		$verif = true;
+		$verifMethod = 'verif'.ucfirst($this->getParentName());
+		if(method_exists($this, $verifMethod)) {
+			// opérations parents
+			$verif = $this->$verifMethod();
+		}
+		if($verif === true) {
+			// opérations pour cette entité
+			// …
+		}
+		return $verif;
 	}
 
 
@@ -262,6 +281,18 @@ class version extends baseL0_entity {
 	}
 
 	/**
+	 * Ajoute un réseau social
+	 * @param reseausocial $reseausocial
+	 * @return version
+	 */
+	public function removeReseausocial(reseausocial $reseausocial = null) {
+		if($reseausocial !== null) {
+			$this->reseausocial->removeElement($reseausocial);
+		}	
+		return $this;
+	}
+
+	/**
 	 * Renvoie les réseaux sociaux
 	 *
 	 * @return string 
@@ -271,24 +302,24 @@ class version extends baseL0_entity {
 	}
 
 	/**
-	 * Set defaut
+	 * Set defaultVersion
 	 *
-	 * @param boolean $defaut
+	 * @param boolean $defaultVersion
 	 * @return version
 	 */
-	public function setDefaut($defaut) {
-		$this->defaut = $defaut;
+	public function setDefaultVersion($defaultVersion) {
+		$this->defaultVersion = $defaultVersion;
 	
 		return $this;
 	}
 
 	/**
-	 * Get defaut
+	 * Get defaultVersion
 	 *
 	 * @return boolean 
 	 */
-	public function getDefaut() {
-		return $this->defaut;
+	public function getDefaultVersion() {
+		return $this->defaultVersion;
 	}
 
 	/**

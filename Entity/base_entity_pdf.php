@@ -110,7 +110,7 @@ abstract class base_entity_pdf extends baseL1_entity {
 	 * @return string
 	 */
 	public function getName() {
-		return 'base_type';
+		return 'base_entity_pdf';
 	}
 
 	/**

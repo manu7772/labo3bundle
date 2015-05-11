@@ -141,6 +141,8 @@ abstract class baseL0_entity {
 	 * @return boolean
 	 */
 	public function verifBaseL0_entity() {
+		// opérations pour cette entité
+		// …
 		return true;
 	}
 
@@ -149,7 +151,7 @@ abstract class baseL0_entity {
 	 * @return string
 	 */
 	public function __toString() {
-		return __CLASS__ . '@' . spl_object_hash($this);
+		return __CLASS__.'@'.spl_object_hash($this);
 	}
 
 

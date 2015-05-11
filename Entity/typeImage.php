@@ -62,15 +62,22 @@ class typeImage extends base_type {
 	}
 
 	/**
+	 * Complète les données avant enregistrement
 	 * @ORM/PreUpdate
 	 * @ORM/PrePersist
 	 */
 	public function verifTypeImage() {
+		$verif = true;
 		$verifMethod = 'verif'.ucfirst($this->getParentName());
 		if(method_exists($this, $verifMethod)) {
-			$this->$verifMethod();
+			// opérations parents
+			$verif = $this->$verifMethod();
 		}
-		$this->defineNomCourt();
+		if($verif === true) {
+			// opérations pour cette entité
+			// …
+		}
+		return $verif;
 	}
 
 	/**
