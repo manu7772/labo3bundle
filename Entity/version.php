@@ -182,7 +182,7 @@ class version extends baseL0_entity {
 	/**
 	 * @var array
 	 *
-	 * @ORM\OneToMany(targetEntity="AcmeGroup\UserBundle\Entity\User", inversedBy="user")
+	 * @ORM\OneToMany(targetEntity="AcmeGroup\UserBundle\Entity\User", mappedBy="user")
 	 * @ORM\JoinColumn(nullable=false, unique=false)
 	 */
 	protected $users;
