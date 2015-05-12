@@ -9,24 +9,42 @@ use Doctrine\Common\Collections\ArrayCollection;
 // Slug
 use Gedmo\Mapping\Annotation as Gedmo;
 // Base
-use laboBundle\Entity\baseL1_entity;
+use laboBundle\Entity\baseL1Entity;
 // aeReponse
 use laboBundle\services\aetools\aeReponse;
 
 /**
  * @ORM\MappedSuperclass
- * @ORM\HasLifecycleCallbacks()
  */
-abstract class base_param extends baseL1_entity {
+abstract class baseUnite extends baseL1Entity {
+
+	/**
+	 * @var string
+	 *
+	 * @ORM\Column(name="nomcourt", type="string", length=3, nullable=true, unique=false)
+	 * @Assert\NotBlank(message = "Vous devez remplir ce champ.")
+	 * @Assert\Length(
+	 *      min = "1",
+	 *      max = "3",
+	 *      minMessage = "Le nom court doit comporter au moins {{ limit }} lettres.",
+	 *      maxMessage = "Le nom court doit comporter au maximum {{ limit }} lettres."
+	 * )
+	 */
+	protected $nomcourt;
+
+	// nombre de lettre max pour $nomcourt
+	protected $lengthNomCourt;
 
 
 	public function __construct() {
 		parent::__construct();
+		$this->lengthNomCourt = 3;
+		$this->nomcourt = null;
 	}
 
 	/**
 	 * Renvoie true si la demande correspond correspond
-	 * ex. : pour l'entité "baseL0_entity" -> "isBaseL0_entity" renvoie true
+	 * ex. : pour l'entité "baseL0Entity" -> "isbaseL0Entity" renvoie true
 	 * @return boolean
 	 */
 	public function __call($name, $arguments = null) {
@@ -54,7 +72,7 @@ abstract class base_param extends baseL1_entity {
 	 * @return string
 	 */
 	public function getName() {
-		return 'base_param';
+		return 'baseUnite';
 	}
 
 	/**
@@ -63,7 +81,7 @@ abstract class base_param extends baseL1_entity {
 	 * @ORM/PrePersist
 	 * @return boolean
 	 */
-	public function verifBase_param() {
+	public function verifBaseUnite() {
 		$verif = true;
 		$verifMethod = 'verif'.ucfirst($this->getParentName());
 		if(method_exists($this, $verifMethod)) {
@@ -81,7 +99,7 @@ abstract class base_param extends baseL1_entity {
 	 * @Assert/True(message = "Cette entité n'est pas valide.")
 	 * @return boolean
 	 */
-	public function isBase_paramValid() {
+	public function isBaseUniteValid() {
 		$valid = true;
 		$validMethod = 'is'.ucfirst($this->getParentName()).'Valid';
 		if(method_exists($this, $validMethod)) {
@@ -93,6 +111,42 @@ abstract class base_param extends baseL1_entity {
 		}
 
 		return $valid;
+	}
+
+	/**
+	 * Redéfinit le nom court de l'entité
+	 * @return baseUnite
+	 */
+	public function defineNomCourt() {
+		if($this->nomcourt === null || strlen(trim($this->nomcourt)) < 1) {
+			$this->nomcourt = substr($this->nom, 0, $this->lengthNomCourt);
+		}
+		return $this;
+	}
+
+	/**
+	 * Set nomcourt
+	 *
+	 * @param string $nomcourt
+	 * @return baseUnite
+	 */
+	public function setNomcourt($nomcourt = null) {
+		if(is_string($nomcourt)) {
+			if (strlen(trim($nomcourt)) > 0) {
+				$this->nomcourt = substr(trim($nomcourt), 0, $this->lengthNomCourt);
+			} else $this->nomcourt = null;
+		} else $this->nomcourt = null;
+	
+		return $this;
+	}
+
+	/**
+	 * Get nomcourt
+	 *
+	 * @return string 
+	 */
+	public function getNomcourt() {
+		return $this->nomcourt;
 	}
 
 

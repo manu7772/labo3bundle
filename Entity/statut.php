@@ -8,7 +8,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 // Slug
 use Gedmo\Mapping\Annotation as Gedmo;
-use laboBundle\Entity\baseL0_entity;
+use laboBundle\Entity\baseL0Entity;
 // aeReponse
 use laboBundle\services\aetools\aeReponse;
 
@@ -20,7 +20,7 @@ use laboBundle\services\aetools\aeReponse;
  * @ORM\Entity(repositoryClass="laboBundle\Entity\statutRepository")
  * @UniqueEntity(fields={"nom"}, message="Ce statut existe déjà.")
  */
-class statut extends baseL0_entity {
+class statut extends baseL0Entity {
 
 	public function __construct() {
 		parent::__construct();
@@ -28,7 +28,7 @@ class statut extends baseL0_entity {
 
 	/**
 	 * Renvoie true si la demande correspond correspond
-	 * ex. : pour l'entité "baseL0_entity" -> "isBaseL0_entity" renvoie true
+	 * ex. : pour l'entité "baseL0Entity" -> "isbaseL0Entity" renvoie true
 	 * @return boolean
 	 */
 	public function __call($name, $arguments = null) {

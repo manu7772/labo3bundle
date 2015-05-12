@@ -16,7 +16,7 @@ use laboBundle\services\aetools\aeReponse;
  * @ORM\MappedSuperclass
  * @ORM\HasLifecycleCallbacks()
  */
-abstract class baseL0_entity {
+abstract class baseL0Entity {
 
 	/**
 	 * @var integer
@@ -105,7 +105,7 @@ abstract class baseL0_entity {
 
 	/**
 	 * Renvoie true si la demande correspond correspond
-	 * ex. : pour l'entité "baseL0_entity" -> "isBaseL0_entity" renvoie true
+	 * ex. : pour l'entité "baseL0Entity" -> "isbaseL0Entity" renvoie true
 	 * @return boolean
 	 */
 	public function __call($name, $arguments = null) {
@@ -125,14 +125,14 @@ abstract class baseL0_entity {
 	 * @return string
 	 */
 	public function getName() {
-		return 'baseL0_entity';
+		return 'baseL0Entity';
 	}
 
 	/**
 	 * @Assert/True(message = "Cette entité n'est pas valide.")
 	 * @return boolean
 	 */
-	public function isBaseL0_entityValid() {
+	public function isBaseL0EntityValid() {
 		return true;
 	}
 
@@ -140,7 +140,7 @@ abstract class baseL0_entity {
 	 * Complète les données avant enregistrement
 	 * @return boolean
 	 */
-	public function verifBaseL0_entity() {
+	public function verifBaseL0Entity() {
 		// opérations pour cette entité
 		// …
 		return true;
@@ -170,7 +170,7 @@ abstract class baseL0_entity {
 	 * Set nom
 	 *
 	 * @param string $nom
-	 * @return baseL0_entity
+	 * @return baseL0Entity
 	 */
 	public function setNom($nom) {
 		$this->nom = $nom;
@@ -191,7 +191,7 @@ abstract class baseL0_entity {
 	 * Set descriptif
 	 *
 	 * @param string $descriptif
-	 * @return baseL0_entity
+	 * @return baseL0Entity
 	 */
 	public function setDescriptif($descriptif = null) {
 		$this->descriptif = $descriptif;
@@ -212,7 +212,7 @@ abstract class baseL0_entity {
 	 * Set dateCreation
 	 *
 	 * @param DateTime $dateCreation
-	 * @return baseL0_entity
+	 * @return baseL0Entity
 	 */
 	public function setDateCreation($dateCreation) {
 		$this->dateCreation = $dateCreation;
@@ -240,7 +240,7 @@ abstract class baseL0_entity {
 	 * Set dateMaj
 	 *
 	 * @param DateTime $dateMaj
-	 * @return baseL0_entity
+	 * @return baseL0Entity
 	 */
 	public function setDateMaj($dateMaj = null) {
 		$this->dateMaj = $dateMaj;
@@ -261,7 +261,7 @@ abstract class baseL0_entity {
 	 * Set dateExpiration
 	 *
 	 * @param DateTime $dateExpiration
-	 * @return baseL0_entity
+	 * @return baseL0Entity
 	 */
 	public function setDateExpiration($dateExpiration = null) {
 		$this->dateExpiration = $dateExpiration;
@@ -282,7 +282,7 @@ abstract class baseL0_entity {
 	 * Set slug
 	 *
 	 * @param integer $slug
-	 * @return baseL0_entity
+	 * @return baseL0Entity
 	 */
 	public function setSlug($slug) {
 		$this->slug = $slug;
@@ -304,7 +304,7 @@ abstract class baseL0_entity {
 	/**
 	 * Autorise les droit à $role : lecture sur cette entité
 	 * @param string $role
-	 * @return baseL0_entity
+	 * @return baseL0Entity
 	 */
 	public function addThisread($role = null) {
 		if($role !== null) ($this->thisreads[] = $role);
@@ -314,7 +314,7 @@ abstract class baseL0_entity {
 	/**
 	 * Supprime les droit à $role : lecture sur cette entité
 	 * @param string $role
-	 * @return baseL0_entity
+	 * @return baseL0Entity
 	 */
 	public function removeThisread($role) {
 		$this->thisreads->removeElement($role);
@@ -332,7 +332,7 @@ abstract class baseL0_entity {
 	/**
 	 * Autorise les droit à $role : écriture sur cette entité
 	 * @param string $role
-	 * @return baseL0_entity
+	 * @return baseL0Entity
 	 */
 	public function addThiswrite($role = null) {
 		if($role !== null) ($this->thiswrites[] = $role);
@@ -342,7 +342,7 @@ abstract class baseL0_entity {
 	/**
 	 * Supprime les droit à $role : écriture sur cette entité
 	 * @param string $role
-	 * @return baseL0_entity
+	 * @return baseL0Entity
 	 */
 	public function removeThiswrite($role) {
 		$this->thiswrites->removeElement($role);
@@ -360,7 +360,7 @@ abstract class baseL0_entity {
 	/**
 	 * Autorise les droit à $role : effacement sur cette entité
 	 * @param string $role
-	 * @return baseL0_entity
+	 * @return baseL0Entity
 	 */
 	public function addThisdelete($role = null) {
 		if($role !== null) ($this->thisdeletes[] = $role);
@@ -370,7 +370,7 @@ abstract class baseL0_entity {
 	/**
 	 * Supprime les droit à $role : effacement sur cette entité
 	 * @param string $role
-	 * @return baseL0_entity
+	 * @return baseL0Entity
 	 */
 	public function removeThisdelete($role) {
 		$this->thisdeletes->removeElement($role);

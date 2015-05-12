@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use \DateTime;
 // Slug
 use Gedmo\Mapping\Annotation as Gedmo;
-use laboBundle\Entity\baseL0_entity;
+use laboBundle\Entity\baseL0Entity;
 // Repositories
 use laboBundle\Entity\statutRepository;
 use laboBundle\Entity\versionRepository;
@@ -23,7 +23,7 @@ use laboBundle\services\aetools\aeReponse;
  * @ORM\MappedSuperclass
  * @ORM\HasLifecycleCallbacks()
  */
-abstract class baseL1_entity extends baseL0_entity {
+abstract class baseL1Entity extends baseL0Entity {
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="laboBundle\Entity\statut")
@@ -53,7 +53,7 @@ abstract class baseL1_entity extends baseL0_entity {
 
 	/**
 	 * Renvoie true si la demande correspond correspond
-	 * ex. : pour l'entité "baseL0_entity" -> "isBaseL0_entity" renvoie true
+	 * ex. : pour l'entité "baseL0Entity" -> "isbaseL0Entity" renvoie true
 	 * @return boolean
 	 */
 	public function __call($name, $arguments = null) {
@@ -81,14 +81,14 @@ abstract class baseL1_entity extends baseL0_entity {
 	 * @return string
 	 */
 	public function getName() {
-		return 'baseL1_entity';
+		return 'baseL1Entity';
 	}
 
 	/**
 	 * @Assert/True(message = "Cette entité n'est pas valide.")
 	 * @return boolean
 	 */
-	public function isBaseL1_entityValid() {
+	public function isBaseL1EntityValid() {
 		return true;
 	}
 
@@ -97,7 +97,7 @@ abstract class baseL1_entity extends baseL0_entity {
 	 * @ORM/PreUpdate
 	 * @ORM/PrePersist
 	 */
-	public function verifBaseL1_entity() {
+	public function verifBaseL1Entity() {
 		$verif = true;
 		$verifMethod = 'verif'.ucfirst($this->getParentName());
 		if(method_exists($this, $verifMethod)) {
@@ -115,7 +115,7 @@ abstract class baseL1_entity extends baseL0_entity {
 	/**
 	 * Set statut
 	 * @param statut $statut
-	 * @return baseL1_entity
+	 * @return baseL1Entity
 	 */
 	public function setStatut(statut $statut) {
 		$this->statut = $statut;
@@ -136,7 +136,7 @@ abstract class baseL1_entity extends baseL0_entity {
 	 * Set version
 	 *
 	 * @param version $version
-	 * @return baseL1_entity
+	 * @return baseL1Entity
 	 */
 	public function setVersion(version $version) {
 		$this->version = $version;

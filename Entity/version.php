@@ -8,7 +8,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 // Slug
 use Gedmo\Mapping\Annotation as Gedmo;
-use laboBundle\Entity\baseL0_entity;
+use laboBundle\Entity\baseL0Entity;
 // Entities
 use laboBundle\Entity\adresse;
 use laboBundle\Entity\image;
@@ -24,7 +24,7 @@ use laboBundle\services\aetools\aeReponse;
  * @ORM\Entity(repositoryClass="laboBundle\Entity\versionRepository")
  * @UniqueEntity(fields={"siren"}, message="Cette version existe déjà")
  */
-class version extends baseL0_entity {
+class version extends baseL0Entity {
 
 	const TEMPLATE 			= "pageweb";
 	const COULEUR_FOND 		= "#ffffff";
@@ -198,7 +198,7 @@ class version extends baseL0_entity {
 
 	/**
 	 * Renvoie true si la demande correspond correspond
-	 * ex. : pour l'entité "baseL0_entity" -> "isBaseL0_entity" renvoie true
+	 * ex. : pour l'entité "baseL0Entity" -> "isbaseL0Entity" renvoie true
 	 * @return boolean
 	 */
 	public function __call($name, $arguments = null) {

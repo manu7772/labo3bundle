@@ -16,12 +16,12 @@ use laboBundle\Entity\statut;
 use laboBundle\services\aetools\aeReponse;
 
 /**
- * base_laboRepository
+ * baseLaboRepository
  */
-class base_laboRepository extends EntityRepository {
+class baseLaboRepository extends EntityRepository {
 
 	const CHAMP_DATE 	= "dateCreation";
-	const REPO_NAME		= "base_laboRepository";
+	const REPO_NAME		= "baseLaboRepository";
 
 	protected $em;
 	protected $version = null;
@@ -72,7 +72,7 @@ class base_laboRepository extends EntityRepository {
 	 * Définit la version du site à utiliser pour le repository. 
 	 * si $version n'est pas précisé, recherche la version par défaut dans l'entité AcmeGroup\LaboBundle\Entity\version
 	 * @param version $version
-	 * @return base_laboRepository
+	 * @return baseLaboRepository
 	 */
 	public function setVersion(version $version = null) {
 		// version par défaut

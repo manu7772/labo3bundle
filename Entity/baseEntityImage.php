@@ -12,7 +12,7 @@ use \Imagick;
 // Slug
 use Gedmo\Mapping\Annotation as Gedmo;
 // Base
-use laboBundle\Entity\baseL1_entity;
+use laboBundle\Entity\baseL1Entity;
 // Entities
 use laboBundle\Entity\typeImage;
 // Repositories
@@ -23,7 +23,7 @@ use laboBundle\services\aetools\aeReponse;
 /**
  * @ORM\MappedSuperclass
  */
-abstract class baseEntityImage extends baseL1_entity {
+abstract class baseEntityImage extends baseL1Entity {
 
 	/**
 	 * @var string
@@ -94,14 +94,15 @@ abstract class baseEntityImage extends baseL1_entity {
 		$this->ext = null;
 		$this->remove = false; // pour effacer l'image
 		// typeImage
-		$typeImages = new typeImageRepository()->defaultVal();
+		$typeImageRepository = new typeImageRepository();
+			$typeImages = $typeImageRepository->defaultVal();
 			if($typeImages instanceOf typeImage) $typeImages = array($typeImages);
 			foreach ($typeImages as $typeImage) $this->addTypeImage($typeImage);
 	}
 
 	/**
 	 * Renvoie true si la demande correspond correspond
-	 * ex. : pour l'entité "baseL0_entity" -> "isBaseL0_entity" renvoie true
+	 * ex. : pour l'entité "baseL0Entity" -> "isbaseL0Entity" renvoie true
 	 * @return boolean
 	 */
 	public function __call($name, $arguments = null) {

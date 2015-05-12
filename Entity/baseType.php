@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 // Slug
 use Gedmo\Mapping\Annotation as Gedmo;
 // Base
-use laboBundle\Entity\baseL1_entity;
+use laboBundle\Entity\baseL1Entity;
 // aeReponse
 use laboBundle\services\aetools\aeReponse;
 
@@ -17,7 +17,7 @@ use laboBundle\services\aetools\aeReponse;
  * @ORM\MappedSuperclass
  * @UniqueEntity(fields={"nomcourt"}, message="Ce nom abrégé existe déjà.")
  */
-abstract class base_type extends baseL1_entity {
+abstract class baseType extends baseL1Entity {
 
 
 	public function __construct() {
@@ -26,7 +26,7 @@ abstract class base_type extends baseL1_entity {
 
 	/**
 	 * Renvoie true si la demande correspond correspond
-	 * ex. : pour l'entité "baseL0_entity" -> "isBaseL0_entity" renvoie true
+	 * ex. : pour l'entité "baseL0Entity" -> "isbaseL0Entity" renvoie true
 	 * @return boolean
 	 */
 	public function __call($name, $arguments = null) {
@@ -54,7 +54,7 @@ abstract class base_type extends baseL1_entity {
 	 * @return string
 	 */
 	public function getName() {
-		return 'base_type';
+		return 'baseType';
 	}
 
 	/**
@@ -63,7 +63,7 @@ abstract class base_type extends baseL1_entity {
 	 * @ORM/PrePersist
 	 * @return boolean
 	 */
-	public function verifBase_type() {
+	public function verifBaseType() {
 		$verif = true;
 		$verifMethod = 'verif'.ucfirst($this->getParentName());
 		if(method_exists($this, $verifMethod)) {
@@ -81,7 +81,7 @@ abstract class base_type extends baseL1_entity {
 	 * @Assert/True(message = "Cette entité n'est pas valide.")
 	 * @return boolean
 	 */
-	public function isBase_typeValid() {
+	public function isBaseTypeValid() {
 		$valid = true;
 		$validMethod = 'is'.ucfirst($this->getParentName()).'Valid';
 		if(method_exists($this, $validMethod)) {

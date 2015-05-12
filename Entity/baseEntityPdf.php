@@ -12,14 +12,14 @@ use \Imagick;
 // Slug
 use Gedmo\Mapping\Annotation as Gedmo;
 // Base
-use laboBundle\Entity\baseL1_entity;
+use laboBundle\Entity\baseL1Entity;
 // aeReponse
 use laboBundle\services\aetools\aeReponse;
 
 /**
  * @ORM\MappedSuperclass
  */
-abstract class base_entity_pdf extends baseL1_entity {
+abstract class baseEntityPdf extends baseL1Entity {
 
 	/**
 	 * @var string
@@ -82,7 +82,7 @@ abstract class base_entity_pdf extends baseL1_entity {
 
 	/**
 	 * Renvoie true si la demande correspond correspond
-	 * ex. : pour l'entité "baseL0_entity" -> "isBaseL0_entity" renvoie true
+	 * ex. : pour l'entité "baseL0Entity" -> "isbaseL0Entity" renvoie true
 	 * @return boolean
 	 */
 	public function __call($name, $arguments = null) {
@@ -110,7 +110,7 @@ abstract class base_entity_pdf extends baseL1_entity {
 	 * @return string
 	 */
 	public function getName() {
-		return 'base_entity_pdf';
+		return 'baseEntityPdf';
 	}
 
 	/**
@@ -119,7 +119,7 @@ abstract class base_entity_pdf extends baseL1_entity {
 	 * @ORM/PrePersist
 	 * @return boolean
 	 */
-	public function verifBase_entity_pdf() {
+	public function verifBaseEntityPdf() {
 		$verif = true;
 		$verifMethod = 'verif'.ucfirst($this->getParentName());
 		if(method_exists($this, $verifMethod)) {
@@ -138,7 +138,7 @@ abstract class base_entity_pdf extends baseL1_entity {
 	 * @Assert/True(message = "Cette entité n'est pas valide.")
 	 * @return boolean
 	 */
-	public function isBase_entity_pdfValid() {
+	public function isBaseEntityPdfValid() {
 		$valid = true;
 		$validMethod = 'is'.ucfirst($this->getParentName()).'Valid';
 		if(method_exists($this, $validMethod)) {
@@ -295,7 +295,7 @@ abstract class base_entity_pdf extends baseL1_entity {
 	 * Set fichierOrigine
 	 *
 	 * @param string $fichierOrigine
-	 * @return base_entity_pdf
+	 * @return baseEntityPdf
 	 */
 	public function setFichierOrigine($fichierOrigine) {
 		$this->fichierOrigine = $fichierOrigine;
@@ -316,7 +316,7 @@ abstract class base_entity_pdf extends baseL1_entity {
 	 * Set fichierNom
 	 *
 	 * @param string $fichierNom
-	 * @return base_entity_pdf
+	 * @return baseEntityPdf
 	 */
 	public function setFichierNom($fichierNom) {
 		$this->fichierNom = $fichierNom;
@@ -338,7 +338,7 @@ abstract class base_entity_pdf extends baseL1_entity {
 	 * Set thumbFichierNom
 	 *
 	 * @param string $thumbFichierNom
-	 * @return base_entity_pdf
+	 * @return baseEntityPdf
 	 */
 	public function setThumbFichierNom($thumbFichierNom = null) {
 		$this->thumbFichierNom = $thumbFichierNom;
@@ -359,7 +359,7 @@ abstract class base_entity_pdf extends baseL1_entity {
 	 * Set tailleMo
 	 *
 	 * @param integer $tailleMo
-	 * @return base_entity_pdf
+	 * @return baseEntityPdf
 	 */
 	public function setTailleMo($tailleMo) {
 		$this->tailleMo = $tailleMo;

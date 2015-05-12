@@ -11,7 +11,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
 // Repositories
 use laboBundle\Entity\versionRepository;
 // Entities
-use laboBundle\Entity\baseL0_entity;
+use laboBundle\Entity\baseL0Entity;
 use laboBundle\Entity\version;
 // aeReponse
 use laboBundle\services\aetools\aeReponse;
@@ -24,7 +24,7 @@ use laboBundle\services\aetools\aeReponse;
  * @ORM\Entity(repositoryClass="laboBundle\Entity\entitiesrightsRepository")
  * @UniqueEntity(fields={"nom"}, message="Cette entitiesrights existe déjà")
  */
-class entitiesrights extends baseL0_entity {
+class entitiesrights extends baseL0Entity {
 
 	/**
 	 * @var integer
@@ -63,7 +63,7 @@ class entitiesrights extends baseL0_entity {
 
 	/**
 	 * Renvoie true si la demande correspond correspond
-	 * ex. : pour l'entité "baseL0_entity" -> "isBaseL0_entity" renvoie true
+	 * ex. : pour l'entité "baseL0Entity" -> "isbaseL0Entity" renvoie true
 	 * @return boolean
 	 */
 	public function __call($name, $arguments = null) {
