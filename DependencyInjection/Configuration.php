@@ -24,11 +24,11 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->scalarNode('default_menu')
-                    ->defaultValue('menu_01')
+                    ->defaultValue('default_menu')
                     ->info('Slug du menu par défaut du site')
                 ->end()
                 ->scalarNode('user_class')
-                    ->defaultValue('AcmeGroup\UserBundle\Entity\User')
+                    ->defaultValue('Acme\UserBundle\Entity\User')
                     ->info('Classe FOS/User')
                 ->end()
             ->end()

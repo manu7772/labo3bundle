@@ -25,13 +25,12 @@ abstract class base_entity_image extends baseL1_entity {
 
 	/**
 	 * @var string
-	 *
-	 * @ORM\Column(name="url", type="text", nullable=true, unique=false)
+	 * @ORM\Column(name="url", type="string", length=255, nullable=true, unique=false)
 	 */
 	protected $url;
 
 	/**
-	 *
+	 * @var integer
 	 * @ORM\ManyToMany(targetEntity="laboBundle\Entity\typeImage")
 	 * @ORM\JoinColumn(nullable=false, unique=false)
 	 */
@@ -39,37 +38,30 @@ abstract class base_entity_image extends baseL1_entity {
 
 	/**
 	 * @var string
-	 *
-	 * @ORM\Column(name="fichierOrigine", type="string", length=200)
-	 * @ORM\JoinColumn(nullable=true, unique=false)
+	 * @ORM\Column(name="fichierOrigine", type="string", length=200, nullable=true, unique=false)
 	 */
 	protected $fichierOrigine;
 
 	/**
 	 * @var string
-	 *
-	 * @ORM\Column(name="fichierNom", type="string", length=200)
-	 * @ORM\JoinColumn(nullable=true, unique=false)
+	 * @ORM\Column(name="fichierNom", type="string", length=200, nullable=true, unique=false)
 	 */
 	protected $fichierNom;
 
 	/**
 	 * @var integer
-	 *
 	 * @ORM\Column(name="tailleX", type="integer", nullable=true, unique=false)
 	 */
 	protected $tailleX;
 
 	/**
 	 * @var integer
-	 *
 	 * @ORM\Column(name="tailleY", type="integer", nullable=true, unique=false)
 	 */
 	protected $tailleY;
 
 	/**
 	 * @var integer
-	 *
 	 * @ORM\Column(name="tailleMo", type="integer", nullable=true, unique=false)
 	 */
 	protected $tailleMo;
@@ -79,8 +71,13 @@ abstract class base_entity_image extends baseL1_entity {
 	 */
 	protected $file;
 
-	protected $tempFileName;
+	/**
+	 * @var string
+	 * @ORM\Column(name="alt", type="string", length=64, nullable=true, unique=false)
+	 */
 	protected $alt;
+
+	protected $tempFileName;
 	protected $ext;
 	// Eléments de formulaire
 	protected $remove;
@@ -325,7 +322,7 @@ abstract class base_entity_image extends baseL1_entity {
 
 	/**
 	 * Set file
-	 * @param integer $file
+	 * @param UploadedFile $file
 	 * @return base_entity_image
 	 */
 	public function setFile(UploadedFile $file = null) {

@@ -9,8 +9,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 // Slug
 use Gedmo\Mapping\Annotation as Gedmo;
 use laboBundle\Entity\base_type;
-// Repositories
-use laboBundle\Entity\typeImageRepository;
 // aeReponse
 use laboBundle\services\aetools\aeReponse;
 
