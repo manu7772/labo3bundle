@@ -139,6 +139,7 @@ abstract class version extends baseL1Entity {
 	 * @return version
 	 */
 	public function setDefaultVersion($defaultVersion) {
+		if($defaultVersion == 1) $defaultVersion = true;
 		if($defaultVersion === true) $this->defaultVersion = $defaultVersion;
 			else $this->defaultVersion = false;
 		return $this;

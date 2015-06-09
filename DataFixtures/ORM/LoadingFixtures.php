@@ -18,6 +18,8 @@ use \DateTime;
  */
 class LoadingFixtures extends entitesService implements FixtureInterface, ContainerAwareInterface {
 
+	const MULTI_ASSOC = "s";
+
 	protected $manager;
 	protected $connection;
 	protected $parsList;
@@ -31,7 +33,9 @@ class LoadingFixtures extends entitesService implements FixtureInterface, Contai
 	protected $entitiesList;
 	protected $aetools;
 	protected $imagetools;
-	protected $baseFolder ;
+	protected $baseFolder;
+	// mémo pour relinks
+	protected $relinks;
 
 	public function __construct(ContainerInterface $container = null) {
 		$this->writeConsole("Chargement du Constructeur FIXTURES…", "normal", true);
@@ -52,6 +56,7 @@ class LoadingFixtures extends entitesService implements FixtureInterface, Contai
 		$this->testFormats = array(
 			"Datetime" => "DATE_",
 		);
+		$this->relinks = array();
 		$this->getEm();
 		$this->initAllData();
 		// $this->baseFolder = __DIR__."/../../../../../../";
@@ -87,6 +92,8 @@ class LoadingFixtures extends entitesService implements FixtureInterface, Contai
 				$this->writeConsole("Fin de l'entité ".$name, "succes", 2);
 			} else $this->writeConsole("Aucune ligne enregistrée.", "error", 2);
 		}
+		$this->writeConsole('Enregistrement de toutes les entités terminé', 'succes', 2);
+		$this->relinkEntities();
 	}
 
 	/**
@@ -156,9 +163,46 @@ class LoadingFixtures extends entitesService implements FixtureInterface, Contai
 	 * Opération finale : Checke toutes les entités pour les relier entre elles
 	 * @return boolean
 	 */
-	protected function linkEntities() {
-		$this->writeConsole("***** RELINK DES ENTITES *****".self::EOLine);
-
+	protected function relinkEntities() {
+		$this->writeConsole("***** RELINK DES ENTITES *****", 'succes');
+		foreach ($this->relinks as $entity => $one) {
+			$this->writeConsole('Entité : '.$entity);
+			$this->defineEntity($entity);
+			foreach($one as $id => $champs) {
+				$entiteAtraiter = $this->getRepo()->find($id);
+				foreach ($champs as $champ => $todo) {
+					$repo = $todo["Repository"];
+					$findMtd = $todo["MethodeRepo"];
+					$set = $todo["MethodeLink"];
+					switch($todo["Association"]) {
+						case "single":
+							$obj = $repo->$findMtd(reset($todo["Searchs"]));
+							if(is_object($obj)) {
+								$entiteAtraiter->$set($obj);
+							} else if(count($obj) > 0) {
+								if(is_object(reset($obj))) {
+									$entiteAtraiter->$set(reset($obj));
+								}
+							}
+							break;
+						case "collection":
+							foreach($todo["Searchs"] as $val) {
+								foreach($repo->$findMtd($val) as $obj) {
+									if(is_object($obj)) {
+										$entiteAtraiter->$set($obj);
+									} else if(count($obj) > 0) {
+										foreach ($obj as $key => $value) if(is_object($value)) $entiteAtraiter->$set($value);
+									}
+								}
+							}
+							break;
+						}
+				}
+				$this->manager->persist($entiteAtraiter);
+				$this->manager->flush();
+			}
+			
+		}
 	}
 
 	protected function loadEntity($name) {
@@ -232,6 +276,7 @@ class LoadingFixtures extends entitesService implements FixtureInterface, Contai
 	}
 
 	protected function createEntry($attributs, $cpt_parent = null) {
+		$memoLinks = array();
 		$this->writeConsole("Begin --> ", "normal", false);
 		// création de l'objet entité prérempli (liens externes par défaut)
 		$this->parsList = $this->newObject(null, true);
@@ -255,32 +300,42 @@ class LoadingFixtures extends entitesService implements FixtureInterface, Contai
 				case "single":
 					// if($this->parsList->isImage()) {
 					// 	$this->writeConsole("Image : ajout des attributs…", "error");
-						$repo = $this->manager->getRepository($this->data["meta"]["type"]["targetEntity"]);
-						$findMtd = $this->getMethodNameWith($this->data["champExt"], "findBy");
-						$obj = $repo->$findMtd($this->data["entityList"][0]);
-						if(is_object($obj)) {
-							$this->parsList->$set($obj);
-						} else if(count($obj) > 0) {
-							if(is_object(reset($obj))) {
-								$this->parsList->$set(reset($obj));
-							}
-						}
+						// $repo = $this->manager->getRepository($this->data["meta"]["type"]["targetEntity"]);
+						// $findMtd = $this->getMethodNameWith($this->data["champExt"], "findBy");
+						// $obj = $repo->$findMtd($this->data["entityList"][0]);
+						// if(is_object($obj)) {
+						// 	$this->parsList->$set($obj);
+						// } else if(count($obj) > 0) {
+						// 	if(is_object(reset($obj))) {
+						// 		$this->parsList->$set(reset($obj));
+						// 	}
+						// }
+						$memoLinks[$nom]["Association"] = $this->data["meta"]["type"]["Association"];
+						$memoLinks[$nom]["Repository"] = $this->manager->getRepository($this->data["meta"]["type"]["targetEntity"]);
+						$memoLinks[$nom]["MethodeRepo"] = $this->getMethodNameWith($this->data["champExt"], "findBy");
+						$memoLinks[$nom]["MethodeLink"] = $this->data["meta"]["methode"];
+						$memoLinks[$nom]["Searchs"] = $this->data["entityList"];
 					// }
 					break;
 				case "collection":
 					// if($this->parsList->isImage()) {
 						// $this->writeConsole("Image : ajout des attributs…", "error");
-						$repo = $this->manager->getRepository($this->data["meta"]["type"]["targetEntity"]);
-						foreach($this->data["entityList"] as $val) {
-							$findMtd = $this->getMethodNameWith($this->data["champExt"], "findBy");
-							foreach($repo->$findMtd($val) as $obj) {
-								if(is_object($obj)) {
-									$this->parsList->$set($obj);
-								} else if(count($obj) > 0) {
-									foreach ($obj as $key => $value) if(is_object($value)) $this->parsList->$set($value);
-								}
-							}
-						}
+						// $repo = $this->manager->getRepository($this->data["meta"]["type"]["targetEntity"]);
+						// $findMtd = $this->getMethodNameWith($this->data["champExt"], "findBy");
+						// foreach($this->data["entityList"] as $val) {
+						// 	foreach($repo->$findMtd($val) as $obj) {
+						// 		if(is_object($obj)) {
+						// 			$this->parsList->$set($obj);
+						// 		} else if(count($obj) > 0) {
+						// 			foreach ($obj as $key => $value) if(is_object($value)) $this->parsList->$set($value);
+						// 		}
+						// 	}
+						// }
+						$memoLinks[$nom]["Association"] = $this->data["meta"]["type"]["Association"];
+						$memoLinks[$nom]["Repository"] = $this->manager->getRepository($this->data["meta"]["type"]["targetEntity"]);
+						$memoLinks[$nom]["MethodeRepo"] = $this->getMethodNameWith($this->data["champExt"], "findBy");
+						$memoLinks[$nom]["MethodeLink"] = $this->data["meta"]["methode"];
+						$memoLinks[$nom]["Searchs"] = $this->data["entityList"];
 					// }
 					break;
 				default:
@@ -312,7 +367,8 @@ class LoadingFixtures extends entitesService implements FixtureInterface, Contai
 		$this->manager->persist($this->parsList);
 		$this->manager->flush();
 		// $this->writeConsole(memory_get_usage().self::EOLine);
-		$this->writeConsole("* Entité ".$this->getEntityShortName()." enregistrée en BDD * id : ".$this->parsList->getId(), "succes", 2);
+		$this->writeConsole("* Entité ".$this->getEntityShortName()." enregistrée en BDD => id : ".$this->parsList->getId(), "succes", 2);
+		$this->relinks[$this->getEntityClassName][$this->parsList->getId()] = $memoLinks;
 		// $this->writeConsole("* Entité enregistrée en BDD *\n\n");
 		return $this->parsList; // renvoie l'objet enregistré
 	}
@@ -477,7 +533,7 @@ class LoadingFixtures extends entitesService implements FixtureInterface, Contai
 	 */
 	protected function getTypeOfAssociation() {
 		$this->data["meta"] = array();
-		$this->data["champSlf_collection"] = $this->data["champSlf"]."s";
+		$this->data["champSlf_collection"] = $this->data["champSlf"].self::MULTI_ASSOC;
 		if(method_exists($this->parsList, $this->getMethodNameWith($this->data["champSlf_collection"], "get"))) {
 			$champ = $this->data["champSlf_collection"];
 		} else {
