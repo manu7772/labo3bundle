@@ -368,7 +368,7 @@ class LoadingFixtures extends entitesService implements FixtureInterface, Contai
 		$this->manager->flush();
 		// $this->writeConsole(memory_get_usage().self::EOLine);
 		$this->writeConsole("* Entité ".$this->getEntityShortName()." enregistrée en BDD => id : ".$this->parsList->getId(), "succes", 2);
-		$this->relinks[$this->getEntityClassName][$this->parsList->getId()] = $memoLinks;
+		$this->relinks[$this->getEntityClassName()][$this->parsList->getId()] = $memoLinks;
 		// $this->writeConsole("* Entité enregistrée en BDD *\n\n");
 		return $this->parsList; // renvoie l'objet enregistré
 	}
