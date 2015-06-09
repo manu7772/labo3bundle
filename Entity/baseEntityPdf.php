@@ -8,13 +8,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use \Datetime;
-use \Imagick;
+use \Exception;
 // Slug
 use Gedmo\Mapping\Annotation as Gedmo;
 // Base
 use laboBundle\Entity\baseL1Entity;
-// aeReponse
-use laboBundle\services\aetools\aeReponse;
+
+use \Imagick;
 
 /**
  * @ORM\MappedSuperclass
@@ -23,35 +23,30 @@ abstract class baseEntityPdf extends baseL1Entity {
 
 	/**
 	 * @var string
-	 *
 	 * @ORM\Column(name="fichierOrigine", type="string", length=255)
 	 */
 	protected $fichierOrigine;
 
 	/**
 	 * @var string
-	 *
 	 * @ORM\Column(name="fichierNom", type="string", length=255)
 	 */
 	protected $fichierNom;
 
 	/**
 	 * @var string
-	 *
 	 * @ORM\Column(name="thumbFichierNom", type="string", length=255, nullable=true, unique=true)
 	 */
 	protected $thumbFichierNom;
 
 	/**
 	 * @var integer
-	 *
 	 * @ORM\Column(name="tailleMo", type="integer", nullable=true, unique=false)
 	 */
 	protected $tailleMo;
 
 	/**
 	 * @var integer
-	 *
 	 * @ORM\Column(name="nbpages", type="integer", nullable=true, unique=false)
 	 */
 	protected $nbpages;
@@ -78,78 +73,6 @@ abstract class baseEntityPdf extends baseL1Entity {
 		$this->tempFilename = array();
 		// initialisation du nom du fichier
 		$this->getAFileName();
-	}
-
-	/**
-	 * Renvoie true si la demande correspond correspond
-	 * ex. : pour l'entité "baseL0Entity" -> "isbaseL0Entity" renvoie true
-	 * @return boolean
-	 */
-	public function __call($name, $arguments = null) {
-		switch ($name) {
-			case 'is'.ucfirst($this->getName()):
-				$reponse = true;
-				break;
-			default:
-				$reponse = false;
-				break;
-		}
-		return $reponse;
-	}
-
-	/**
-	 * Renvoie le nom de l'entité parent
-	 * @return string
-	 */
-	public function getParentName() {
-		return parent::getName();
-	}
-
-	/**
-	 * Renvoie le nom de l'entité
-	 * @return string
-	 */
-	public function getName() {
-		return 'baseEntityPdf';
-	}
-
-	/**
-	 * Complète les données avant enregistrement
-	 * @ORM/PreUpdate
-	 * @ORM/PrePersist
-	 * @return boolean
-	 */
-	public function verifBaseEntityPdf() {
-		$verif = true;
-		$verifMethod = 'verif'.ucfirst($this->getParentName());
-		if(method_exists($this, $verifMethod)) {
-			// opérations parents
-			$verif = $this->$verifMethod();
-		}
-		if($verif === true) {
-			// opérations pour cette entité
-			// …
-		}
-		return $verif;
-	}
-
-
-	/**
-	 * @Assert/True(message = "Cette entité n'est pas valide.")
-	 * @return boolean
-	 */
-	public function isBaseEntityPdfValid() {
-		$valid = true;
-		$validMethod = 'is'.ucfirst($this->getParentName()).'Valid';
-		if(method_exists($this, $validMethod)) {
-			$valid = $this->$validMethod();
-		}
-		// autres vérifications, si le parent est valide…
-		if($valid === true) {
-			//
-		}
-
-		return $valid;
 	}
 
 
@@ -284,7 +207,6 @@ abstract class baseEntityPdf extends baseL1Entity {
 
 	/**
 	 * Get file
-	 *
 	 * @return integer 
 	 */
 	public function getFile() {
@@ -293,7 +215,6 @@ abstract class baseEntityPdf extends baseL1Entity {
 
 	/**
 	 * Set fichierOrigine
-	 *
 	 * @param string $fichierOrigine
 	 * @return baseEntityPdf
 	 */
@@ -305,7 +226,6 @@ abstract class baseEntityPdf extends baseL1Entity {
 
 	/**
 	 * Get fichierOrigine
-	 *
 	 * @return string 
 	 */
 	public function getFichierOrigine() {
@@ -314,7 +234,6 @@ abstract class baseEntityPdf extends baseL1Entity {
 
 	/**
 	 * Set fichierNom
-	 *
 	 * @param string $fichierNom
 	 * @return baseEntityPdf
 	 */
@@ -327,7 +246,6 @@ abstract class baseEntityPdf extends baseL1Entity {
 
 	/**
 	 * Get fichierNom
-	 *
 	 * @return string 
 	 */
 	public function getFichierNom() {
@@ -336,7 +254,6 @@ abstract class baseEntityPdf extends baseL1Entity {
 
 	/**
 	 * Set thumbFichierNom
-	 *
 	 * @param string $thumbFichierNom
 	 * @return baseEntityPdf
 	 */
@@ -348,7 +265,6 @@ abstract class baseEntityPdf extends baseL1Entity {
 
 	/**
 	 * Get thumbFichierNom
-	 *
 	 * @return string 
 	 */
 	public function getThumbFichierNom() {
@@ -357,7 +273,6 @@ abstract class baseEntityPdf extends baseL1Entity {
 
 	/**
 	 * Set tailleMo
-	 *
 	 * @param integer $tailleMo
 	 * @return baseEntityPdf
 	 */
@@ -369,7 +284,6 @@ abstract class baseEntityPdf extends baseL1Entity {
 
 	/**
 	 * Get tailleMo
-	 *
 	 * @return integer 
 	 */
 	public function getTailleMo() {

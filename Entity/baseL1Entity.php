@@ -7,103 +7,71 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use \DateTime;
+use \Exception;
 // Slug
 use Gedmo\Mapping\Annotation as Gedmo;
+// baseInterface
 use laboBundle\Entity\baseL0Entity;
-// Repositories
-use laboBundle\Entity\statutRepository;
-use laboBundle\Entity\versionRepository;
-// Entities
-use laboBundle\Entity\statut;
-use laboBundle\Entity\version;
-// aeReponse
-use laboBundle\services\aetools\aeReponse;
+use laboBundle\Entity\interfaces\baseL1Interface;
 
 /**
+ * Entité de base L0 étendue => L1 pour gestion de dates (création / modification / expiration)
+ * 
  * @ORM\MappedSuperclass
  * @ORM\HasLifecycleCallbacks()
  */
-abstract class baseL1Entity extends baseL0Entity {
+abstract class baseL1Entity extends baseL0Entity implements baseL1Interface {
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="laboBundle\Entity\statut")
-	 * @ORM\JoinColumn(nullable=false, unique=false)
-	 */
-	protected $statut;
-
-	/**
-	 * @var integer
+	 * @var DateTime
 	 *
-	 * @ORM\ManyToOne(targetEntity="laboBundle\Entity\version")
-	 * @ORM\JoinColumn(nullable=false, unique=false)
+	 * @ORM\Column(name="dateCreation", type="datetime", nullable=false, unique=false)
 	 */
-	protected $version;
+	protected $dateCreation;
+
+	/**
+	 * @var DateTime
+	 *
+	 * @ORM\Column(name="dateMaj", type="datetime", nullable=true, unique=false)
+	 */
+	protected $dateMaj;
+
+	/**
+	 * @var DateTime
+	 *
+	 * @ORM\Column(name="dateExpiration", type="datetime", nullable=true, unique=false)
+	 */
+	protected $dateExpiration;
+
+
 
 	public function __construct() {
 		parent::__construct();
-		// statut
-		$statut = new statutRepository()->defaultVal();
-			if(is_array($statut)) $statut = reset($statut);
-			if($statut instanceOf statut) $this->setStatut($statut);
-		// version
-		$version = new versionRepository()->defaultVersion();
-			if(is_array($version)) $version = reset($version);
-			if($version instanceOf version) $this->setVersion($version);
 	}
 
+// DEBUT --------------------- à inclure dans toutes les entités ------------------------
+
 	/**
-	 * Renvoie true si la demande correspond correspond
-	 * ex. : pour l'entité "baseL0Entity" -> "isbaseL0Entity" renvoie true
+	 * Renvoie true si l'entité est valide
 	 * @return boolean
 	 */
-	public function __call($name, $arguments = null) {
-		switch ($name) {
-			case 'is'.ucfirst($this->getName()):
-				$reponse = true;
-				break;
-			default:
-				$reponse = false;
-				break;
+	public function isValid() {
+		$valid = true;
+		$valid = parent::isValid();
+		if($valid === true) {
+			// opérations pour cette entité
+			// …
 		}
-		return $reponse;
-	}
-
-	/**
-	 * Renvoie le nom de l'entité parent
-	 * @return string
-	 */
-	public function getParentName() {
-		return parent::getName();
-	}
-
-	/**
-	 * Renvoie le nom de l'entité
-	 * @return string
-	 */
-	public function getName() {
-		return 'baseL1Entity';
-	}
-
-	/**
-	 * @Assert/True(message = "Cette entité n'est pas valide.")
-	 * @return boolean
-	 */
-	public function isBaseL1EntityValid() {
-		return true;
+		return $valid;
 	}
 
 	/**
 	 * Complète les données avant enregistrement
-	 * @ORM/PreUpdate
-	 * @ORM/PrePersist
+	 * @return boolean
 	 */
-	public function verifBaseL1Entity() {
+	public function verify() {
 		$verif = true;
-		$verifMethod = 'verif'.ucfirst($this->getParentName());
-		if(method_exists($this, $verifMethod)) {
-			// opérations parents
-			$verif = $this->$verifMethod();
-		}
+		$verif = parent::verify();
 		if($verif === true) {
 			// opérations pour cette entité
 			// …
@@ -111,47 +79,89 @@ abstract class baseL1Entity extends baseL0Entity {
 		return $verif;
 	}
 
+	public function __call($method, $args) {
+		switch ($method) {
+			case 'isBaseL1Entity':
+				return true;
+				break;
+			default:
+				return parent::__call($method, $args);
+				break;
+		}
+	}
+
+// FIN --------------------- à inclure dans toutes les entités ------------------------
 
 	/**
-	 * Set statut
-	 * @param statut $statut
+	 * Set dateCreation
+	 *
+	 * @param DateTime $dateCreation
 	 * @return baseL1Entity
 	 */
-	public function setStatut(statut $statut) {
-		$this->statut = $statut;
+	public function setDateCreation(DateTime $dateCreation) {
+		$this->dateCreation = $dateCreation;
 	
 		return $this;
 	}
 
 	/**
-	 * Get statut
+	 * Get dateCreation
 	 *
-	 * @return statut 
+	 * @return DateTime
 	 */
-	public function getStatut() {
-		return $this->statut;
+	public function getDateCreation() {
+		return $this->dateCreation;
 	}
 
+    /**
+     * @ORM\PreUpdate
+     */
+    public function updateDateMaj() {
+        $this->setDateMaj(new DateTime());
+    }
+
 	/**
-	 * Set version
+	 * Set dateMaj
 	 *
-	 * @param version $version
+	 * @param DateTime $dateMaj
 	 * @return baseL1Entity
 	 */
-	public function setVersion(version $version) {
-		$this->version = $version;
+	public function setDateMaj(DateTime $dateMaj = null) {
+		$this->dateMaj = $dateMaj;
 	
 		return $this;
 	}
 
 	/**
-	 * Get version
+	 * Get dateMaj
 	 *
-	 * @return version 
+	 * @return DateTime
 	 */
-	public function getVersion() {
-		return $this->version;
+	public function getDateMaj() {
+		return $this->dateMaj;
 	}
+
+	/**
+	 * Set dateExpiration
+	 *
+	 * @param DateTime $dateExpiration
+	 * @return baseL1Entity
+	 */
+	public function setDateExpiration(DateTime $dateExpiration = null) {
+		$this->dateExpiration = $dateExpiration;
+	
+		return $this;
+	}
+
+	/**
+	 * Get dateExpiration
+	 *
+	 * @return DateTime 
+	 */
+	public function getDateExpiration() {
+		return $this->dateExpiration;
+	}
+
 
 
 }

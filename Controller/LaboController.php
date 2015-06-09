@@ -6,12 +6,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 // aeReponse
-use labo\Bundle\TestmanuBundle\services\aetools\aeReponse;
+use laboBundle\services\aetools\aeReponse;
 // User forms
 // use AcmeGroup\UserBundle\Form\Type\ProfileFormType;
 // use AcmeGroup\UserBundle\Form\Type\RegistrationFormType;
 
 class laboController extends Controller {
+
+	const DEFAULT_VIEWS = "pages";
 
 	//////////////////////////
 	// PAGES
@@ -19,7 +21,7 @@ class laboController extends Controller {
 
 	// Page d'accueil de l'admin (labo)
 	public function homeAction() {
-		return $this->render('laboBundle:pages:index.html.twig');
+		return $this->render('laboBundle:'.self::DEFAULT_VIEWS.':index.html.twig');
 	}
 
 	public function navbarAction() {

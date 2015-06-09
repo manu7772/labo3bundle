@@ -6,14 +6,14 @@ namespace laboBundle\services\entitiesServices;
 use Symfony\Component\Templating\EngineInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
-use laboBundle\services\entitiesServices\entitiesGeneric;
+use laboBundle\services\entitiesServices\entitesService;
 // use Symfony\Component\Form\FormFactoryInterface;
 
-class categorie extends entitiesGeneric {
+class categorie extends entitesService {
 
-	protected $actifPath;	// path de l'élément actif : liste des éléments parents
-	protected $actifChil;	// enfants de l'élément actif : liste des éléments enfants
-	protected $actifSlug;	// nom de l'élément de catégorie actif
+	protected $actifPath;				// path de l'élément actif : liste des éléments parents
+	protected $actifChil;				// enfants de l'élément actif : liste des éléments enfants
+	protected $actifSlug;				// nom de l'élément de catégorie actif
 	protected $sayIfChangeOrNo = null;
 	protected $container;
 	protected $menuSlug = null;
@@ -22,9 +22,9 @@ class categorie extends entitiesGeneric {
 		$this->container = $container;
 		parent::__construct($this->container);
 		// récupération du paramètre de menu dans parameters.yml si existant
-		// tester : $this->container->getParameter( 'labo_3_bundle.default_menu' );
-		if($this->container->hasParameter('labo_3_bundle.default_menu')) {
-			$this->menuSlug = $this->container->getParameter("labo_3_bundle.default_menu");
+		// tester : $this->container->getParameter( 'labo.default_menu_slug' );
+		if($this->container->hasParameter('labo.default_menu_slug')) {
+			$this->menuSlug = $this->container->getParameter("labo.default_menu_slug");
 		} else $this->menuSlug = null;
 		// if($this->container->hasParameter('menu_slug')) {
 		// 	$this->menuSlug = $this->container->getParameter("menu_slug");
@@ -171,7 +171,7 @@ class categorie extends entitiesGeneric {
 	*
 	*/
 	public function getPathInfo() {
-		$categorieSlug = $this->container->get("request")->attributes->get('categorieSlug');
+		$categorieSlug = $this->requAttributes->get('categorieSlug');
 		if($categorieSlug === "web") $categorieSlug = null;
 		return $categorieSlug;
 	}
@@ -202,5 +202,3 @@ class categorie extends entitiesGeneric {
 	}
 
 }
-
-?>

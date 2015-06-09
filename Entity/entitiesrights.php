@@ -8,45 +8,31 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 // Slug
 use Gedmo\Mapping\Annotation as Gedmo;
-// Repositories
-use laboBundle\Entity\versionRepository;
-// Entities
-use laboBundle\Entity\baseL0Entity;
-use laboBundle\Entity\version;
-// aeReponse
-use laboBundle\services\aetools\aeReponse;
+use laboBundle\Entity\baseL1Entity;
+use \DateTime;
+use \Exception;
 
 /**
  * entitiesrights
- *
- * @ORM\Entity
- * @ORM\Table(name="entitiesrights")
- * @ORM\Entity(repositoryClass="laboBundle\Entity\entitiesrightsRepository")
- * @UniqueEntity(fields={"nom"}, message="Cette entitiesrights existe déjà")
+ * 
+ * @ORM\MappedSuperclass
+ * @ORM\HasLifecycleCallbacks()
  */
-class entitiesrights extends baseL0Entity {
-
-	/**
-	 * @var integer
-	 *
-	 * @ORM\ManyToOne(targetEntity="laboBundle\Entity\version")
-	 * @ORM\JoinColumn(nullable=false, unique=false)
-	 */
-	protected $version;
+abstract class entitiesrights extends baseL1Entity {
 
 	/**
 	 * @var array
-	 * @ORM/Column(name="globalreads", type="array", nullable=true, unique=false)
+	 * @ORM\Column(name="globalreads", type="array", nullable=true, unique=false)
 	 */
 	protected $globalreads;
 	/**
 	 * @var array
-	 * @ORM/Column(name="globalwrites", type="array", nullable=true, unique=false)
+	 * @ORM\Column(name="globalwrites", type="array", nullable=true, unique=false)
 	 */
 	protected $globalwrites;
 	/**
 	 * @var array
-	 * @ORM/Column(name="globaldeletes", type="array", nullable=true, unique=false)
+	 * @ORM\Column(name="globaldeletes", type="array", nullable=true, unique=false)
 	 */
 	protected $globaldeletes;
 
@@ -55,57 +41,34 @@ class entitiesrights extends baseL0Entity {
 		$this->globalreads = new ArrayCollection;
 		$this->globalwrites = new ArrayCollection;
 		$this->globaldeletes = new ArrayCollection;
-		// version
-		$version = new versionRepository()->defaultVersion();
-			if(is_array($version)) $version = reset($version);
-			if($version instanceOf version) $this->setVersion($version);
 	}
 
+// DEBUT --------------------- à inclure dans toutes les entités ------------------------
+
 	/**
-	 * Renvoie true si la demande correspond correspond
-	 * ex. : pour l'entité "baseL0Entity" -> "isbaseL0Entity" renvoie true
+	 * Renvoie true si l'entité est valide
+	 * @Assert\True(message = "Ce statut n'est pas valide.")
 	 * @return boolean
 	 */
-	public function __call($name, $arguments = null) {
-		switch ($name) {
-			case 'is'.ucfirst($this->getName()):
-				$reponse = true;
-				break;
-			default:
-				$reponse = false;
-				break;
+	public function isValid() {
+		$valid = true;
+		$valid = parent::isValid();
+		if($valid === true) {
+			// opérations pour cette entité
+			// …
 		}
-		return $reponse;
-	}
-
-	/**
-	 * Renvoie le nom de l'entité parent
-	 * @return string
-	 */
-	public function getParentName() {
-		return parent::getName();
-	}
-
-	/**
-	 * Renvoie le nom de l'entité
-	 * @return string
-	 */
-	public function getName() {
-		return 'entitiesrights';
+		return $valid;
 	}
 
 	/**
 	 * Complète les données avant enregistrement
-	 * @ORM/PreUpdate
-	 * @ORM/PrePersist
+	 * @ORM\PreUpdate
+	 * @ORM\PrePersist
+	 * @return boolean
 	 */
-	public function verifStatut() {
+	public function verify() {
 		$verif = true;
-		$verifMethod = 'verif'.ucfirst($this->getParentName());
-		if(method_exists($this, $verifMethod)) {
-			// opérations parents
-			$verif = $this->$verifMethod();
-		}
+		$verif = parent::verify();
 		if($verif === true) {
 			// opérations pour cette entité
 			// …
@@ -113,42 +76,7 @@ class entitiesrights extends baseL0Entity {
 		return $verif;
 	}
 
-	/**
-	 * @Assert/True(message = "Ce statut n'est pas valide.")
-	 */
-	public function isStatutValid() {
-		$valid = true;
-		$validMethod = 'is'.ucfirst($this->getParentName()).'Valid';
-		if(method_exists($this, $validMethod)) {
-			$valid = $this->$validMethod();
-		}
-		// autres vérifications, si le parent est valide…
-		if($valid === true) {
-			//
-		}
-		return $valid;
-	}
-
-	/**
-	 * Set version
-	 *
-	 * @param version $version
-	 * @return entitiesrights
-	 */
-	public function setVersion(version $version) {
-		$this->version = $version;
-	
-		return $this;
-	}
-
-	/**
-	 * Get version
-	 *
-	 * @return version 
-	 */
-	public function getVersion() {
-		return $this->version;
-	}
+// FIN --------------------- à inclure dans toutes les entités ------------------------
 
 
 	//// ENTITÉ GLOBALE /////
@@ -159,7 +87,9 @@ class entitiesrights extends baseL0Entity {
 	 * @return entitiesrights
 	 */
 	public function addGlobalread($role = null) {
-		if($role !== null) ($this->globalreads[] = $role);
+		if($role !== null) {
+			$this->globalreads->add($role);
+		}
 		return $this;
 	}
 
@@ -187,7 +117,9 @@ class entitiesrights extends baseL0Entity {
 	 * @return entitiesrights
 	 */
 	public function addGlobalwrite($role = null) {
-		if($role !== null) ($this->globalwrites[] = $role);
+		if($role !== null) {
+			$this->globalwrites->add($role);
+		}
 		return $this;
 	}
 
@@ -215,7 +147,9 @@ class entitiesrights extends baseL0Entity {
 	 * @return entitiesrights
 	 */
 	public function addGlobaldelete($role = null) {
-		if($role !== null) ($this->globaldeletes[] = $role);
+		if($role !== null) {
+			$this->globaldeletes->add($role);
+		}
 		return $this;
 	}
 

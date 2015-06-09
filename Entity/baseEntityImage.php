@@ -8,17 +8,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use \Datetime;
-use \Imagick;
+use \Exception;
 // Slug
 use Gedmo\Mapping\Annotation as Gedmo;
 // Base
 use laboBundle\Entity\baseL1Entity;
-// Entities
-use laboBundle\Entity\typeImage;
-// Repositories
-use laboBundle\Entity\typeImageRepository;
-// aeReponse
-use laboBundle\services\aetools\aeReponse;
 
 /**
  * @ORM\MappedSuperclass
@@ -30,13 +24,6 @@ abstract class baseEntityImage extends baseL1Entity {
 	 * @ORM\Column(name="url", type="string", length=255, nullable=true, unique=false)
 	 */
 	protected $url;
-
-	/**
-	 * @var integer
-	 * @ORM\ManyToMany(targetEntity="laboBundle\Entity\typeImage")
-	 * @ORM\JoinColumn(nullable=false, unique=false)
-	 */
-	protected $typeImages;
 
 	/**
 	 * @var string
@@ -93,83 +80,19 @@ abstract class baseEntityImage extends baseL1Entity {
 		$this->fichierOrigine = null;
 		$this->ext = null;
 		$this->remove = false; // pour effacer l'image
-		// typeImage
-		$typeImageRepository = new typeImageRepository();
-			$typeImages = $typeImageRepository->defaultVal();
-			if($typeImages instanceOf typeImage) $typeImages = array($typeImages);
-			foreach ($typeImages as $typeImage) $this->addTypeImage($typeImage);
 	}
 
-	/**
-	 * Renvoie true si la demande correspond correspond
-	 * ex. : pour l'entité "baseL0Entity" -> "isbaseL0Entity" renvoie true
-	 * @return boolean
-	 */
-	public function __call($name, $arguments = null) {
-		switch ($name) {
-			case 'is'.ucfirst($this->getName()):
-				$reponse = true;
+	public function __call($method, $args) {
+		switch ($method) {
+			case 'isImage':
+				return true;
 				break;
+			
 			default:
-				$reponse = false;
+				return parent::__call($method, $args);
 				break;
 		}
-		return $reponse;
 	}
-
-	/**
-	 * Renvoie le nom de l'entité parent
-	 * @return string
-	 */
-	public function getParentName() {
-		return parent::getName();
-	}
-
-	/**
-	 * Renvoie le nom de l'entité
-	 * @return string
-	 */
-	public function getName() {
-		return 'baseEntityImage';
-	}
-
-	/**
-	 * Complète les données avant enregistrement
-	 * @ORM/PreUpdate
-	 * @ORM/PrePersist
-	 * @return boolean
-	 */
-	public function verifBaseEntityImage() {
-		$verif = true;
-		$verifMethod = 'verif'.ucfirst($this->getParentName());
-		if(method_exists($this, $verifMethod)) {
-			// opérations parents
-			$verif = $this->$verifMethod();
-		}
-		if($verif === true) {
-			// opérations pour cette entité
-			// …
-		}
-		return $verif;
-	}
-
-	/**
-	 * @Assert/True(message = "Cette entité n'est pas valide.")
-	 * @return boolean
-	 */
-	public function isBaseEntityImageValid() {
-		$valid = true;
-		$validMethod = 'is'.ucfirst($this->getParentName()).'Valid';
-		if(method_exists($this, $validMethod)) {
-			$valid = $this->$validMethod();
-		}
-		// autres vérifications, si le parent est valide…
-		if($valid === true) {
-			//
-		}
-		return $valid;
-	}
-
 
 	/**
 	 * Set remove
@@ -206,33 +129,6 @@ abstract class baseEntityImage extends baseL1Entity {
 	 */
 	public function getUrl() {
 		return $this->url;
-	}
-
-	/**
-	 * Ajoute un type d'image
-	 * @param typeImage $typeImages
-	 * @return baseEntityImage
-	 */
-	public function addTypeImage(typeImage $typeImage) {
-		$this->typeImages[] = $typeImage;
-		$typeImage->addImage($this);
-		return $this;
-	}
-
-	/**
-	 * Supprime un type d'image
-	 * @param typeImage $typeImage
-	 */
-	public function removeTypeImage(typeImage $typeImage) {
-		$this->typeImages->removeElement($typeImage);
-	}
-
-	/**
-	 * Renvoie les types de l'image
-	 * @return ArrayCollection 
-	 */
-	public function getTypeImages() {
-		return $this->typeImages;
 	}
 
 	/**

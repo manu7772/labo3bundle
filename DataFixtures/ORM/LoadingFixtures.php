@@ -1,70 +1,90 @@
 <?php
-// labo/Bundle/TestmanuBundle/DataFixtures/ORM/LoadingFixtures.php
+// laboBundle/DataFixtures/ORM/LoadingFixtures.php
 
-namespace labo\Bundle\TestmanuBundle\DataFixtures\ORM;
+namespace laboBundle\DataFixtures\ORM;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+// aetools
+use laboBundle\services\entitiesServices\entitesService;
+// use laboBundle\services\aetools\aetools;
 
-define("BASEFOLDER", __DIR__."/../../../../../../../..");
+use \DateTime;
+
 /*
  * Les fixtures sont des objets qui doivent obligatoireemnt implémenter l'interface FixtureInterface
  */
-class LoadingFixtures implements FixtureInterface, ContainerAwareInterface {
+class LoadingFixtures extends entitesService implements FixtureInterface, ContainerAwareInterface {
 
-	private $manager;
-	private $connection;
-	private $parsList		= array();
-	private $entityName;
-	private $entityObj;
-	private $EntityService;
-	private $container;
-	private $testFormats	= array("Datetime" => "DATE_");
-	private $texttools;
-	private $data;
-	private $entitiesService;
-	private $listOfEnties;
-	private $aetools;
-	private $imagetools;
+	protected $manager;
+	protected $connection;
+	protected $parsList;
+	protected $entityName;
+	protected $entityObj;
+	// protected $EntityService;
+	protected $container;
+	protected $testFormats;
+	protected $texttools;
+	protected $data;
+	protected $entitiesList;
+	protected $aetools;
+	protected $imagetools;
+	protected $baseFolder ;
+
+	public function __construct(ContainerInterface $container = null) {
+		$this->writeConsole("Chargement du Constructeur FIXTURES…", "normal", true);
+		parent::__construct($container);
+	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function setContainer(ContainerInterface $container = null) {
+		$this->writeConsole("Chargement du Container FIXTURES…", "normal", true);
 		$this->container = $container;
+		// $this = $this->container->get('labobundle.entities');
+		$this->initFixData();
+	}
+
+	protected function initFixData() {
+		$this->testFormats = array(
+			"Datetime" => "DATE_",
+		);
+		$this->getEm();
+		$this->initAllData();
+		// $this->baseFolder = __DIR__."/../../../../../../";
+		// service images
 	}
 
 	public function load(ObjectManager $manager) {
+		$this->writeConsole('Fixtures loading…');
 		$this->manager = $manager;
 		$this->connection = $this->manager->getConnection();
-		// service text utilities
-		$this->texttools = $this->container->get("acmeGroup.textutilities");
 		// servicve entités
-		$this->entitiesService = $this->container->get("acmeGroup.entities");
-		$this->listOfEnties = $this->entitiesService->listOfEnties();
+		// $this->EntityService = $this->container->get("labobundle.entities");
+		$this->imagetools = $this->container->get('labobundle.imagetools');
+		$this->writeConsole('Tri ordre des entités… ', null, false);
 		$this->trieEntities();
 		$this->afficheEntities();
+		$this->afficheEntitiesFound();
 		// services dossiers/fichiers
-		$this->aetools = $this->container->get('acmeGroup.aetools');
-		$this->listOfBundles = $this->aetools->getBundlesList();
 		$this->afficheBundles();
-		// service images
-		$this->imagetools = $this->container->get('acmeGroup.imagetools');
 
 		//efface le dossier images
-		$this->deleteAllImageFolders();
+		$this->imagetools->deleteAllImageFolders();
+		// recrée les dossiers images vierges
+		$this->imagetools->checkDossiersImages();
 
 		$this->writeConsole("**********************************", "succes", true);
 		$this->writeConsole("***** LANCEMENT DES FIXTURES *****", "succes", true);
 		$this->writeConsole("**********************************", "succes", 2);
 
-		foreach($this->listOfEnties as $name => $namespace) {
-			$this->writeConsole("Fixtures remplissage de ".$namespace, "headline", true);
-			$entityL = $this->loadEntity($name);
-			if($entityL !== false) {
-				$this->writeConsole("Lignes de l'entité enregistrées : ".$name, "succes", 2);
+		foreach($this->entitiesList as $namespace => $name) {
+			$this->writeConsole("Fixtures hydratation de ".$name, "headline");
+			if($this->loadEntity($name) !== false) {
+				$this->writeConsole("Fin de l'entité ".$name, "succes", 2);
 			} else $this->writeConsole("Aucune ligne enregistrée.", "error", 2);
 		}
 	}
@@ -72,89 +92,131 @@ class LoadingFixtures implements FixtureInterface, ContainerAwareInterface {
 	/**
 	 * Trie les entités dans le bon ordre
 	 */
-	private function trieEntities() {
+	protected function trieEntities() {
 		$ordre = array(
-			0 		=> "statut",
-			10		=> "pays",
-			20		=> "villesFrance",
-			30		=> "adresse",
-			40		=> "typeImage",
-			50		=> "typeRemise",
-			60		=> "typeEvenement",
-			70		=> "typeRichtext",
-			75		=> "typePartenaire",
-			78		=> "typeMembre",
-			80		=> "panier",
-			90		=> "version",
-			100		=> "tauxTVA",
-			110		=> "video",
-			120		=> "image",
-			130		=> "collection",
-			140 	=> "richtext",
-			150 	=> "reseau",
-			160		=> "marque",
-			170		=> "pageweb",
-			180		=> "categorie",
-			190		=> "magasin",
-			200		=> "ficheCreative",
-			210		=> "partenaire",
-			220		=> "evenement",
-			230		=> "article",
-			240		=> "membre",
+			"AcmeGroup\\LaboBundle\\Entity\\statut",
+			"AcmeGroup\\LaboBundle\\Entity\\version",
+
+			"AcmeGroup\\LaboBundle\\Entity\\tag",
+			"AcmeGroup\\LaboBundle\\Entity\\unite",
+			"AcmeGroup\\LaboBundle\\Entity\\typeEmail",
+			"AcmeGroup\\LaboBundle\\Entity\\typeImage",
+			"AcmeGroup\\LaboBundle\\Entity\\typeReseau",
+			"AcmeGroup\\LaboBundle\\Entity\\typeAdresse",
+			"AcmeGroup\\LaboBundle\\Entity\\typeTelephone",
+			"AcmeGroup\\LaboBundle\\Entity\\typeNatureTelephone",
+			"AcmeGroup\\LaboBundle\\Entity\\typeFiche",
+			"AcmeGroup\\LaboBundle\\Entity\\typeVideo",
+
+			"AcmeGroup\\LaboBundle\\Entity\\telephone",
+			"AcmeGroup\\LaboBundle\\Entity\\email",
+			"AcmeGroup\\LaboBundle\\Entity\\adresse",
+			"AcmeGroup\\LaboBundle\\Entity\\panier",
+			"AcmeGroup\\LaboBundle\\Entity\\tva",
+			"AcmeGroup\\LaboBundle\\Entity\\video",
+			"AcmeGroup\\LaboBundle\\Entity\\image",
+			"AcmeGroup\\LaboBundle\\Entity\\collection",
+			"AcmeGroup\\LaboBundle\\Entity\\reseausocial",
+			"AcmeGroup\\LaboBundle\\Entity\\pageweb",
+			"AcmeGroup\\LaboBundle\\Entity\\fichierPdf",
+			"AcmeGroup\\LaboBundle\\Entity\\fiche",
+			"AcmeGroup\\LaboBundle\\Entity\\pageweb",
+			"AcmeGroup\\LaboBundle\\Entity\\cuisson",
+			"AcmeGroup\\LaboBundle\\Entity\\evenement",
+			"AcmeGroup\\LaboBundle\\Entity\\categorie",
+			"AcmeGroup\\LaboBundle\\Entity\\article",
 			);
 		ksort($ordre);
-		$newordre = array();
-		foreach($ordre as $num => $nom) {
-			$newordre[$nom] = $this->listOfEnties[$nom];
+		$this->entitiesList = array();
+		$entitiesList = array();
+		// entités ordonnées
+		foreach($ordre as $num => $namespace) {
+			$name = $this->getEntityShortName($namespace);
+			if($name !== false) {
+				$entitiesList[$namespace] = $name;
+			} else {
+				$this->writeConsole('Entité ordonnée non trouvée.', 'error');
+			}
 		}
-		$this->listOfEnties = array();
-		$this->listOfEnties = $newordre;
+		// reste des entités
+		foreach($this->getListOfEnties(false) as $namespace => $name) {
+			if(!array_key_exists($namespace, $entitiesList)) $entitiesList[$namespace] = $name;
+		}
+		// ne garde que les entités réelles (non abstraites)
+		foreach ($entitiesList as $namespace => $name) {
+			// $this->writeConsole('- MetaData = '.$namespace);
+			$CMD = $this->getClassMetaData($namespace);
+			$reflectionClass = $CMD->getReflectionClass();
+			if(!$reflectionClass->isAbstract() && !$reflectionClass->isInterface()) $this->entitiesList[$namespace] = $name;
+		}
+		unset($entitiesList);
 	}
 
 	/**
 	 * Opération finale : Checke toutes les entités pour les relier entre elles
 	 * @return boolean
 	 */
-	private function linkEntities() {
-		printf("***** RELINK DES ENTITES *****\n");
+	protected function linkEntities() {
+		$this->writeConsole("***** RELINK DES ENTITES *****".self::EOLine);
 
 	}
 
-	private function loadEntity($name) {
-		$this->EntityService = $this->container->get('acmeGroup.entities')->defineEntity($name);
+	protected function loadEntity($name) {
+		$this->defineEntity($name);
+		$this->writeConsole('Définition nouvelle entité : '.$name);
 		// si l'entité existe…
-		if(in_array($this->EntityService->getClassEntite(), $this->listOfEnties)) {
+		// if(in_array($this->getEntityClassName(), $this->entitiesList)) {
+			// !!!!! attention, NORMALEMENT, mettre le nom de la table (column) et non du champ Doctrine (field) !!!!!
 			$this->connection->exec("ALTER TABLE ".$name." AUTO_INCREMENT = 1;");
-			$this->parsList = array();
+			// $this->parsList = null;
 			// chargement
 			$this->loadXML();
-		} else return false;
+			return true;
+		// } else return false;
 	}
 
-	private function loadXML() {
-		$XMLfile = BASEFOLDER."/src/AcmeGroup/SiteBundle/Resources/public/xml/".$this->EntityService->getNameFixturesFile();
-		if(file_exists($XMLfile)) {
-			printf("XML trouvé : ".$this->EntityService->getNameFixturesFile()."\n");
-			$r = $this->parseX(@simplexml_load_file($XMLfile));
+	protected function loadXML() {
+		// !!!!! faire ici une recherche dans les dossiers des fichiers XML
+		// $this->writeConsole("File : ".$XMLfile.self::EOLine);
+		// $files = $this->deleteFilesEverywhere($file);
+		// $this->writeConsole($files);
+		// die("ok\n\n");
+		$fileCSV = $this->getNameFixturesFileCSV($this->getEntityShortName());
+		$CSVfilepath = $this->gotoroot."src/AcmeGroup/SiteBundle/Resources/public/csv/".$fileCSV;
+		$fileXML = $this->getNameFixturesFileXML($this->getEntityShortName());
+		$XMLfilepath = $this->gotoroot."src/AcmeGroup/SiteBundle/Resources/public/xml/".$fileXML;
+		if(file_exists($CSVfilepath)) {
+			$this->writeConsole("CSV trouvé : ".$fileCSV, 'error');
+			$CSVreader = $this->container->get('labobundle.CSVreader');
+			if($CSVreader->createXMLfileFromCSV($CSVfilepath, $XMLfilepath)) $this->writeConsole("Fichier XML créé : ".$fileXML, 'succes');
 		} else {
-			printf("XML non trouvé : ".$this->EntityService->getNameFixturesFile()."\n");
-			$r = null;
+			// $this->writeConsole("CSV non trouvé : ".$CSVfilepath);
+			// $r = false;
 		}
-		// return $r;
+		// XML
+		if(file_exists($XMLfilepath)) {
+			$this->writeConsole("XML trouvé : ".$fileXML);
+			$r = $this->parseX(@simplexml_load_file($XMLfilepath));
+		} else {
+			$this->writeConsole("XML non trouvé : ".$XMLfilepath);
+			$r = false;
+		}
+		return $r;
 	}
 
 	### Parse des données XML (total)
-	private function parseX($XMLfile) {
+	protected function parseX($XMLfile) {
 		$tb = array();
 		if($XMLfile != null) {
+			$this->writeConsole('-> '.count($XMLfile).' ligne'.$this->texttools->plur($XMLfile, 's').' à générer');
 			$tb = array();
 			foreach($XMLfile as $ojbc) {
 				$att = $ojbc->attributes();
 				$nom = $att["nom"];
 				if($nom === null) $nom = $att["nomunique"];
 				if($nom === null) $nom = $att["title"];
-				printf("--------------------------------------\nNom : ".$nom."\n");
-				printf(".");
+				$this->writeConsole("--------------------------------------");
+				$this->writeConsole("Nom : ".$nom);
 				$this->parss2($ojbc, $this->createEntry($att, null));
 			}
 			return $r = $tb;
@@ -162,61 +224,64 @@ class LoadingFixtures implements FixtureInterface, ContainerAwareInterface {
 		return $r;
 	}
 
-	private function parss2($XMLfile, $cpt_parent) {
+	protected function parss2($XMLfile, $cpt_parent) {
 		if($XMLfile->count() > 0) foreach($XMLfile->children() as $nom1 => $entityName1) {
 			$att = $entityName1->attributes();
 			$this->parss2($entityName1, $this->createEntry($att, $cpt_parent));
 		}
 	}
 
-	private function createEntry($attributs, $cpt_parent = null) {
-		printf("Begin --> ");
+	protected function createEntry($attributs, $cpt_parent = null) {
+		$this->writeConsole("Begin --> ", "normal", false);
 		// création de l'objet entité prérempli (liens externes par défaut)
-		$this->parsList = $this->EntityService->newObject(true);
-		printf("Entité générée\n");
+		$this->parsList = $this->newObject(null, true);
+		$this->writeConsole('Hiérarchie : '.$this->getClassHierarchy($this->parsList, 'string'), 'error');
+		if(is_object($this->parsList)) {
+			$this->writeConsole("Entité ".$this->getEntityShortName()." générée");
+		} else {
+			$this->writeConsole("Entité ".$this->getEntityShortName()." NON générée", 'error');
+			return false;
+		}
 
 		foreach($attributs as $nom => $entityString) {
-			// réinitialise $this->data
+			// initialise $this->data
 			$this->data = array();
-			// initData = formats spéciaux : Datetime, etc.
-			// + verif ajout ou remplacement des données
-			// + traduction des données $entityString
-			// $this->data["format"]				= "standard" ou autre
-			// $this->data["nom"]					= champ + association (éventuelle)
-			// $this->data["vals"]					= valeurs
-			// $this->data["suppStd"]				= boolean --> supprime ou non les valeurs ext. par défaut
-			// $this->data["champSlf"]				= nom du champ
-			// $this->data["champSlf_collection"]	= nom du champ version "colletion" (sinon sans "s")
-			// $this->data["champExt"]				= nom du champ externe
-			// $this->data["entitExt"]				= nom de l'entité externe
-			// $this->data["entityList"]			= Liste des valeurs pour le champs de l'entité
-			// $this->data["meta"]["type"] 			= infos META
-			// $this->data["meta"]["methode"] 		= nom de methode
+			$this->writeConsole("- ".$nom." = ".$entityString);
 			$this->initData($nom, $entityString);
 
 			// Recherche et ajout à $vals des valeurs désignées dans le fichier XML --> Association single/collection
 			$set = $this->data["meta"]["methode"];
 			switch($this->data["meta"]["type"]["Association"]) {
 				case "single":
-					$explodName = explode('\\',  $this->data["meta"]["type"]["targetEntity"]);
-					printf("Entité liée (single) : ".$this->data["meta"]["type"]["targetEntity"]."\n");
-					// printf("Bundle : ".$explodName[0].$explodName[1].":".$explodName[3]."\n");
-					$repo = $this->manager->getRepository($explodName[0].$explodName[1].":".$explodName[3]);
-					// printf("Find : findBy".ucfirst($this->data["champExt"])." = ".$this->data["entityList"][0]."\n");
-					$findMtd = "findBy".ucfirst($this->data["champExt"]);
-					$obj = $repo->$findMtd($this->data["entityList"][0]);
-					if(count($obj) > 0) {if(is_object($obj[0])) {$this->parsList->$set($obj[0]);}}
+					// if($this->parsList->isImage()) {
+					// 	$this->writeConsole("Image : ajout des attributs…", "error");
+						$repo = $this->manager->getRepository($this->data["meta"]["type"]["targetEntity"]);
+						$findMtd = $this->getMethodNameWith($this->data["champExt"], "findBy");
+						$obj = $repo->$findMtd($this->data["entityList"][0]);
+						if(is_object($obj)) {
+							$this->parsList->$set($obj);
+						} else if(count($obj) > 0) {
+							if(is_object(reset($obj))) {
+								$this->parsList->$set(reset($obj));
+							}
+						}
+					// }
 					break;
 				case "collection":
-					$explodName = explode('\\',  $this->data["meta"]["type"]["targetEntity"]);
-					// printf("Entité liée (collection) : ".$this->data["meta"]["type"]["targetEntity"]."\n");
-					// printf("Bundle : ".$explodName[0].$explodName[1].":".$explodName[3]."\n");
-					$repo = $this->manager->getRepository($explodName[0].$explodName[1].":".$explodName[3]);
-					foreach($this->data["entityList"] as $val) {
-						// printf("Find : findBy".ucfirst($this->data["champExt"])." = ".$val."\n");
-						$findMtd = "findBy".ucfirst($this->data["champExt"]);
-						foreach($repo->$findMtd($val) as $obj) if(is_object($obj)) $this->parsList->$set($obj);
-					}
+					// if($this->parsList->isImage()) {
+						// $this->writeConsole("Image : ajout des attributs…", "error");
+						$repo = $this->manager->getRepository($this->data["meta"]["type"]["targetEntity"]);
+						foreach($this->data["entityList"] as $val) {
+							$findMtd = $this->getMethodNameWith($this->data["champExt"], "findBy");
+							foreach($repo->$findMtd($val) as $obj) {
+								if(is_object($obj)) {
+									$this->parsList->$set($obj);
+								} else if(count($obj) > 0) {
+									foreach ($obj as $key => $value) if(is_object($value)) $this->parsList->$set($value);
+								}
+							}
+						}
+					// }
 					break;
 				default:
 					// aucune + autres
@@ -224,7 +289,7 @@ class LoadingFixtures implements FixtureInterface, ContainerAwareInterface {
 						// ajout de liens URL dynamiques liées (dans les textes)
 						switch($this->data["format"]) {
 							case "Datetime":
-								$val = new \Datetime($val);
+								$val = new DateTime($val);
 								break;
 							default:
 								// standard + autres
@@ -243,12 +308,12 @@ class LoadingFixtures implements FixtureInterface, ContainerAwareInterface {
 			if (method_exists($this->parsList, "addParent")) $this->parsList->addParent($cpt_parent);
 		}
 		// Persist & flush
-		// printf("Mémoire PHP : ".memory_get_usage()." --> ");
+		// $this->writeConsole("Mémoire PHP : ".memory_get_usage()." --> ");
 		$this->manager->persist($this->parsList);
 		$this->manager->flush();
-		// printf(memory_get_usage()."\n");
-		$this->writeConsole("* Entité ".$this->EntityService->getName()." enregistrée en BDD *", "succes", 2);
-		// printf("* Entité enregistrée en BDD *\n\n");
+		// $this->writeConsole(memory_get_usage().self::EOLine);
+		$this->writeConsole("* Entité ".$this->getEntityShortName()." enregistrée en BDD *", "succes", 2);
+		// $this->writeConsole("* Entité enregistrée en BDD *\n\n");
 		return $this->parsList; // renvoie l'objet enregistré
 	}
 
@@ -258,7 +323,7 @@ class LoadingFixtures implements FixtureInterface, ContainerAwareInterface {
 	 * @param array $files -> liste des fichiers
 	 * @return array
 	 */
-	private function importFiles($files) {
+	protected function importFiles($files) {
 		if(is_string($files)) {
 			$f = $files;
 			$files = array();
@@ -273,34 +338,37 @@ class LoadingFixtures implements FixtureInterface, ContainerAwareInterface {
 				$file[1] = $file[0];
 				$file[0] = $dossier;
 			} else $dossier = $file[0];
-			$importFile = BASEFOLDER."/src/AcmeGroup/SiteBundle/Resources/public/".$file[0]."/".$file[1];
-			printf("Import : ".$importFile."\n");
+			$importFile = $this->gotoroot."src/AcmeGroup/SiteBundle/Resources/public/".$file[0]."/".$file[1];
+			$this->writeConsole("Import : ".$importFile.self::EOLine);
 			if(file_exists($importFile)) {
 				$txt = @file_get_contents($importFile);
 				if($txt !== false) {
 					$txt = nl2br($txt);
 					$contenu[] = str_replace("><br />", ">", $txt);
-					printf(" --> Fichier chargé avec succès ( ".substr($txt, 0, 20)."… )\n");
-				} else printf(" --> ".$this->writeConsole("ECHEC", "error", false)." (lecture du fichier échouée)\n");
-			} else printf(" --> ".$this->writeConsole("ECHEC", "error", false)." (fichier non trouvé)\n");
+					$this->writeConsole(" --> Fichier chargé avec succès ( ".substr($txt, 0, 20)."… )".self::EOLine);
+				} else $this->writeConsole(" --> ".$this->writeConsole("ECHEC", "error", false)." (lecture du fichier échouée)".self::EOLine);
+			} else $this->writeConsole(" --> ".$this->writeConsole("ECHEC", "error", false)." (fichier non trouvé)".self::EOLine);
 		}
 		return $contenu;
 	}
 
-	private function dynUrls($texte) {
+	protected function dynUrls($texte) {
 		// {# IMG:nom:isaac #}
 		$texte = preg_replace_callback(
 			'|{# (IMG):(\w+):(\w+) #}|', 
 			function($matches) {
 				if((count($matches) > 3) || ($matches[1] == 'IMG')) {
-					$meth = 'findBy'.ucfirst($matches[2]);
+					$meth = $this->getMethodNameWith($matches[2], 'findBy');
 					// $repo = $this->manager->getRepository("AcmeGroup\\LaboBundle\\Entity\\image");
 					$repo = $this->manager->getRepository("AcmeGroupLaboBundle:image");
 					$image = $repo->$meth($matches[3]);
-					if(count($image) > 0) return ("{{ asset('images/original/".$image[0]->getFichierNom()."') }}");
+					if(count($image) > 0) {
+						$image = reset($image);
+						return "{{ asset('".$this->imagetools->getNomDossierImages().$this->imagetools->getNomDossierOriginal().$image->getFichierNom()."') }}";
+					}
 				}
 			},
-			$texte, -1, $nb
+			$texte, -1, $nb // $nb remplie par preg_replace_callback avec le nombre de remplacements effectués
 		);
 		return $texte;
 	}
@@ -312,7 +380,7 @@ class LoadingFixtures implements FixtureInterface, ContainerAwareInterface {
 	 * @param $nom (du champ)
 	 * @param $entityString (chaîne de paramètres)
 	 */
-	private function initData($nom, $entityString) {
+	protected function initData($nom, $entityString) {
 		$n = array();
 		foreach($this->testFormats as $nomformat => $prefix) {
 			if(preg_match("'^(".$prefix.")'", $nom)) {
@@ -323,11 +391,15 @@ class LoadingFixtures implements FixtureInterface, ContainerAwareInterface {
 				$this->data["nom"] = $nom;
 			}
 		}
+		$this->writeConsole(self::TAB1."Format : ".$this->data["format"]);
 		$this->verifSuppStdLiens($entityString);
+		$this->data["suppStd"] === true ? $donnees = "ajoutées" : $donnees = "remplacées";
+		$this->writeConsole(self::TAB1."Données STD : ".$donnees);
 		$this->compileNom();
-		// printf("Format objet ".$this->data["format"]." : ".$this->data["nom"]."\n");
+		// $this->writeConsole("Format objet ".$this->data["format"]." : ".$this->data["nom"].self::EOLine);
 		// supprime les valeurs par défaut sur le champ
-		if($this->data["suppStd"] === true) $this->emptyField();
+		if($this->data["suppStd"] === true) $this->emptyFieldFix();
+		// $this->writeConsole("Données initialisées…");
 	}
 
 	/**
@@ -335,7 +407,7 @@ class LoadingFixtures implements FixtureInterface, ContainerAwareInterface {
 	 * Verifie si les liens remplacent ou sont ajoutés au champ existant
 	 * @param $entityString (chaîne de paramètres)
 	 */
-	private function verifSuppStdLiens($entityString) {
+	protected function verifSuppStdLiens($entityString) {
 			if(substr($entityString, 0, 1) == "+") {
 				// + : ajoute les valeurs aux valeurs par défaut
 				$this->data["suppStd"] = false;
@@ -351,7 +423,7 @@ class LoadingFixtures implements FixtureInterface, ContainerAwareInterface {
 	 * compileNom
 	 * Extrait les paramètres du nom de l'attribut
 	 */
-	private function compileNom() {
+	protected function compileNom() {
 		$this->data["entityList"] = explode("|", $this->data["vals"]);
 		$nom = explode("__", $this->data["nom"]); // $this->data["champSlf"] = version  ==> méthode
 		if(count($nom) > 1) {
@@ -391,7 +463,7 @@ class LoadingFixtures implements FixtureInterface, ContainerAwareInterface {
 				// au cas où il n'y a pas de résultat…
 				if(count($this->data["entityList"]) < 1) $this->data["entityList"][] = "";
 			}
-			// var_dump($entityList);
+			// $this->writeConsole($entityList);
 		}
 		$this->data["champSlf"] = $nom[0];
 		$this->data["champExt"] = $nom[1];
@@ -403,38 +475,38 @@ class LoadingFixtures implements FixtureInterface, ContainerAwareInterface {
 	 * getTypeOfAssociation
 	 * Renvoie le type d'Association ["type"] et la méthode associée ["methode"]
 	 */
-	private function getTypeOfAssociation() {
+	protected function getTypeOfAssociation() {
 		$this->data["meta"] = array();
 		$this->data["champSlf_collection"] = $this->data["champSlf"]."s";
-		if(method_exists($this->parsList, "get".ucfirst($this->data["champSlf_collection"]))) {
+		if(method_exists($this->parsList, $this->getMethodNameWith($this->data["champSlf_collection"], "get"))) {
 			$champ = $this->data["champSlf_collection"];
 		} else {
 			$champ = $this->data["champSlf_collection"] = $this->data["champSlf"];
 		}
-		$this->data["meta"]["type"] = $this->EntityService->getMetaInfoField($this->parsList, $champ);
+		$this->data["meta"]["type"] = $this->getMetaInfoField($this->parsList, $champ);
 		switch($this->data["meta"]["type"]["Association"]) {
 			case "single":
-				$this->data["meta"]["methode"] = "set".ucfirst($this->data["champSlf"]);
-				printf($this->data["champSlf"]." (single)\n");
+				$this->data["meta"]["methode"] = $this->getMethodNameWith($this->data["champSlf"], "set");
+				$this->writeConsole(self::TAB1.$this->data["champSlf"]." (single)");
 				break;
 			case "collection":
-				$this->data["meta"]["methode"] = "add".ucfirst($this->data["champSlf"]);
-				printf($this->data["champSlf"]." (collection)\n");
+				$this->data["meta"]["methode"] = $this->getMethodNameWith($this->data["champSlf"], "add");
+				$this->writeConsole(self::TAB1.$this->data["champSlf"]." (collection)");
 				break;
 			default:
-				$this->data["meta"]["methode"] = "set".ucfirst($this->data["champSlf"]);
-				printf($this->data["champSlf"]." (aucune Association)\n");
+				$this->data["meta"]["methode"] = $this->getMethodNameWith($this->data["champSlf"], "set");
+				$this->writeConsole(self::TAB1.$this->data["champSlf"]." (aucune Association)");
 				break;
 		}
 	}
 
 	/**
-	 * emptyField
+	 * emptyFieldFix
 	 * Vide les données d'un champ
 	 * @param $field
 	 */
-	private function emptyField() {
-		return $this->EntityService->emptyField($this->data["champSlf_collection"], $this->parsList);
+	public function emptyFieldFix($field = null, $object = null) {
+		return $this->emptyField($this->data["champSlf_collection"], $this->parsList);
 	}
 
 
@@ -442,87 +514,18 @@ class LoadingFixtures implements FixtureInterface, ContainerAwareInterface {
 	// AFFICHAGE DES INFORMATIONS
 
 	/**
-	 * Supprime tous les dossiers du dossier images
+	 * Affiche la liste des entités
 	 */
-	private function deleteAllImageFolders() {
-		$this->afficheTitre('Vérification et suppression des dossiers web/images/');
-		// $this->aetools->setWebPath("images/");
-		foreach ($this->imagetools->getAllDossiers() as $key => $value) {
-			$path = $this->aetools->setWebPath("images/".$value["nom"]."/");
-			if($path !== false) {
-				$this->aetools->findAndDeleteFiles(ALL_FILES);
-				if($this->aetools->deleteDir($this->aetools->getCurrentPath()) === true) $result = "Dossier existant : effacé";
-					else $result = "Dossier existant : ".$this->returnConsole("!!!", "error", false)." non effacé";
-			} else $result = "Dossier non existant";
-			$this->writeConsole($this->texttools->fillOfChars("Dossier ".$value["nom"], 25)." | ".$this->texttools->fillOfChars($result, 40), "table_line", true);
-		}
-		$this->doRT();
-		$this->aetools->setWebPath();
+	protected function afficheEntities() {
+		$this->writeTableConsole('Liste des entités présentes utilisées pour Fixtures', $this->entitiesList);
 	}
 
 	/**
 	 * Affiche la liste des entités
 	 */
-	private function afficheEntities() {
-		$this->afficheTitre('Liste des entités présentes détectées par Doctrine2');
-		foreach($this->listOfEnties as $nom => $namespace) {
-			$this->writeConsole($this->texttools->fillOfChars($nom, 25)." | ".$this->texttools->fillOfChars($namespace, 40), "table_line", true);
-		}
-		$this->doRT();
+	protected function afficheEntitiesFound() {
+		$this->writeTableConsole('Liste des entités présentes détectées par Doctrine2', $this->getListOfEnties(true));
 	}
 
-	/**
-	 * Affiche la liste des bundles
-	 */
-	private function afficheBundles() {
-		$this->afficheTitre('Liste des Bundles présents détectés par Symfony2');
-		foreach($this->listOfBundles as $nom => $namespace) {
-			$this->writeConsole($this->texttools->fillOfChars($nom, 25)." | ".$this->texttools->fillOfChars($namespace, 40), "table_line", true);
-		}
-		$this->doRT();
-	}
-
-	private function afficheTitre($texte) {
-		$this->writeConsole($this->texttools->fillOfChars($texte, 71), "table_titre", true);
-	}
-
-	private function writeConsole($t, $color = "normal", $rt = true) {
-		printf($this->returnConsole($t, $color, $rt));
-	}
-
-	private function returnConsole($t, $color = "normal", $rt = true) {
-		if($rt !== false) {
-			if($rt === true) $rt = 1;
-			$rt2 = "";
-			for ($i=0; $i < $rt; $i++) { 
-				$rt2 .= "\n";
-			}
-			$rt = $rt2;
-		} else $rt = "";
-		switch ($color) {
-			case 'error':
-				return "\033[1;7;31m".$t."\033[00m".$rt;
-				break;
-			case 'succes':
-				return "\033[1;42;30m".$t."\033[00m".$rt;
-				break;
-			case 'headline':
-				return "\033[1;46;34m".$t."\033[00m".$rt;
-				break;
-			case 'table_titre':
-				return "\033[1;44;36m".$t."\033[00m".$rt;
-				break;
-			case 'table_line':
-				return "\033[1;40;37m".$t."\033[00m".$rt;
-				break;
-			default:
-				return "\033[00m".$t.$rt;
-				break;
-		}		
-	}
-
-	private function doRT() {
-		printf("\n");
-	}
 
 }

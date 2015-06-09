@@ -6,17 +6,21 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
+
 use \DateTime;
+use \Exception;
 // Slug
 use Gedmo\Mapping\Annotation as Gedmo;
-// aeReponse
-use laboBundle\services\aetools\aeReponse;
+// baseInterface
+use laboBundle\Entity\interfaces\baseL0Interface;
 
 /**
+ * Entité de base L0
+ * 
  * @ORM\MappedSuperclass
  * @ORM\HasLifecycleCallbacks()
  */
-abstract class baseL0Entity {
+abstract class baseL0Entity implements baseL0Interface {
 
 	/**
 	 * @var integer
@@ -29,12 +33,17 @@ abstract class baseL0Entity {
 
 	/**
 	 * @var string
-	 *
-	 * @ORM\Column(name="nom", type="string", length=100, nullable=false, unique=false)
+	 * @ORM\Column(name="uniquefield", type="text", nullable=true, unique=false)
+	 */
+	protected $uniquefield;
+
+	/**
+	 * @var string
+	 * @ORM\Column(name="nom", type="string", length=128, nullable=false, unique=false)
 	 * @Assert\NotBlank(message = "Vous devez donner un nom.")
 	 * @Assert\Length(
 	 *      min = "3",
-	 *      max = "100",
+	 *      max = "128",
 	 *      minMessage = "Le nom doit comporter au moins {{ limit }} lettres.",
 	 *      maxMessage = "Le nom doit comporter au maximum {{ limit }} lettres."
 	 * )
@@ -43,31 +52,9 @@ abstract class baseL0Entity {
 
 	/**
 	 * @var string
-	 *
 	 * @ORM\Column(name="descriptif", type="text", nullable=true, unique=false)
 	 */
 	protected $descriptif;
-
-	/**
-	 * @var DateTime
-	 *
-	 * @ORM\Column(name="dateCreation", type="datetime", nullable=false)
-	 */
-	protected $dateCreation;
-
-	/**
-	 * @var DateTime
-	 *
-	 * @ORM\Column(name="dateMaj", type="datetime", nullable=true)
-	 */
-	protected $dateMaj;
-
-	/**
-	 * @var DateTime
-	 *
-	 * @ORM\Column(name="dateExpiration", type="datetime", nullable=true)
-	 */
-	protected $dateExpiration;
 
 	/**
 	 * @Gedmo\Slug(fields={"nom"})
@@ -77,73 +64,111 @@ abstract class baseL0Entity {
 
 	/**
 	 * @var array
-	 * @ORM/Column(name="thisreads", type="array", nullable=true, unique=false)
+	 * @ORM\Column(name="thisreads", type="array", nullable=true, unique=false)
 	 */
 	protected $thisreads;
 	/**
 	 * @var array
-	 * @ORM/Column(name="thiswrites", type="array", nullable=true, unique=false)
+	 * @ORM\Column(name="thiswrites", type="array", nullable=true, unique=false)
 	 */
 	protected $thiswrites;
 	/**
 	 * @var array
-	 * @ORM/Column(name="thisdeletes", type="array", nullable=true, unique=false)
+	 * @ORM\Column(name="thisdeletes", type="array", nullable=true, unique=false)
 	 */
 	protected $thisdeletes;
 
+	protected $numberReplaces;
+	protected $numberReplacesBy;
+	protected $numberSpace;
 
 	public function __construct() {
 		$this->dateCreation = new DateTime();
 		$this->dateMaj = null;
 		$this->dateExpiration = null;
+		// field unique
+		$this->uniquefield = json_encode(array());
 		// droits
 		$this->thisreads = new ArrayCollection;
 		$this->thiswrites = new ArrayCollection;
 		$this->thisdeletes = new ArrayCollection;
+
+		$this->numberReplaces = array('.', '-', ' ', self::SLASH, self::ASLASH);
+		$this->numberReplacesBy = array('');
+		$this->numberSpace = ' ';
 	}
 
 
+
+// DEBUT --------------------- réservé exclusivement à cette classe abstraite ------------------------
+
 	/**
-	 * Renvoie true si la demande correspond correspond
-	 * ex. : pour l'entité "baseL0Entity" -> "isbaseL0Entity" renvoie true
-	 * @return boolean
+	 * Renvoie le namespace de l'entité parent
+	 * @return string
 	 */
-	public function __call($name, $arguments = null) {
-		switch ($name) {
-			case 'is'.ucfirst($this->getName()):
-				$reponse = true;
-				break;
-			default:
-				$reponse = false;
-				break;
-		}
-		return $reponse;
+	public function getParentClassName() {
+		return get_parent_class();
 	}
 
 	/**
-	 * Renvoie le nom de l'entité
+	 * Renvoie le nom court de l'entité parent
+	 * @return string
+	 */
+	public function getParentShortName() {
+		return $this->getSimpleNameFromString($this->getParentClassName());
+	}
+
+	/**
+	 * Renvoie le namespace de l'entité
+	 * @return string
+	 */
+	public function getClassName() {
+		return get_called_class();
+	}
+
+	/**
+	 * Renvoie le nom court de l'entité
 	 * @return string
 	 */
 	public function getName() {
-		return 'baseL0Entity';
+		return $this->getSimpleNameFromString($this->getClassName());
 	}
 
 	/**
-	 * @Assert/True(message = "Cette entité n'est pas valide.")
+	 * Renvoie le nom court de l'entité
+	 * @param string $longName
+	 * @return string
+	 */
+	public function getSimpleNameFromString($longName) {
+		if($longName === false) return $longName;
+		$longName = explode(self::ASLASH, $longName);
+		return end($longName);
+	}
+
+	/**
+	 * Renvoie true si l'entité est valide
 	 * @return boolean
 	 */
-	public function isBaseL0EntityValid() {
-		return true;
+	public function isValid() {
+		$valid = true;
+		// $valid = parent::isValid();
+		if($valid === true) {
+			// opérations pour cette entité
+			// …
+		}
+		return $valid;
 	}
 
 	/**
 	 * Complète les données avant enregistrement
 	 * @return boolean
 	 */
-	public function verifBaseL0Entity() {
+	public function verify() {
+		$verif = true;
 		// opérations pour cette entité
 		// …
-		return true;
+		if(is_string($this->getSlug())) $this->addToUniqueField('slug', $this->getSlug());
+		return $verif;
 	}
 
 	/**
@@ -155,11 +180,30 @@ abstract class baseL0Entity {
 	}
 
 
+	public function __call($method, $args) {
+		switch ($method) {
+			case 'isBaseL0Entity':
+				return true;
+				break;
+			default:
+				return false;
+				break;
+		}
+	}
+
+// FONCTIONNALITÉS ---------------------
+
+	protected function normalizeCp($cp = null) {
+		if($cp !== null) $cp = str_replace($this->numberReplaces, $this->numberReplacesBy, $cp);
+		return $cp;
+	}
+
+// FIN --------------------- réservé exclusivement à cette classe abstraite ------------------------
+
 
 
 	/**
 	 * Get id
-	 *
 	 * @return integer 
 	 */
 	public function getId() {
@@ -167,20 +211,73 @@ abstract class baseL0Entity {
 	}
 
 	/**
+	 * Set uniquefield
+	 * @param string $uniquefield
+	 * @return baseL0Entity
+	 */
+	public function setUniquefield($uniquefield) {
+		throw new Exception("NE PAS UTILISER CE CHAMP !!!");
+		// $this->uniquefield = $uniquefield;
+		return $this;
+	}
+
+	/**
+	 * Get uniquefield
+	 * @return string 
+	 */
+	public function getUniquefield() {
+		return $this->uniquefield;
+	}
+
+	/**
+	 * ajoute un champ au champ global pour UniqueEntity
+	 * @param string $key - clé
+	 * @param string $value - valeur
+	 * @return baseL0Entity
+	 */
+	public function addToUniqueField($key, $value) {
+		if(is_string($key) && is_string($value)) {
+			$field = json_decode($this->uniquefield);
+			if(!is_array($field)) $field = array();
+			$field[$key] = $value;
+			$this->uniquefield = json_encode($field);
+		} else {
+			throw new Exception("addToUniqueField : les deux paramètres doivent être des textes !");			
+		}
+		return $this;
+	}
+
+	/**
+	 * ajoute un champ au champ global pour UniqueEntity
+	 * @param string $key - clé
+	 * @param string $value - valeur
+	 * @return baseL0Entity
+	 */
+	public function removeFromUniqueField($key) {
+		if(is_string($key)) {
+			$field = json_decode($this->uniquefield);
+			if(array_key_exists($key, $field)) {
+				unset($field[$key]);
+			}
+			$this->uniquefield = json_encode($field);
+		} else {
+			throw new Exception("removeFromUniqueField : le paramètre doit être un texte !");			
+		}
+		return $this;
+	}
+
+	/**
 	 * Set nom
-	 *
 	 * @param string $nom
 	 * @return baseL0Entity
 	 */
 	public function setNom($nom) {
 		$this->nom = $nom;
-	
 		return $this;
 	}
 
 	/**
 	 * Get nom
-	 *
 	 * @return string 
 	 */
 	public function getNom() {
@@ -189,19 +286,16 @@ abstract class baseL0Entity {
 
 	/**
 	 * Set descriptif
-	 *
 	 * @param string $descriptif
 	 * @return baseL0Entity
 	 */
 	public function setDescriptif($descriptif = null) {
 		$this->descriptif = $descriptif;
-	
 		return $this;
 	}
 
 	/**
 	 * Get descriptif
-	 *
 	 * @return string 
 	 */
 	public function getDescriptif() {
@@ -209,78 +303,7 @@ abstract class baseL0Entity {
 	}
 
 	/**
-	 * Set dateCreation
-	 *
-	 * @param DateTime $dateCreation
-	 * @return baseL0Entity
-	 */
-	public function setDateCreation($dateCreation) {
-		$this->dateCreation = $dateCreation;
-	
-		return $this;
-	}
-
-	/**
-	 * Get dateCreation
-	 *
-	 * @return DateTime
-	 */
-	public function getDateCreation() {
-		return $this->dateCreation;
-	}
-
-    /**
-     * @ORM\PreUpdate
-     */
-    public function updateDateMaj() {
-        $this->setDateMaj(new \Datetime());
-    }
-
-	/**
-	 * Set dateMaj
-	 *
-	 * @param DateTime $dateMaj
-	 * @return baseL0Entity
-	 */
-	public function setDateMaj($dateMaj = null) {
-		$this->dateMaj = $dateMaj;
-	
-		return $this;
-	}
-
-	/**
-	 * Get dateMaj
-	 *
-	 * @return DateTime
-	 */
-	public function getDateMaj() {
-		return $this->dateMaj;
-	}
-
-	/**
-	 * Set dateExpiration
-	 *
-	 * @param DateTime $dateExpiration
-	 * @return baseL0Entity
-	 */
-	public function setDateExpiration($dateExpiration = null) {
-		$this->dateExpiration = $dateExpiration;
-	
-		return $this;
-	}
-
-	/**
-	 * Get dateExpiration
-	 *
-	 * @return DateTime 
-	 */
-	public function getDateExpiration() {
-		return $this->dateExpiration;
-	}
-
-	/**
 	 * Set slug
-	 *
 	 * @param integer $slug
 	 * @return baseL0Entity
 	 */
@@ -291,7 +314,6 @@ abstract class baseL0Entity {
 
 	/**
 	 * Get slug
-	 *
 	 * @return string
 	 */
 	public function getSlug() {

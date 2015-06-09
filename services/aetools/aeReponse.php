@@ -4,26 +4,35 @@
 namespace laboBundle\services\aetools;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use \Exception;
 
 class aeReponse {
 
-	const NOM_MESSAGES = 'info';
-	const NOM_NOTICES = 'notice';
-	const NOM_ERRORMESSAGES = 'error';
+	const NOM_MESSAGES 			= 'info';
+	const NOM_NOTICES 			= 'notice';
+	const NOM_ERRORMESSAGES 	= 'error';
 
 	protected $container;		// container
 	protected $flashBag;		// session
 	protected $data = array();	// data
+	protected $textes;			// textes divers
 
 	public function __construct(ContainerInterface $container) {
-		$this->container 	= $container;
-		$this->flashBag 	= $this->container->get('request')->getSession()->getFlashBag();
-		$this->data["data"] = array();
-		$this->data["messages"] = array();
-		$this->data["notices"] = array();
-		$this->data["ERRORmessages"] = array();
-
+		$this->container 				= $container;
+		$this->flashBag 				= $this->container->get('request')->getSession()->getFlashBag();
+		$this->data["data"] 			= array();
+		$this->data["messages"] 		= array();
+		$this->data["notices"] 			= array();
+		$this->data["ERRORmessages"] 	= array();
+		//
 		$this->setResult(true);
+		//
+		$this->textes = array(
+			"messages" 			=> 'Messages', 
+			"notices" 			=> 'Notifications', 
+			"ERRORmessages" 	=> 'Messages d\'erreur',
+		);
+		return $this;
 	}
 
 	protected function computeData() {
@@ -67,15 +76,15 @@ class aeReponse {
 	 */
 	public function getAllMessages($mix = false) {
 		if($mix === false) return array(
-			"messages" => $this->data["messages"], 
-			"messages" => $this->data["notices"], 
-			"ERRORmessages" => $this->data["ERRORmessages"]
-			);
+			"messages" 			=> $this->data["messages"], 
+			"notices" 			=> $this->data["notices"], 
+			"ERRORmessages" 	=> $this->data["ERRORmessages"]
+		);
 		return array_merge(
 			$this->data["messages"], 
 			$this->data["notices"], 
 			$this->data["ERRORmessages"]
-			);
+		);
 	}
 
 	// public function getAllMessagesInHtml($mix = false) {
@@ -353,6 +362,15 @@ class aeReponse {
 		return $this;
 	}
 
+	public function generateException() {
+		if($this->hasErrors() === true) {
+			$message = array();
+			foreach ($this->getAllMessages() as $key => $value) {
+				if(count($value) > 0) $message[$key] .= '<strong>'.$this->textes[$key].' :</strong><br>'.implode('<br>', $value);
+			}
+			throw new Exception(implode('<br>', $message), 1);		
+		}
+		return $this;
+	}
 
 }
-?>

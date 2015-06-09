@@ -8,41 +8,33 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 // Slug
 use Gedmo\Mapping\Annotation as Gedmo;
-use laboBundle\Entity\baseL0Entity;
-// Entities
-use laboBundle\Entity\adresse;
-use laboBundle\Entity\image;
-use laboBundle\Entity\reseausocial;
-// aeReponse
-use laboBundle\services\aetools\aeReponse;
+use laboBundle\Entity\baseL1Entity;
+use \DateTime;
+use \Exception;
 
 /**
  * version
  *
- * @ORM\Entity
- * @ORM\Table(name="version")
- * @ORM\Entity(repositoryClass="laboBundle\Entity\versionRepository")
- * @UniqueEntity(fields={"siren"}, message="Cette version existe déjà")
+ * @ORM\MappedSuperclass
+ * @ORM\HasLifecycleCallbacks()
  */
-class version extends baseL0Entity {
+abstract class version extends baseL1Entity {
 
 	const TEMPLATE 			= "pageweb";
 	const COULEUR_FOND 		= "#ffffff";
 
 	/**
 	 * @var boolean
-	 *
 	 * @ORM\Column(name="defaultVersion", type="boolean", nullable=false, unique=false)
 	 */
 	protected $defaultVersion;
 
 	/**
 	 * @var string
-	 *
-	 * @ORM\Column(name="accroche", type="string", length=200, nullable=true, unique=false)
+	 * @ORM\Column(name="accroche", type="string", length=255, nullable=true, unique=false)
 	 * @Assert\Length(
-	 *      min = "1",
-	 *      max = "200",
+	 *      min = "6",
+	 *      max = "255",
 	 *      minMessage = "L'accroche doit comporter au moins {{ limit }} lettres.",
 	 *      maxMessage = "L'accroche doit comporter au maximum {{ limit }} lettres."
 	 * )
@@ -50,197 +42,72 @@ class version extends baseL0Entity {
 	protected $accroche;
 
 	/**
-	 * @var array
-	 *
-     * @ORM\OneToOne(targetEntity="laboBundle\Entity\reseausocial", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=true, unique=false)
-	 */
-	protected $reseausocial;
-
-	/**
 	 * @var string
-	 *
 	 * @ORM\Column(name="tvaIntra", type="string", length=100, nullable=true, unique=false)
 	 */
 	protected $tvaIntra;
 
 	/**
 	 * @var string
-	 *
 	 * @ORM\Column(name="siren", type="string", length=100, nullable=true, unique=false)
 	 */
 	protected $siren;
 
 	/**
 	 * @var string
-	 *
-	 * @ORM\Column(name="telpublic", type="string", length=25, nullable=true, unique=false)
-	 * @Assert\Length(
-	 *      min = "10",
-	 *      max = "14",
-	 *      minMessage = "Le téléphone doit comporter au moins {{ limit }} chiffres.",
-	 *      maxMessage = "Le téléphone doit comporter au plus {{ limit }} chiffres."
-	 * )
-	 *
+	 * @ORM\Column(name="refGoogle", type="string", length=20, nullable=true, unique=false)
 	 */
-	protected $telpublic;
+	protected $refGoogle;
 
 	/**
 	 * @var string
-	 *
-	 * @ORM\Column(name="telportable", type="string", length=25, nullable=true, unique=false)
-	 * @Assert\Length(
-	 *      min = "10",
-	 *      max = "14",
-	 *      minMessage = "Le téléphone portable doit comporter au moins {{ limit }} chiffres.",
-	 *      maxMessage = "Le téléphone portable doit comporter au plus {{ limit }} chiffres."
-	 * )
-	 *
-	 */
-	protected $telportable;
-
-	/**
-	 * @var string
-	 *
-	 * @ORM\Column(name="descriptif", type="text", nullable=true, unique=false)
-	 */
-	protected $descriptif;
-
-	/**
-	 * @var string
-	 *
 	 * @ORM\Column(name="nomDomaine", type="string", length=200, nullable=false, unique=true)
 	 * @Assert\Url(message = "Vous devez indiquer une URL valide et complète.")
-	 * 
 	 */
 	protected $nomDomaine;
 
 	/**
 	 * @var string
-	 *
 	 * @ORM\Column(name="hote", type="string", length=200, nullable=true, unique=false)
 	 * @Assert\Url(message = "Vous devez indiquer une URL valide et complète.")
-	 * 
 	 */
 	protected $hote;
 
 	/**
 	 * @var string
-	 *
-	 * @ORM\Column(name="email", type="string", length=200, nullable=true, unique=false)
-	 * @Assert\Email(message = "Vous devez indiquer un email valide et complet.")
-	 * 
-	 */
-	protected $email;
-
-	/**
-	 * @var integer
-	 *
-	 * @ORM\ManyToOne(targetEntity="laboBundle\Entity\image", cascade={"persist", "remove"})
-	 * @ORM\JoinColumn(nullable=true, unique=false)
-	 */
-	protected $logo;
-
-	/**
-	 * @var integer
-	 *
-	 * @ORM\OneToOne(targetEntity="laboBundle\Entity\image", cascade={"persist", "remove"})
-	 * @ORM\JoinColumn(nullable=true, unique=false)
-	 */
-	protected $favicon;
-
-	/**
-	 * @var integer
-	 *
-	 * @ORM\ManyToOne(targetEntity="laboBundle\Entity\image", cascade={"persist", "remove"})
-	 * @ORM\JoinColumn(nullable=true, unique=false)
-	 */
-	protected $imageEntete;
-
-	/**
-	 * @var string
-	 *
 	 * @ORM\Column(name="couleurFond", type="string", length=30, nullable=false, unique=false)
 	 */
 	protected $couleurFond;
 
 	/**
 	 * @var string
-	 *
 	 * @ORM\Column(name="templateIndex", type="string", length=30, nullable=false, unique=false)
 	 */
 	protected $templateIndex;
 
-    /**
-     * @var string
-     *
-     * @ORM\ManyToOne(targetEntity="laboBundle\Entity\adresse", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(nullable=true, unique=false)
-     */
-    protected $adresse;
 
-	/**
-	 * @var array
-	 *
-	 * @ORM\OneToMany(targetEntity="AcmeGroup\UserBundle\Entity\User", mappedBy="version")
-	 * @ORM\JoinColumn(nullable=true, unique=false)
-	 */
-	protected $users;
 
 	public function __construct() {
 		parent::__construct();
-		$this->defaultVersion 			= false;
+		$this->defaultVersion 	= false;
 		$this->couleurFond 		= self::COULEUR_FOND;
 		$this->templateIndex 	= self::TEMPLATE;
-		$this->reseausocial 	= new ArrayCollection;
-		$this->users 			= new ArrayCollection;
 	}
 
+
+// DEBUT --------------------- à inclure dans toutes les entités ------------------------
+
 	/**
-	 * Renvoie true si la demande correspond correspond
-	 * ex. : pour l'entité "baseL0Entity" -> "isbaseL0Entity" renvoie true
+	 * Renvoie true si l'entité est valide
+	 * @Assert\True(message = "Cette version n'est pas valide.")
 	 * @return boolean
 	 */
-	public function __call($name, $arguments = null) {
-		switch ($name) {
-			case 'is'.ucfirst($this->getName()):
-				$reponse = true;
-				break;
-			default:
-				$reponse = false;
-				break;
-		}
-		return $reponse;
-	}
-
-	/**
-	 * Renvoie le nom de l'entité parent
-	 * @return string
-	 */
-	public function getParentName() {
-		return parent::getName();
-	}
-
-	/**
-	 * Renvoie le nom de l'entité
-	 * @return string
-	 */
-	public function getName() {
-		return 'version';
-	}
-
-	/**
-	 * @Assert\True(message = "Vous devez renseigner soit le numéro TVAintra, soit le SIREN.")
-	 */
-	public function isVersionValid() {
+	public function isValid() {
 		$valid = true;
-		$validMethod = 'is'.ucfirst($this->getParentName()).'Valid';
-		if(method_exists($this, $validMethod)) {
-			$valid = $this->$validMethod();
-		}
-		// autres vérifications, si le parent est valide…
+		$valid = parent::isValid();
 		if($valid === true) {
-			if($this->tvaIntra || $this->siren) $valid = true;
+			// opérations pour cette entité
+			if($this->tvaIntra !== null || $this->siren !== null) $valid = true;
 				else $valid = false;
 		}
 		return $valid;
@@ -248,16 +115,13 @@ class version extends baseL0Entity {
 
 	/**
 	 * Complète les données avant enregistrement
-	 * @ORM/PreUpdate
-	 * @ORM/PrePersist
+	 * @ORM\PreUpdate
+	 * @ORM\PrePersist
+	 * @return boolean
 	 */
-	public function verifVersion() {
+	public function verify() {
 		$verif = true;
-		$verifMethod = 'verif'.ucfirst($this->getParentName());
-		if(method_exists($this, $verifMethod)) {
-			// opérations parents
-			$verif = $this->$verifMethod();
-		}
+		$verif = parent::verify();
 		if($verif === true) {
 			// opérations pour cette entité
 			// …
@@ -265,57 +129,23 @@ class version extends baseL0Entity {
 		return $verif;
 	}
 
+// FIN --------------------- à inclure dans toutes les entités ------------------------
 
 
-
-	/**
-	 * Ajoute un réseau social
-	 * @param reseausocial $reseausocial
-	 * @return version
-	 */
-	public function addReseausocial(reseausocial $reseausocial = null) {
-		if($reseausocial !== null) {
-			$this->reseausocial->add($reseausocial);
-		}	
-		return $this;
-	}
-
-	/**
-	 * Ajoute un réseau social
-	 * @param reseausocial $reseausocial
-	 * @return version
-	 */
-	public function removeReseausocial(reseausocial $reseausocial = null) {
-		if($reseausocial !== null) {
-			$this->reseausocial->removeElement($reseausocial);
-		}	
-		return $this;
-	}
-
-	/**
-	 * Renvoie les réseaux sociaux
-	 *
-	 * @return string 
-	 */
-	public function getReseausocials() {
-		return $this->reseausocial;
-	}
 
 	/**
 	 * Set defaultVersion
-	 *
 	 * @param boolean $defaultVersion
 	 * @return version
 	 */
 	public function setDefaultVersion($defaultVersion) {
-		$this->defaultVersion = $defaultVersion;
-	
+		if($defaultVersion === true) $this->defaultVersion = $defaultVersion;
+			else $this->defaultVersion = false;
 		return $this;
 	}
 
 	/**
 	 * Get defaultVersion
-	 *
 	 * @return boolean 
 	 */
 	public function getDefaultVersion() {
@@ -324,7 +154,6 @@ class version extends baseL0Entity {
 
 	/**
 	 * Set accroche
-	 *
 	 * @param string $accroche
 	 * @return version
 	 */
@@ -336,7 +165,6 @@ class version extends baseL0Entity {
 
 	/**
 	 * Get accroche
-	 *
 	 * @return string 
 	 */
 	public function getAccroche() {
@@ -345,7 +173,6 @@ class version extends baseL0Entity {
 
 	/**
 	 * Set tvaIntra
-	 *
 	 * @param string $tvaIntra
 	 * @return version
 	 */
@@ -357,7 +184,6 @@ class version extends baseL0Entity {
 
 	/**
 	 * Get tvaIntra
-	 *
 	 * @return string 
 	 */
 	public function getTvaIntra() {
@@ -366,7 +192,6 @@ class version extends baseL0Entity {
 
 	/**
 	 * Set siren
-	 *
 	 * @param string $siren
 	 * @return version
 	 */
@@ -378,7 +203,6 @@ class version extends baseL0Entity {
 
 	/**
 	 * Get siren
-	 *
 	 * @return string 
 	 */
 	public function getSiren() {
@@ -386,50 +210,26 @@ class version extends baseL0Entity {
 	}
 
 	/**
-	 * Set telpublic
-	 *
-	 * @param string $telpublic
+	 * Set refGoogle
+	 * @param string $refGoogle
 	 * @return version
 	 */
-	public function setTelpublic($telpublic) {
-		$this->telpublic = $telpublic;
+	public function setRefGoogle($refGoogle) {
+		$this->refGoogle = $refGoogle;
 	
 		return $this;
 	}
 
 	/**
-	 * Get telpublic
-	 *
+	 * Get refGoogle
 	 * @return string 
 	 */
-	public function getTelpublic() {
-		return $this->telpublic;
-	}
-
-	/**
-	 * Set telportable
-	 *
-	 * @param string $telportable
-	 * @return version
-	 */
-	public function setTelportable($telportable) {
-		$this->telportable = $telportable;
-	
-		return $this;
-	}
-
-	/**
-	 * Get telportable
-	 *
-	 * @return string 
-	 */
-	public function getTelportable() {
-		return $this->telportable;
+	public function getRefGoogle() {
+		return $this->refGoogle;
 	}
 
 	/**
 	 * Set nomDomaine
-	 *
 	 * @param string $nomDomaine
 	 * @return version
 	 */
@@ -442,7 +242,6 @@ class version extends baseL0Entity {
 
 	/**
 	 * Get nomDomaine
-	 *
 	 * @return string 
 	 */
 	public function getNomDomaine() {
@@ -463,7 +262,6 @@ class version extends baseL0Entity {
 
 	/**
 	 * Get hote
-	 *
 	 * @return string 
 	 */
 	public function getHote() {
@@ -471,29 +269,7 @@ class version extends baseL0Entity {
 	}
 
 	/**
-	 * Set email
-	 *
-	 * @param string $email
-	 * @return version
-	 */
-	public function setEmail($email = null) {
-		$this->email = $email;
-	
-		return $this;
-	}
-
-	/**
-	 * Get email
-	 *
-	 * @return string 
-	 */
-	public function getEmail() {
-		return $this->email;
-	}
-
-	/**
 	 * Set couleurFond
-	 *
 	 * @param string $couleurFond
 	 * @return version
 	 */
@@ -505,7 +281,6 @@ class version extends baseL0Entity {
 
 	/**
 	 * Get couleurFond
-	 *
 	 * @return string 
 	 */
 	public function getCouleurFond() {
@@ -514,7 +289,6 @@ class version extends baseL0Entity {
 
 	/**
 	 * Set templateIndex
-	 *
 	 * @param string $templateIndex
 	 * @return version
 	 */
@@ -526,97 +300,10 @@ class version extends baseL0Entity {
 
 	/**
 	 * Get templateIndex
-	 *
 	 * @return string 
 	 */
 	public function getTemplateIndex() {
 		return $this->templateIndex;
 	}
-
-	/**
-	 * Set logo
-	 *
-	 * @param image $logo
-	 * @return version
-	 */
-	public function setLogo(image $logo = null) {
-		$this->logo = $logo;
-	
-		return $this;
-	}
-
-	/**
-	 * Get logo
-	 *
-	 * @return image 
-	 */
-	public function getLogo() {
-		return $this->logo;
-	}
-
-	/**
-	 * Set favicon
-	 *
-	 * @param image $favicon
-	 * @return version
-	 */
-	public function setFavicon(image $favicon = null) {
-		if($favicon !== null) $this->favicon = $favicon;
-	
-		return $this;
-	}
-
-	/**
-	 * Get favicon
-	 *
-	 * @return image 
-	 */
-	public function getFavicon() {
-		return $this->favicon;
-	}
-
-	/**
-	 * Set imageEntete
-	 *
-	 * @param image $imageEntete
-	 * @return version
-	 */
-	public function setImageEntete(image $imageEntete = null) {
-		$this->imageEntete = $imageEntete;
-	
-		return $this;
-	}
-
-	/**
-	 * Get imageEntete
-	 *
-	 * @return image 
-	 */
-	public function getImageEntete() {
-		return $this->imageEntete;
-	}
-
-    /**
-     * Set adresse
-     *
-     * @param adresse $adresse
-     * @return version
-     */
-    public function setAdresse(adresse $adresse = null)
-    {
-        $this->adresse = $adresse;
-    
-        return $this;
-    }
-
-    /**
-     * Get adresse
-     *
-     * @return adresse 
-     */
-    public function getAdresse()
-    {
-        return $this->adresse;
-    }
 
 }

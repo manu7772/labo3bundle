@@ -13,6 +13,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class entitiesGeneric {
+
+	const NOM_OBJET_TYPE = "objet_type";
+
 	protected $container;					// container
 	protected $em;							// entity_manager
 	protected $repo;						// repository
@@ -765,9 +768,11 @@ class entitiesGeneric {
 		return $r;
 	}
 
-	public function getMetaInfo($newObject = null) {
-		if($newObject === null) $newObject = $this->newObject;
-		$r['CMData'] = $this->em->getClassMetadata(get_class($newObject));
+	public function getMetaInfo($entity = null) {
+		if($entity === null) $entity = $this->entity[$this->current][self::NOM_OBJET_TYPE];
+		if(!is_string($entity)) $entityClassName = get_class($entity);
+			else $entityClassName = $entity;
+		$r['CMData'] = $this->getEm()->getClassMetadata($entityClassName);
 		// informations sur la classe (entité)
 		$r['classInfo']['className'] = $r['CMData']->getName();
 		$r['classInfo']['tableName'] = $r['CMData']->getTableName();

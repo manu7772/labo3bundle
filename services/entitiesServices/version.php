@@ -6,11 +6,11 @@ namespace laboBundle\services\entitiesServices;
 use Symfony\Component\Templating\EngineInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
-use laboBundle\services\entitiesServices\entitiesGeneric;
+use laboBundle\services\entitiesServices\entitesService;
 // use Symfony\Component\Form\FormFactoryInterface;
 use \Exception;
 
-class version extends entitiesGeneric {
+class version extends entitesService {
 	protected $service = array();
 	protected $serviceData = false; // objet version
 
