@@ -75,6 +75,48 @@ abstract class baseEntityPdf extends baseL1Entity {
 		$this->getAFileName();
 	}
 
+// DEBUT --------------------- à inclure dans toutes les entités ------------------------
+
+	/**
+	 * Renvoie true si l'entité est valide
+	 * @return boolean
+	 */
+	public function isValid() {
+		$valid = true;
+		$valid = parent::isValid();
+		if($valid === true) {
+			// opérations pour cette entité
+			// …
+		}
+		return $valid;
+	}
+
+	/**
+	 * Complète les données avant enregistrement
+	 * @return boolean
+	 */
+	public function verify() {
+		$verif = true;
+		$verif = parent::verify();
+		if($verif === true) {
+			// opérations pour cette entité
+			// …
+		}
+		return $verif;
+	}
+
+	public function __call($method, $args) {
+		switch ($method) {
+			case 'isPdf':
+				return true;
+				break;
+			default:
+				return parent::__call($method, $args);
+				break;
+		}
+	}
+
+// FIN --------------------- à inclure dans toutes les entités ------------------------
 
 	/**
 	 * initialisation du nom du fichier

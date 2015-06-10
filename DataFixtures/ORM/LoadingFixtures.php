@@ -145,16 +145,11 @@ class LoadingFixtures extends entitesService implements FixtureInterface, Contai
 				$this->writeConsole('Entité ordonnée non trouvée.', 'error');
 			}
 		}
+		// ne garde que les entités réelles (non abstraites / non interfaces)
+		$this->setOnlyConcrete(true);
 		// reste des entités
 		foreach($this->getListOfEnties(false) as $namespace => $name) {
 			if(!array_key_exists($namespace, $entitiesList)) $entitiesList[$namespace] = $name;
-		}
-		// ne garde que les entités réelles (non abstraites)
-		foreach ($entitiesList as $namespace => $name) {
-			// $this->writeConsole('- MetaData = '.$namespace);
-			$CMD = $this->getClassMetaData($namespace);
-			$reflectionClass = $CMD->getReflectionClass();
-			if(!$reflectionClass->isAbstract() && !$reflectionClass->isInterface()) $this->entitiesList[$namespace] = $name;
 		}
 		unset($entitiesList);
 	}

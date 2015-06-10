@@ -23,10 +23,12 @@ class entitesService extends aetools {
 	const NOM_OBJET_TYPE 		= "objet_type";		// nom de l'objet type basique
 	const NOM_OBJET_READY 		= "objet_ready";	// nom de l'objet rempli avec les valeurs par défaut
 	const REPO_DEFAULT_VAL		= "defaultVal";		// méthode repository pour récupération des entités par défaut
+	const ONLY_CONCRETE			= true;				// ne récupère que les entités concrètes (non abstract ou interface)
 
 	// ENTITÉS / ENTITÉ COURANTE
 	protected $entity = array();			// tableau des entités
 	protected $current = null;				// className (nom long) de l'entité courante
+	protected $onlyConcrete;
 
 	protected $_em;							// entity_manager
 	protected $repo;						// repository
@@ -45,7 +47,18 @@ class entitesService extends aetools {
 		if($this->isControllerPresent() === true) {
 			// autre données dépendant du controller
 		}
+		$this->setOnlyConcrete();
 		// return $this;
+	}
+
+	/**
+	 * Définit le mode de récupération de la liste des entités
+	 * @param boolean $val - true : ne récupère que les entités concrètes / false : récupère tout
+	 * @return boolean
+	 */
+	public function setOnlyConcrete($val = null) {
+		$val !== false ? $this->onlyConcrete = self::ONLY_CONCRETE : $this->onlyConcrete = !self::ONLY_CONCRETE;
+		return $this->onlyConcrete;
 	}
 
 	/**
@@ -70,7 +83,7 @@ class entitesService extends aetools {
 	 * @param boolean $reLoad
 	 */
 	public function serviceEventInit(FilterControllerEvent $event, $reLoad = false) {
-		$this->service = array();
+		// $this->service = array();
 		// paramètres URL et route
 	}
 
@@ -134,11 +147,20 @@ class entitesService extends aetools {
 			foreach($groupesSRC as $nom) $groupes[] = $nom['nom'];
 			// var_dump($groupes);die();
 			foreach($entitiesNameSpaces as $ENS) {
-				$EE = $this->getClassShortName($ENS);
-				$exp = explode(self::ASLASH, $ENS);
-				$group = reset($exp);
-				if(in_array($group, $groupes)) $this->listOfEnties[$ENS] = $EE;
-				$this->completeListOfEnties[$ENS] = $EE;
+				$doit = true;
+				if($this->onlyConcrete === true) {
+					// supprime les classes abstraites et les interfaces
+					$CMD = $this->getClassMetaData($ENS);
+					$reflectionClass = $CMD->getReflectionClass();
+					if($reflectionClass->isAbstract() || $reflectionClass->isInterface()) $doit = false;
+				}
+				if($doit === true) {
+					$EE = $this->getClassShortName($ENS);
+					$exp = explode(self::ASLASH, $ENS);
+					$group = reset($exp);
+					if(in_array($group, $groupes)) $this->listOfEnties[$ENS] = $EE;
+					$this->completeListOfEnties[$ENS] = $EE;
+				}
 			}
 		}
 		// var_dump($this->listOfEnties);die();

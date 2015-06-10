@@ -99,7 +99,6 @@ abstract class version extends baseL1Entity {
 
 	/**
 	 * Renvoie true si l'entité est valide
-	 * @Assert\True(message = "Cette version n'est pas valide.")
 	 * @return boolean
 	 */
 	public function isValid() {
@@ -115,8 +114,6 @@ abstract class version extends baseL1Entity {
 
 	/**
 	 * Complète les données avant enregistrement
-	 * @ORM\PreUpdate
-	 * @ORM\PrePersist
 	 * @return boolean
 	 */
 	public function verify() {
@@ -129,8 +126,18 @@ abstract class version extends baseL1Entity {
 		return $verif;
 	}
 
-// FIN --------------------- à inclure dans toutes les entités ------------------------
+	public function __call($method, $args) {
+		switch ($method) {
+			case 'isVersion':
+				return true;
+				break;
+			default:
+				return parent::__call($method, $args);
+				break;
+		}
+	}
 
+// FIN --------------------- à inclure dans toutes les entités ------------------------
 
 
 	/**

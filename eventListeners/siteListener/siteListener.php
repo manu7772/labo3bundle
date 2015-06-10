@@ -15,13 +15,13 @@ class siteListener {
 	private $itClass = array();
 	private $serviceMethode = "serviceEventInit";
 	private $items = array(	// entités à initialiser
-		// "acmeGroup.aetools",
-		// "acmeGroup.entities",
-		// "acmeGroup.parametre",
-		// "acmeGroup.version",
-		// "acmeGroup.pageweb",
-		// "acmeGroup.categorie",
-		// "acmeGroup.directeditor",
+		// "labobundle.aetools",
+		// "labobundle.entities",
+		// "labobundle.parametre",
+		"labobundle.version",
+		// "labobundle.pageweb",
+		// "labobundle.categorie",
+		// "labobundle.directeditor",
 		);
 
 	public function __construct(ContainerInterface $container) {
