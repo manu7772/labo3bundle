@@ -132,7 +132,7 @@ class LoadingFixtures extends entitesService implements FixtureInterface, Contai
 			"AcmeGroup\\LaboBundle\\Entity\\evenement",
 			"AcmeGroup\\LaboBundle\\Entity\\categorie",
 			"AcmeGroup\\LaboBundle\\Entity\\article",
-			);
+		);
 		ksort($ordre);
 		$this->entitiesList = array();
 		$entitiesList = array();
@@ -145,12 +145,12 @@ class LoadingFixtures extends entitesService implements FixtureInterface, Contai
 				$this->writeConsole('Entité ordonnée non trouvée.', 'error');
 			}
 		}
-		// ne garde que les entités réelles (non abstraites / non interfaces)
-		$this->setOnlyConcrete(true);
 		// reste des entités
 		foreach($this->getListOfEnties(false) as $namespace => $name) {
-			if(!array_key_exists($namespace, $entitiesList)) $entitiesList[$namespace] = $name;
+			if(!array_key_exists($namespace, $entitiesList)) $this->entitiesList[$namespace] = $name;
 		}
+		// ne garde que les entités réelles (non abstraites / non interfaces)
+		$this->setOnlyConcrete(true);
 		unset($entitiesList);
 	}
 
