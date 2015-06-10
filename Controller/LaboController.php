@@ -14,6 +14,8 @@ use laboBundle\services\aetools\aeReponse;
 class laboController extends Controller {
 
 	const DEFAULT_VIEWS = "pages";
+	const DEFAULT_BUNDLE = "laboBundle";
+	const DEFAULT_MENUS = "menus";
 
 	//////////////////////////
 	// PAGES
@@ -21,11 +23,11 @@ class laboController extends Controller {
 
 	// Page d'accueil de l'admin (labo)
 	public function homeAction() {
-		return $this->render('laboBundle:'.self::DEFAULT_VIEWS.':index.html.twig');
+		return $this->render(self::DEFAULT_BUNDLE.':'.self::DEFAULT_VIEWS.':index.html.twig');
 	}
 
 	public function navbarAction() {
-		return $this->render('laboBundle:menus:navbar.html.twig');
+		return $this->render(self::DEFAULT_BUNDLE.':'.self::DEFAULT_MENUS.':navbar.html.twig');
 	}
 
 }
