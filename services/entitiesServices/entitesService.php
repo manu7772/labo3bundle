@@ -147,14 +147,16 @@ class entitesService extends aetools {
 			foreach($groupesSRC as $nom) $groupes[] = $nom['nom'];
 			// var_dump($groupes);die();
 			foreach($entitiesNameSpaces as $ENS) {
-				$doit = true;
+				$do_it = true;
 				if($this->onlyConcrete === true) {
 					// supprime les classes abstraites et les interfaces
 					$CMD = $this->getClassMetaData($ENS);
-					$reflectionClass = $CMD->getReflectionClass();
-					if($reflectionClass->isAbstract() || $reflectionClass->isInterface()) $doit = false;
+					if(is_object($CMD)) {
+						$reflectionClass = $CMD->getReflectionClass();
+						if($reflectionClass->isAbstract() || $reflectionClass->isInterface()) $do_it = false;
+					} else $do_it = false;
 				}
-				if($doit === true) {
+				if($do_it === true) {
 					$EE = $this->getClassShortName($ENS);
 					$exp = explode(self::ASLASH, $ENS);
 					$group = reset($exp);
