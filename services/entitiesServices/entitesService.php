@@ -150,7 +150,7 @@ class entitesService extends aetools {
 				$do_it = true;
 				if($this->onlyConcrete === true) {
 					// supprime les classes abstraites et les interfaces
-					$CMD = $this->getClassMetaData($ENS);
+					$CMD = $this->getEm()->getClassMetaData($ENS);
 					if(is_object($CMD)) {
 						$reflectionClass = $CMD->getReflectionClass();
 						if($reflectionClass->isAbstract() || $reflectionClass->isInterface()) $do_it = false;

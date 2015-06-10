@@ -11,9 +11,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class siteListener {
 
+	const SERVICE_METHODE = "serviceEventInit";
+
 	private $container;
 	private $itClass = array();
-	private $serviceMethode = "serviceEventInit";
+	private $serviceMethode;
 	private $items = array(	// entités à initialiser
 		// "labobundle.aetools",
 		// "labobundle.entities",
@@ -27,6 +29,7 @@ class siteListener {
 	public function __construct(ContainerInterface $container) {
 		$this->container = $container;
 		$this->serviceSess = $this->container->get('request')->getSession();
+		$this->serviceMethode = self::SERVICE_METHODE;
 		foreach($this->items as $item) {
 			$this->itClass[$item] = $this->container->get($item);
 		}
