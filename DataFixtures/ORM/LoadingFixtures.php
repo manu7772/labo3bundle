@@ -100,58 +100,59 @@ class LoadingFixtures extends entitesService implements FixtureInterface, Contai
 	 * Trie les entités dans le bon ordre
 	 */
 	protected function trieEntities() {
-		$ordre = array(
-			"AcmeGroup\\LaboBundle\\Entity\\statut",
-			"AcmeGroup\\LaboBundle\\Entity\\version",
+		// $ordre = array(
+		// 	"AcmeGroup\\LaboBundle\\Entity\\statut",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\version",
 
-			"AcmeGroup\\LaboBundle\\Entity\\tag",
-			"AcmeGroup\\LaboBundle\\Entity\\unite",
-			"AcmeGroup\\LaboBundle\\Entity\\typeEmail",
-			"AcmeGroup\\LaboBundle\\Entity\\typeImage",
-			"AcmeGroup\\LaboBundle\\Entity\\typeReseau",
-			"AcmeGroup\\LaboBundle\\Entity\\typeAdresse",
-			"AcmeGroup\\LaboBundle\\Entity\\typeTelephone",
-			"AcmeGroup\\LaboBundle\\Entity\\typeNatureTelephone",
-			"AcmeGroup\\LaboBundle\\Entity\\typeFiche",
-			"AcmeGroup\\LaboBundle\\Entity\\typeVideo",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\tag",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\unite",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\typeEmail",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\typeImage",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\typeReseau",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\typeAdresse",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\typeTelephone",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\typeNatureTelephone",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\typeFiche",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\typeVideo",
 
-			"AcmeGroup\\LaboBundle\\Entity\\telephone",
-			"AcmeGroup\\LaboBundle\\Entity\\email",
-			"AcmeGroup\\LaboBundle\\Entity\\adresse",
-			"AcmeGroup\\LaboBundle\\Entity\\panier",
-			"AcmeGroup\\LaboBundle\\Entity\\tva",
-			"AcmeGroup\\LaboBundle\\Entity\\video",
-			"AcmeGroup\\LaboBundle\\Entity\\image",
-			"AcmeGroup\\LaboBundle\\Entity\\collection",
-			"AcmeGroup\\LaboBundle\\Entity\\reseausocial",
-			"AcmeGroup\\LaboBundle\\Entity\\pageweb",
-			"AcmeGroup\\LaboBundle\\Entity\\fichierPdf",
-			"AcmeGroup\\LaboBundle\\Entity\\fiche",
-			"AcmeGroup\\LaboBundle\\Entity\\pageweb",
-			"AcmeGroup\\LaboBundle\\Entity\\cuisson",
-			"AcmeGroup\\LaboBundle\\Entity\\evenement",
-			"AcmeGroup\\LaboBundle\\Entity\\categorie",
-			"AcmeGroup\\LaboBundle\\Entity\\article",
-		);
-		ksort($ordre);
-		$this->entitiesList = array();
-		$entitiesList = array();
-		// entités ordonnées
-		foreach($ordre as $num => $namespace) {
-			$name = $this->getEntityShortName($namespace);
-			if($name !== false) {
-				$entitiesList[$namespace] = $name;
-			} else {
-				$this->writeConsole('Entité ordonnée non trouvée.', 'error');
-			}
-		}
-		// reste des entités
-		foreach($this->getListOfEnties(false) as $namespace => $name) {
-			if(!array_key_exists($namespace, $entitiesList)) $this->entitiesList[$namespace] = $name;
-		}
+		// 	"AcmeGroup\\LaboBundle\\Entity\\telephone",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\email",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\adresse",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\panier",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\tva",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\video",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\image",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\collection",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\reseausocial",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\pageweb",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\fichierPdf",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\fiche",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\pageweb",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\cuisson",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\evenement",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\categorie",
+		// 	"AcmeGroup\\LaboBundle\\Entity\\article",
+		// );
+		// ksort($ordre);
+		// $this->entitiesList = array();
+		// $entitiesList = array();
+		// // entités ordonnées
+		// foreach($ordre as $num => $namespace) {
+		// 	$name = $this->getEntityShortName($namespace);
+		// 	if($name !== false) {
+		// 		$entitiesList[$namespace] = $name;
+		// 	} else {
+		// 		$this->writeConsole('Entité ordonnée non trouvée.', 'error');
+		// 	}
+		// }
+		// // reste des entités
+		// foreach($this->getListOfEnties(false) as $namespace => $name) {
+		// 	if(!array_key_exists($namespace, $entitiesList)) $this->entitiesList[$namespace] = $name;
+		// }
 		// ne garde que les entités réelles (non abstraites / non interfaces)
 		$this->setOnlyConcrete(true);
-		unset($entitiesList);
+		$this->entitiesList = $this->getListOfEnties(false);
+		// unset($entitiesList);
 	}
 
 	/**
