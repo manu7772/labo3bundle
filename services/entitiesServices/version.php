@@ -14,18 +14,13 @@ class version extends entitesService {
 	// protected $service = array();
 	// protected $serviceData = false; // objet version
 
+	protected $versionClassName;
+
 	public function __construct(ContainerInterface $container) {
 		parent::__construct($container);
 		// if(($this->init["categorie"] === false) || ($this->modeFixtures === true))
-		$this->defineEntity($this->getVersionEntityClassName());
-	}
-
-	public function getVersionEntityClassName() {
-		$this->setOnlyConcrete(true);
-		foreach ($this->getListOfEnties(true) as $key => $entity) {
-			$entity = new $entity;
-			if($entity->isVersion()) die(get_class($entity)." est bien une version !!");
-		}
+		$this->versionClassName = $this->getVersionEntityClassName();
+		$this->defineEntity($this->versionClassName);
 	}
 
 	/**
@@ -36,6 +31,12 @@ class version extends entitesService {
 	* @param boolean $reLoad
 	*/
 	public function serviceEventInit(FilterControllerEvent $event, $reLoad = false) {
+		$version = $this->defaultVersion();
+		$ver['nom'] = $version->getNom();
+		$ver['slug'] = $version->getSlug();
+		echo('<pre>');
+		var_dump($ver);
+		die('</pre>');
 		// $this->defineEntity("version");
 		// $this->init["version"] = true;
 		// $this->service = array();
@@ -178,16 +179,17 @@ class version extends entitesService {
 
 	/**
 	 * defaultVersion
-	 * Renvoie la version par défaut (ou à défaut, la première version trouvée)
+	 * Renvoie l'entité version par défaut (ou à défaut, la première version trouvée)
 	 * @return string
 	 */
 	public function defaultVersion() {
 		$ver = $this->getRepo()->defaultVersion(); // Récupère version par défaut
 		if(!is_object($ver)) { // sinon récupère le premier trouvé
-			$ver = reset($this->getRepo()->findAll());
+			$versionsFound = $this->getRepo()->findAll();
+			$ver = reset($versionsFound);
 		}
 		if(!is_object($ver)) {
-			throw new Exception("Service version : aucune version trouvée.");
+			throw new Exception("Service version : aucune version n'existe.");
 		}
 		return $ver;
 	}

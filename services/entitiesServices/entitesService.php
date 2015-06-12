@@ -61,6 +61,28 @@ class entitesService extends aetools {
 		return $this->onlyConcrete;
 	}
 
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// VERSIONS
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * Renvoie le nom de la classe servant de version
+	 * @return string - false si aucune entité version
+	 */
+	public function getVersionEntityClassName() {
+		$this->setOnlyConcrete(true);
+		foreach ($this->getListOfEnties(false) as $entity => $shortname) {
+			$entity = new $entity;
+			if(method_exists($entity, "__call")) {
+				if($entity->isVersion()) return get_class($entity);
+			}
+		}
+		throw new Exception("Service version : aucune entité de version n'existe.");
+		// return false;
+	}
+
+
+
 	/**
 	 * Renvoie le nom de la classe
 	 * @return string
