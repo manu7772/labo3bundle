@@ -15,13 +15,56 @@ use \DateTime;
  */
 class baseVersionRepository extends EntityRepository {
 
-	public function getVersionSlugArray($versionSlug) {
-		$qb = $this->createQueryBuilder('element');
-		$qb->where('element.slug = :slug')
-			->setParameter('slug', $versionSlug);
+	/**
+	* defaultVal
+	* Renvoie l'instance de la version par défaut (ou null)
+	*/
+	public function defaultVal() {
+		return $this->defaultVersion();
+	}
+
+	/**
+	* defaultVersion
+	* Renvoie l'instance de la version par défaut (ou null)
+	*/
+	public function defaultVersion() {
+		$qb = $this->getQbWithDefaultVersion();
+		try {
+			$result = $qb->getQuery()->getSingleResult();
+		} catch (Exception $e) {
+			// printf("Aucun résultat pour la version par défaut…\n");
+			$result = null;
+		}
+		return $result;
+	}
+
+
+	/**
+	* defaultVersion
+	* Renvoie l'instance de la version par défaut (ou null)
+	*/
+	public function getVersionSlugArray($versionSlug = null) {
+		if(is_string($versionSlug) && strlen($versionSlug) > 0) {
+			$qb = $this->createQueryBuilder('element');
+			$qb->where('element.slug = :slug')
+				->setParameter('slug', $versionSlug);
+			$errorMessage = "La version ".$versionSlug." (slug) n'a pu être trouvée.";
+		} else {
+			$qb = $this->getQbWithDefaultVersion();
+			$errorMessage = "Il n'existe pas de version par défaut.";
+		}
 		$result = $qb->getQuery()->getArrayResult();
 		if(is_array($result) && count($result) > 0) return reset($result);
-		throw new Exception("La version ".$versionSlug." (slug) n'a pu être trouvée.", 1);
+		throw new Exception($errorMessage, 1);
+	}
+
+
+
+	protected function getQbWithDefaultVersion() {
+		$qb = $this->createQueryBuilder('element');
+		$qb->where('element.defaultVersion = :true')
+			->setParameter('true', 1);
+		return $qb;
 	}
 
 }

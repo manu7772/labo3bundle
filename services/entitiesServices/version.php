@@ -33,7 +33,7 @@ class version extends entitesService {
 		// $this->initDataVersion();
 	}
 
-	protected initDataVersion() {
+	protected function initDataVersion() {
 		$this->do_load = false;
 		$this->newVersionHote = null;
 		$this->newVersionSlug = null;
@@ -91,8 +91,8 @@ class version extends entitesService {
 	 */
 	protected function verifyRequestChangeDomaine() {
 		// Changement de version en GET ou POST (versionDefine=slug_de_la_version)
-		$serviceChange = $event->getRequest()->request->get($this->serviceNom."Define"); // POST en priorité
-		if($serviceChange === null) $serviceChange = $event->getRequest()->query->get($this->serviceNom."Define"); // GET
+		$serviceChange = $this->serviceRequ->request->get($this->serviceNom."Define"); // POST en priorité
+		if($serviceChange === null) $serviceChange = $this->serviceRequ->query->get($this->serviceNom."Define"); // GET
 		if(is_string($serviceChange)) $this->newVersionSlug = $serviceChange;
 		if($serviceChange !== null) $this->do_load = true;
 		return $serviceChange === null ? false : true;
@@ -116,7 +116,7 @@ class version extends entitesService {
 	*/
 	public function serviceEventInit(FilterControllerEvent $event, $reLoad = false) {
 		$this->event = $event;
-		if($this->doReload() === true) {
+		if($this->doReload() === true || 1 == 1) {
 			// rechargement de version
 			$this->actualVersion = $this->getRepo()->getVersionSlugArray();
 			$this->sessionData->set("siteListener", array("reloadAll" => true));
