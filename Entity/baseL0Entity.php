@@ -52,6 +52,12 @@ abstract class baseL0Entity implements baseL0Interface {
 
 	/**
 	 * @var string
+	 * @ORM\Column(name="cible", type="string", length=128, nullable=true, unique=false)
+	 */
+	protected $cible;
+
+	/**
+	 * @var string
 	 * @ORM\Column(name="descriptif", type="text", nullable=true, unique=false)
 	 */
 	protected $descriptif;
@@ -282,6 +288,24 @@ abstract class baseL0Entity implements baseL0Interface {
 	 */
 	public function getNom() {
 		return $this->nom;
+	}
+
+	/**
+	 * Set cible
+	 * @param string $cible
+	 * @return baseL0Entity
+	 */
+	public function setCible($cible) {
+		$this->cible = $cible;
+		return $this;
+	}
+
+	/**
+	 * Get cible
+	 * @return string 
+	 */
+	public function getCible() {
+		return $this->cible;
 	}
 
 	/**
