@@ -93,8 +93,8 @@ class version extends entitesService {
 	 */
 	protected function verifyRequestChangeDomaine() {
 		// Changement de version en GET ou POST (versionDefine=slug_de_la_version)
-		$serviceChange = $this->serviceRequ->request->get($this->serviceNom."Define"); // POST en priorité
-		if($serviceChange === null) $serviceChange = $this->serviceRequ->query->get($this->serviceNom."Define"); // GET
+		$serviceChange = $this->serviceRequ->request->get($this->getShortName()."Define"); // POST en priorité
+		if($serviceChange === null) $serviceChange = $this->serviceRequ->query->get($this->getShortName()."Define"); // GET
 		if(is_string($serviceChange)) $this->newVersionSlug = $serviceChange;
 		if($serviceChange !== null) $this->do_load = true;
 		return $serviceChange === null ? false : true;
@@ -131,10 +131,18 @@ class version extends entitesService {
 				// version par défaut
 				$this->service = $this->getRepo()->getVersionArray();
 			}
-			// echo('<pre>');
-			// var_dump($this->aeSerialize($this->service));
-			// echo('</pre>');
-			// echo("<h1>Enregistrement en session : ".$this->getShortName()."</h1>");
+			// ajoute les infos des autres versions
+			$allVersions = $this->getRepo()->findAll();
+			$this->service['allVersions'] = array();
+			if(is_array($allVersions)) {
+				foreach ($allVersions as $version) {
+					$this->service['allVersions']['nom'] = $version->getNom();
+					$this->service['allVersions']['slug'] = $version->getSlug();
+					$this->service['allVersions']['defaultVersion'] = $version->getDefaultVersion();
+					$this->service['allVersions']['nomDomaine'] = $version->getNomDomaine();
+					$this->service['allVersions']['templateIndex'] = $version->getTemplateIndex();
+				}
+			}
 			$this->siteListener_InSession();
 		}
 		return $this;
