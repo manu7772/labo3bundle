@@ -104,8 +104,9 @@ class version extends entitesService {
 	 * Renvoie si la version doit être rechargée en session
 	 * @return boolean
 	 */
-	protected function doReload() {
+	protected function doReload($reLoad = false) {
 		$this->initDataVersion();
+		if($reLoad === true) $this->do_load = true;
 		return $this->do_load;
 	}
 
@@ -118,7 +119,7 @@ class version extends entitesService {
 	*/
 	public function serviceEventInit(FilterControllerEvent $event, $reLoad = false) {
 		// $this->event = $event;
-		if($this->doReload() === true) {
+		if($this->doReload($reLoad) === true) {
 			// rechargement de version
 			$this->service = $this->getRepo()->getVersionSlugArray();
 			// echo('<pre>');
