@@ -15,12 +15,96 @@ class version extends entitesService {
 	// protected $serviceData = false; // objet version
 
 	protected $versionClassName;
+	protected $actualVersion = null;
+	protected $event;
+
+
+	protected $newVersionHote = null;
+	protected $newVersionSlug = null;
+	protected $actualDomaine = null;
+	protected $previousDomaine = null;
+	protected $do_load = false;
 
 	public function __construct(ContainerInterface $container) {
 		parent::__construct($container);
 		// if(($this->init["categorie"] === false) || ($this->modeFixtures === true))
 		$this->versionClassName = $this->getVersionEntityClassName();
 		$this->defineEntity($this->versionClassName);
+		// $this->initDataVersion();
+	}
+
+	protected initDataVersion() {
+		$this->do_load = false;
+		$this->newVersionHote = null;
+		$this->newVersionSlug = null;
+		$this->memoriseActualDomaine();
+		$this->verifyChangedDomaine();
+		$this->verifyRequestChangeDomaine();
+	}
+
+	protected function getActualDomaine() {
+		// !!!!! remplacer par un preg_replace
+		if($this->actualDomaine === null) $this->actualDomaine = str_replace(array("http://www.","https://www.","www."), "", $this->event->getRequest()->getHost());
+		return $this->actualDomaine;
+ 	}
+
+	/**
+	 * Mémorise le domaine dans le flashbag
+	 * @return tring
+	 */
+	protected function getMemorisedDomaine() {
+		if($this->previousDomaine === null) $this->previousDomaine = $this->event->getRequest()->getSession()->get("hote");
+		return $this->previousDomaine;
+	}
+
+	/**
+	 * Mémorise le domaine dans la session / le flashbag
+	 * @return version
+	 */
+	protected function memoriseActualDomaine() {
+		$this->getMemorisedDomaine();
+		$this->event->getRequest()->getSession()->set("hote", $this->getActualDomaine());
+		// $this->flashBag->add("hote", $this->getActualDomaine());
+		return $this;
+	}
+
+	/**
+	 * Renvoie le nouveau domaine s'il a été changé. 
+	 * S'il n'a pas changé, renvoie false.
+	 * @return string
+	 */
+	protected function verifyChangedDomaine() {
+		$BASEHOST = $this->getActualDomaine();
+		$PRECHOST = $this->getMemorisedDomaine();
+		$this->memoriseActualDomaine();
+		if(($PRECHOST !== $BASEHOST) && ($BASEHOST !== "localhost")) {
+			$this->newVersionHote = $BASEHOST;
+			$this->do_load = true;
+			return $BASEHOST;
+		}
+		return false;
+	}
+
+	/**
+	 * Renvoie le nouveau domaine doit être changé via requête
+	 * @return boolean
+	 */
+	protected function verifyRequestChangeDomaine() {
+		// Changement de version en GET ou POST (versionDefine=slug_de_la_version)
+		$serviceChange = $event->getRequest()->request->get($this->serviceNom."Define"); // POST en priorité
+		if($serviceChange === null) $serviceChange = $event->getRequest()->query->get($this->serviceNom."Define"); // GET
+		if(is_string($serviceChange)) $this->newVersionSlug = $serviceChange;
+		if($serviceChange !== null) $this->do_load = true;
+		return $serviceChange === null ? false : true;
+	}
+
+	/**
+	 * Renvoie si la version doit être rechargée en session
+	 * @return boolean
+	 */
+	protected function doReload() {
+		$this->initDataVersion();
+		return $this->do_load;
 	}
 
 	/**
@@ -31,12 +115,15 @@ class version extends entitesService {
 	* @param boolean $reLoad
 	*/
 	public function serviceEventInit(FilterControllerEvent $event, $reLoad = false) {
-		$version = $this->defaultVersion();
-		$ver['nom'] = $version->getNom();
-		$ver['slug'] = $version->getSlug();
-		echo('<pre>');
-		var_dump($ver);
-		die('</pre>');
+		$this->event = $event;
+		if($this->doReload() === true) {
+			// rechargement de version
+			$this->actualVersion = $this->getRepo()->getVersionSlugArray();
+			$this->sessionData->set("siteListener", array("reloadAll" => true));
+			echo('<pre>');
+			var_dump($this->actualVersion);
+			echo('</pre>');
+		}
 		// $this->defineEntity("version");
 		// $this->init["version"] = true;
 		// $this->service = array();
