@@ -7,16 +7,18 @@ use Symfony\Component\Templating\EngineInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use laboBundle\services\entitiesServices\entitesService;
+use Doctrine\Common\Collections\ArrayCollection;
 // use Symfony\Component\Form\FormFactoryInterface;
 use \Exception;
+use \DateTime;
 
 class version extends entitesService {
 	// protected $service = array();
 	// protected $serviceData = false; // objet version
 
 	protected $versionClassName;
-	protected $actualVersion = null;
-	protected $event;
+	// protected $actualVersion = null;
+	protected $container;
 
 
 	protected $newVersionHote = null;
@@ -44,7 +46,7 @@ class version extends entitesService {
 
 	protected function getActualDomaine() {
 		// !!!!! remplacer par un preg_replace
-		if($this->actualDomaine === null) $this->actualDomaine = str_replace(array("http://www.","https://www.","www."), "", $this->event->getRequest()->getHost());
+		if($this->actualDomaine === null) $this->actualDomaine = str_replace(array("http://www.","https://www.","www."), "", $this->container->getRequest()->getHost());
 		return $this->actualDomaine;
  	}
 
@@ -53,7 +55,7 @@ class version extends entitesService {
 	 * @return tring
 	 */
 	protected function getMemorisedDomaine() {
-		if($this->previousDomaine === null) $this->previousDomaine = $this->event->getRequest()->getSession()->get("hote");
+		if($this->previousDomaine === null) $this->previousDomaine = $this->sessionData->get("hote");
 		return $this->previousDomaine;
 	}
 
@@ -63,7 +65,7 @@ class version extends entitesService {
 	 */
 	protected function memoriseActualDomaine() {
 		$this->getMemorisedDomaine();
-		$this->event->getRequest()->getSession()->set("hote", $this->getActualDomaine());
+		$this->sessionData->set("hote", $this->getActualDomaine());
 		// $this->flashBag->add("hote", $this->getActualDomaine());
 		return $this;
 	}
@@ -118,11 +120,12 @@ class version extends entitesService {
 		$this->event = $event;
 		if($this->doReload() === true || 1 == 1) {
 			// rechargement de version
-			$this->actualVersion = $this->getRepo()->getVersionSlugArray();
-			$this->sessionData->set("siteListener", array("reloadAll" => true));
+			$this->service = $this->getRepo()->getVersionSlugArray();
 			echo('<pre>');
-			var_dump($this->actualVersion);
+			var_dump($this->aeSerialize($this->service));
 			echo('</pre>');
+			echo("<h1>Enregistrement en session : ".$this->getShortName()."</h1>");
+			$this->siteListener_InSession();
 		}
 		// $this->defineEntity("version");
 		// $this->init["version"] = true;
@@ -264,32 +267,6 @@ class version extends entitesService {
 		return $this;
 	}
 
-	/**
-	 * defaultVersion
-	 * Renvoie l'entité version par défaut (ou à défaut, la première version trouvée)
-	 * @return string
-	 */
-	public function defaultVersion() {
-		$ver = $this->getRepo()->defaultVersion(); // Récupère version par défaut
-		if(!is_object($ver)) { // sinon récupère le premier trouvé
-			$versionsFound = $this->getRepo()->findAll();
-			$ver = reset($versionsFound);
-		}
-		if(!is_object($ver)) {
-			throw new Exception("Service version : aucune version n'existe.");
-		}
-		return $ver;
-	}
-
-	/**
-	 * getDefaultVersionDossTemplates
-	 * Renvoie le nom du dossier de templates utilisé par la version par défaut ("Site", en général)
-	 * @return string
-	 */
-	public function getDefaultVersionDossTemplates() {
-		$ver = $this->defaultVersion(); // Récupère version par défaut
-		return $ver->getTemplateIndex();
-	}
 
 }
 
