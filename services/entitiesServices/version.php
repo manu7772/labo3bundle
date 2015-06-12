@@ -36,7 +36,7 @@ class version extends entitesService {
 	}
 
 	protected function initDataVersion() {
-		$this->do_load = $this->isSiteListener_InSession();
+		$this->do_load = !$this->isSiteListener_InSession();
 		$this->newVersionHote = null;
 		$this->newVersionSlug = null;
 		$this->memoriseActualDomaine();
@@ -120,8 +120,17 @@ class version extends entitesService {
 	public function serviceEventInit(FilterControllerEvent $event, $reLoad = false) {
 		// $this->event = $event;
 		if($this->doReload($reLoad) === true) {
-			// rechargement de version
-			$this->service = $this->getRepo()->getVersionSlugArray();
+			// Chargement de version
+			if($this->newVersionHote !== null) {
+				// changements d'hôte en priorité
+				$this->service = $this->getRepo()->getVersionArray($this->newVersionHote, "hote");
+			} else if($this->newVersionSlug !== null) {
+				// si changement par requête
+				$this->service = $this->getRepo()->getVersionArray($this->newVersionSlug);
+			} else {
+				// version par défaut
+				$this->service = $this->getRepo()->getVersionArray();
+			}
 			// echo('<pre>');
 			// var_dump($this->aeSerialize($this->service));
 			// echo('</pre>');

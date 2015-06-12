@@ -43,12 +43,12 @@ class baseVersionRepository extends EntityRepository {
 	* defaultVersion
 	* Renvoie l'instance de la version par défaut (ou null)
 	*/
-	public function getVersionSlugArray($versionSlug = null) {
-		if(is_string($versionSlug) && strlen($versionSlug) > 0) {
+	public function getVersionArray($valeur = null, $champ = 'slug') {
+		if(is_string($valeur) && strlen($valeur) > 0) {
 			$qb = $this->createQueryBuilder('element');
-			$qb->where('element.slug = :slug')
-				->setParameter('slug', $versionSlug);
-			$errorMessage = "La version ".$versionSlug." (slug) n'a pu être trouvée.";
+			$qb->where('element.'.$champ.' = :val')
+				->setParameter('val', $valeur);
+			$errorMessage = "La version ".$valeur." (".$champ.") n'a pu être trouvée.";
 		} else {
 			$qb = $this->getQbWithDefaultVersion();
 			$errorMessage = "Il n'existe pas de version par défaut.";
