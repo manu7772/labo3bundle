@@ -787,13 +787,20 @@ class aetools {
 	}
 
 	/**
-	* siteListener_InSession
-	* dépose les informations de l'entité dans la session
-	*
+	* Dépose les informations de l'entité dans la session
+	* @return aetools
 	*/
 	public function siteListener_InSession() {
 		$this->serviceSess->set($this->getShortName(), $this->service);
 		return $this;
+	}
+
+	/**
+	* Renvoie true si les informations de l'entité sont bien dans la session
+	* @return boolean
+	*/
+	public function isSiteListener_InSession() {
+		return $this->serviceSess->get($this->getShortName()) !== null ? true : false;
 	}
 
 

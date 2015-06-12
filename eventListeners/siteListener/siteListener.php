@@ -17,7 +17,7 @@ class siteListener {
 	private $itClass = array();
 	private $serviceMethode;
 	private $items = array(	// entités à initialiser
-		// "labobundle.aetools",
+		"labobundle.aetools",
 		// "labobundle.entities",
 		// "labobundle.parametre",
 		"labobundle.version",
