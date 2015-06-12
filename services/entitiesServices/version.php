@@ -135,12 +135,12 @@ class version extends entitesService {
 			$allVersions = $this->getRepo()->findAll();
 			$this->service['allVersions'] = array();
 			if(is_array($allVersions)) {
-				foreach ($allVersions as $version) {
-					$this->service['allVersions']['nom'] = $version->getNom();
-					$this->service['allVersions']['slug'] = $version->getSlug();
-					$this->service['allVersions']['defaultVersion'] = $version->getDefaultVersion();
-					$this->service['allVersions']['nomDomaine'] = $version->getNomDomaine();
-					$this->service['allVersions']['templateIndex'] = $version->getTemplateIndex();
+				foreach ($allVersions as $key => $version) {
+					$this->service['allVersions'][$key]['nom'] = $version->getNom();
+					$this->service['allVersions'][$key]['slug'] = $version->getSlug();
+					$this->service['allVersions'][$key]['defaultVersion'] = $version->getDefaultVersion();
+					$this->service['allVersions'][$key]['nomDomaine'] = $version->getNomDomaine();
+					$this->service['allVersions'][$key]['templateIndex'] = $version->getTemplateIndex();
 				}
 			}
 			$this->siteListener_InSession();
