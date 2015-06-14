@@ -120,16 +120,34 @@ class version extends entitesService {
 	public function serviceEventInit(FilterControllerEvent $event, $reLoad = false) {
 		// $this->event = $event;
 		if($this->doReload($reLoad) === true) {
+			$adds = array(
+				'favicon' 			=> array(),
+				'logo'				=> array(),
+				'telephones'		=> array(
+					'typeTelephone'			=> array(),
+					'typeNatureTelephone'	=> array(),
+				),
+				'emails'			=> array(
+					'typeEmail'		=> array(),
+				),
+				'reseausocials'		=> array(
+					'typeReseau'			=> array(),
+				),
+				'imageEntete'		=> array(),
+				'adresses'			=> array(
+					'typeAdresse'			=> array(),
+				),
+			);
 			// Chargement de version
 			if($this->newVersionHote !== null) {
 				// changements d'hôte en priorité
-				$this->service = $this->getRepo()->getVersionArray($this->newVersionHote, "hote");
+				$this->service = $this->getRepo()->getVersionArray($this->newVersionHote, "hote", $adds);
 			} else if($this->newVersionSlug !== null) {
 				// si changement par requête
-				$this->service = $this->getRepo()->getVersionArray($this->newVersionSlug);
+				$this->service = $this->getRepo()->getVersionArray($this->newVersionSlug, 'slug', $adds);
 			} else {
 				// version par défaut
-				$this->service = $this->getRepo()->getVersionArray();
+				$this->service = $this->getRepo()->getVersionArray(null, null, $adds);
 			}
 			// ajoute les infos des autres versions
 			$allVersions = $this->getRepo()->findAll();
@@ -150,5 +168,3 @@ class version extends entitesService {
 
 
 }
-
-?>

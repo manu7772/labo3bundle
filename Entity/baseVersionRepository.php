@@ -15,6 +15,8 @@ use \DateTime;
  */
 class baseVersionRepository extends EntityRepository {
 
+	const ELEMENT = 'element';
+
 	/**
 	* defaultVal
 	* Renvoie l'instance de la version par défaut (ou null)
@@ -40,29 +42,45 @@ class baseVersionRepository extends EntityRepository {
 
 
 	/**
-	* defaultVersion
-	* Renvoie l'instance de la version par défaut (ou null)
+	* Renvoie les données de version en array
+	* @param string $valeur - valeur recherchée
+	* @param string $champ - champ dans lequel la valeur est recherchée
+	* @param array $adds - éléments associés à ajouter (leftJoin) sous forme d'array (multiples niveaux possibles)
+	* @return array
 	*/
-	public function getVersionArray($valeur = null, $champ = 'slug') {
+	public function getVersionArray($valeur = null, $champ = 'slug', $adds = null) {
 		if(is_string($valeur) && strlen($valeur) > 0) {
-			$qb = $this->createQueryBuilder('element');
-			$qb->where('element.'.$champ.' = :val')
+			$qb = $this->createQueryBuilder(self::ELEMENT);
+			$qb->where(self::ELEMENT.'.'.$champ.' = :val')
 				->setParameter('val', $valeur);
 			$errorMessage = "La version ".$valeur." (".$champ.") n'a pu être trouvée.";
 		} else {
-			$qb = $this->getQbWithDefaultVersion();
+			$qb = $this->getQbWithDefaultVersion($qb);
 			$errorMessage = "Il n'existe pas de version par défaut.";
 		}
+		if(is_array($adds)) $qb = $this->addJoins($qb, $adds);
 		$result = $qb->getQuery()->getArrayResult();
 		if(is_array($result) && count($result) > 0) return reset($result);
 		throw new Exception($errorMessage, 1);
 	}
 
+	protected function addJoins(QueryBuilder $qb, $adds, $joined = null) {
+		if($joined === null || !is_string($joined)) $joined = self::ELEMENT;
+		if(!($qb instanceOf QueryBuilder)) $qb = $this->createQueryBuilder($joined);
+		foreach ($adds as $field => $childs) {
+			$itemField = $joined.'.'.$field;
+			if(!is_array($childs)) $childs = array();
+			$qb->leftJoin($itemField, $field)
+				->addSelect($field)
+				;
+			if(count($childs) > 0) $qb = $this->addJoins($qb, $childs, $field);
+		}
+		return $qb;
+	}
 
-
-	protected function getQbWithDefaultVersion() {
-		$qb = $this->createQueryBuilder('element');
-		$qb->where('element.defaultVersion = :true')
+	protected function getQbWithDefaultVersion(QueryBuilder $qb = null) {
+		if(!($qb instanceOf QueryBuilder)) $qb = $this->createQueryBuilder(self::ELEMENT);
+		$qb->where(self::ELEMENT.'.defaultVersion = :true')
 			->setParameter('true', 1);
 		return $qb;
 	}
