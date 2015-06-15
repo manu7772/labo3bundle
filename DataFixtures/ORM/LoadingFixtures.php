@@ -179,28 +179,47 @@ class LoadingFixtures extends entitesService implements FixtureInterface, Contai
 								$entiteAtraiter->$set($obj);
 							} else if(count($obj) > 0) {
 								if(is_object(reset($obj))) {
-									$entiteAtraiter->$set(reset($obj));
+									$obj = reset($obj);
+									$entiteAtraiter->$set($obj);
 								}
 							}
+							$this->writeConsole(self::TAB1.'Single > '.$this->addAff($entiteAtraiter).' : '.$this->addAff($obj), 'normal');
 							break;
 						case "collection":
+							$aff = array();
 							foreach($todo["Searchs"] as $val) {
 								foreach($repo->$findMtd($val) as $obj) {
 									if(is_object($obj)) {
 										$entiteAtraiter->$set($obj);
+										$aff[] = $this->addAff($entiteAtraiter).' : '.$this->addAff($obj);
 									} else if(count($obj) > 0) {
-										foreach ($obj as $key => $value) if(is_object($value)) $entiteAtraiter->$set($value);
+										foreach ($obj as $key => $value) if(is_object($value)) {
+											$entiteAtraiter->$set($value);
+											$aff[] = $this->addAff($entiteAtraiter).' : '.$this->addAff($value);
+										}
 									}
 								}
 							}
+							$this->writeConsole(self::TAB1.'Collec > '.implode(' / ', $aff), 'normal');
 							break;
 						}
 				}
+				$this->writeConsole(self::TAB1.'Flush > ', 'headline', false);
+				$this->writeConsole("•", 'error', false);
 				$this->manager->persist($entiteAtraiter);
+				$this->writeConsole("•", 'error', false);
 				$this->manager->flush();
+				$this->writeConsole("•", 'error');
 			}
 			
 		}
+	}
+
+	private function addAff($obj) {
+		if(method_exists($obj, 'getCible')) $nom = $obj->getCible();
+			else if(method_exists($obj, 'getslug')) $nom = $obj->getslug();
+			else $nom = 'id:'.$obj->getId();
+		return $nom;
 	}
 
 	protected function loadEntity($name) {

@@ -49,6 +49,7 @@ class entitesService extends aetools {
 		}
 		$this->setOnlyConcrete();
 		// return $this;
+		$this->getCurrentVersion();
 	}
 
 	/**
@@ -66,6 +67,42 @@ class entitesService extends aetools {
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	/**
+	 * Renvoie les données sur la version courante
+	 * Données stockées en session
+	 * @return array
+	 */
+	public function getCurrentVersion() {
+		if($this->isControllerPresent()) {
+			$this->version = $this->sessionData->get($this->getVersionEntityShortName());
+		} else {
+			$this->version = false;
+		}
+		return $this->version;
+	}
+
+	/**
+	 * Renvoie le slug la version courante
+	 * @return string
+	 */
+	public function getCurrentVersionSlug() {
+		if($this->getCurrentVersion() !== false) {
+			return $this->version['slug'];
+		}
+		return false;
+	}
+
+	/**
+	 * Renvoie le nom la version courante
+	 * @return string
+	 */
+	public function getCurrentVersionNom() {
+		if($this->getCurrentVersion() !== false) {
+			return $this->version['nom'];
+		}
+		return false;
+	}
+
+	/**
 	 * Renvoie le nom de la classe servant de version
 	 * @return string - false si aucune entité version
 	 */
@@ -81,6 +118,14 @@ class entitesService extends aetools {
 		// return false;
 	}
 
+	/**
+	 * Renvoie le nom court de la classe servant de version
+	 * @return string - false si aucune entité version
+	 */
+	public function getVersionEntityShortName() {
+		$version = $this->getVersionEntityClassName();
+		return $this->getClassShortName($version);
+	}
 
 
 	/**
@@ -424,8 +469,8 @@ class entitesService extends aetools {
 				if((method_exists($this->getCurrent(), "setVersion")) || (method_exists($this->getCurrent(), "addVersion")))
 					$hasVersion = true; else $hasVersion = false;
 				// définit la version pour le Repository
-				if(method_exists($this->repo, "setVersion") && ($this->version !== false)) {
-					$this->repo->setVersion($this->version);
+				if(method_exists($this->repo, "setVersion") && ($this->getCurrentVersionSlug() !== false)) {
+					$this->repo->setVersion($this->getCurrentVersionSlug());
 				} else {
 					// else
 				}
@@ -433,7 +478,7 @@ class entitesService extends aetools {
 					// $this->repo->dontTestVersion();
 				}
 			} else {
-				$this->writeConsole('Repository '.$this->getEntityShortName()." : hors controller / sans test de version courante.");
+				// $this->writeConsole('Repository '.$this->getEntityShortName()." : hors controller / sans test de version courante.");
 			}
 			return $this->repo;
 		}

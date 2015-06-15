@@ -108,7 +108,6 @@ class aetools {
 			$this->sessionData			= $this->container->get("session");
 			$this->flashBag 			= $this->sessionData->getFlashBag();
 			$this->securityContext 		= $this->container->get('security.context');
-			$this->getCurrentVersion();
 			// $this->setWebPath();
 		}
 		// slashes
@@ -121,8 +120,22 @@ class aetools {
 		$this->memo = $this->getName().$this->memo;
 	}
 
+	/**
+	 * set configuration from app/config/config.yml (labo)
+	 */
 	public function setConfig($parameters) {
 		$this->labo_parameters = $parameters;
+	}
+
+	/**
+	 * get configuration
+	 * @param string $item
+	 * @return mixed
+	 */
+	public function getConfig($item = null) {
+		if(is_string($item) && array_key_exists($item, $this->labo_parameters)) $params = $this->labo_parameters[$item];
+			else $params = $this->labo_parameters;
+		return $params;
 	}
 
 	/**
@@ -201,46 +214,6 @@ class aetools {
 		return !$this->isContainerPresent();
 	}
 
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// VERSIONS
-	////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	/**
-	 * Renvoie les données sur la version courante
-	 * Données stockées en session
-	 * @return array
-	 */
-	public function getCurrentVersion() {
-		if($this->isControllerPresent()) {
-			$this->version = $this->sessionData->get('version');
-		} else {
-			$this->version = false;
-		}
-		return $this->version;
-	}
-
-	/**
-	 * Renvoie le slug la version courante
-	 * @return string
-	 */
-	public function getCurrentVersionSlug() {
-		if($this->getCurrentVersion() !== false) {
-			return $this->version['slug'];
-		}
-		return false;
-	}
-
-	/**
-	 * Renvoie le nom la version courante
-	 * @return string
-	 */
-	public function getCurrentVersionNom() {
-		if($this->getCurrentVersion() !== false) {
-			return $this->version['nom'];
-		}
-		return false;
-	}
 
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////

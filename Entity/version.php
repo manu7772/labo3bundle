@@ -8,7 +8,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 // Slug
 use Gedmo\Mapping\Annotation as Gedmo;
-use laboBundle\Entity\baseAttributsInterface;
+use laboBundle\Entity\baseAttributsEntity;
 use \DateTime;
 use \Exception;
 
@@ -18,7 +18,7 @@ use \Exception;
  * @ORM\MappedSuperclass
  * @ORM\HasLifecycleCallbacks()
  */
-abstract class version extends baseAttributsInterface {
+abstract class version extends baseAttributsEntity {
 
 	const TEMPLATE 			= "pageweb";
 	const COULEUR_FOND 		= "#ffffff";

@@ -124,7 +124,7 @@ class version extends entitesService {
 			isset($this->labo_parameters['version_in_session']) ? $adds = $this->labo_parameters['version_in_session'] : $adds = array();
 			// Chargement de version
 			if($this->newVersionHote !== null) {
-				// changements d'hôte en priorité
+				// changements d'hôte EN PRIORITÉ
 				$this->service = $this->getRepo()->getVersionArray($this->newVersionHote, "hote", $adds);
 			} else if($this->newVersionSlug !== null) {
 				// si changement par requête

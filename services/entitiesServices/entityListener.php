@@ -9,9 +9,13 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+use AcmeGroup\LaboBundle\Entity\version;
+
+use \DateTime;
+
 class entityListener implements EventSubscriber {
 
-	const ENTITY_IMAGE_BASENAME = 'base_entity_image';
+	// const ENTITY_IMAGE_BASENAME = 'base_entity_image';
 
 	private $eventArgs;
 	private $em;
@@ -24,6 +28,8 @@ class entityListener implements EventSubscriber {
 	private $entityName;
 	private $entityNameSpace;
 	private $uow;
+
+	protected $entityService;		// service entité
 	// private $aetools;
 	private $imagetools;
 	private $creation = false;
@@ -82,42 +88,29 @@ class entityListener implements EventSubscriber {
 	 */
 	public function defineDefaultsTools(LifecycleEventArgs $eventArgs) {
 		$this->entity = $eventArgs->getEntity();
+		$this->entityNameSpace = get_class($this->entity);
 		$this->em = $eventArgs->getEntityManager();
 		$this->eventArgs = $eventArgs;
-		// info MetaData sur l'entité
-		// $this->info = $this->getMetaInfo($this->entity);
-		// namespace de l'entité
-		$this->entityNameSpace = $this->em->getClassMetadata(get_class($this->entity))->getName();
-		$ex = explode("\\", $this->entityNameSpace);
-		// nom de l'entité
-		$this->entityName = $ex[count($ex) - 1];
-		$this->BundleEntityName = str_replace("Bundle", "", $ex[count($ex) - 3]).":".$this->entityName;
-		// Service entité
-		// $this->entityService = $this->container->get("labobundle.entities")->defineEntity($this->BundleEntityName);
-		// Repository
-		$this->repo = $this->em->getRepository($this->entityNameSpace);
+		$this->entityService = $this->container->get("labobundle.entities");
+		$this->entityService->defineEntity($this->entityNameSpace);
+		$this->entityName = $this->entityService->getEntityShortName();
+		$this->repo = $this->entityService->getRepo();
 		$this->uow = $this->em->getUnitOfWork();
 		// détection fixtures :
-		if($this->container->get("request")->attributes->get('_controller') === null) {
-			// en mode fixtures
-			$this->modeFixtures = true;
-			$this->currentVersion = false;
-		} else {
+		$this->currentVersion = false;
+		if($this->entityService->isControllerPresent()) {
 			// pas en mode fixtures
-			$this->modeFixtures = false;
-			$this->session = $this->container->get('session')->get('version');
-			$ver = $this->session["slug"];
-			$this->repoVersion = $this->em->getRepository('AcmeGroup\\LaboBundle\\Entity\\version');
+			// $this->session = $this->container->get('session')->get($this->entityService->getVersionEntityShortName());
+			// $ver = $this->entityService->getCurrentVersionSlug();
+			$this->repoVersion = $this->em->getRepository($this->entityService->getVersionEntityClassName());
 			// $this->repoVersion = $this->em->getRepository("AcmeGroup\\LaboBundle\\Entity\\version");
-			$cv = $this->repoVersion->findBySlug($ver);
-			if(count($cv) > 0) $this->currentVersion = $cv[0];
-				else $this->currentVersion = false;
+			$cv = $this->repoVersion->findBySlug($this->entityService->getCurrentVersionSlug());
+			if(count($cv) > 0) $this->currentVersion = reset($cv);
 		}
 		// services dossiers/fichiers
 		// $this->aetools = $this->container->get('labobundle.aetools');
 		// service images
 		$this->imagetools = $this->container->get('labobundle.imagetools');
-		// $this->SPYwrite("\r\n\r\n--------------- Events sur ".$this->entityName);
 	}
 
 	/////////////////////////////////////////////////////////
@@ -222,9 +215,9 @@ class entityListener implements EventSubscriber {
 	 */
 	public function PreUpload() {
 		// $this->SPYwrite('- preUpload() sur '.$this->entityName);
-		if(method_exists($this->entity, 'getParentshortName')) {
+		if(method_exists($this->entity, '__call') || method_exists($this->entity, 'isImage')) {
 			if($this->entity->isImage()) {
-				if(null === $this->entity->getFile() && $this->modeFixtures === false) {
+				if(null === $this->entity->getFile() && $this->entityService->isControllerPresent()) {
 					// $this->SPYwrite('- Pas d\'image pour '.$this->entityName);
 					return;
 				} else {
@@ -255,7 +248,7 @@ class entityListener implements EventSubscriber {
 						// $this->entity->setExt($ext[count($ext) - 1]);
 					}
 					// Création du nom d'enregistrement de l'image / enregistrement du fichier original
-					$date = new \Datetime();
+					$date = new DateTime();
 					$this->entity->setFichierNom(md5(rand(100000, 999999))."-".$date->getTimestamp().".".$this->entity->getExt());
 				}
 			}
@@ -263,8 +256,12 @@ class entityListener implements EventSubscriber {
 	}
 
 	public function addCurrentVersion() {
-		if(method_exists($this->entity, "setVersion") && $this->currentVersion instanceOf AcmeGroup\LaboBundle\Entity\version) {
-			$this->entity->setVersion($this->currentVersion);
+		if($this->currentVersion instanceOf version) {
+			if(method_exists($this->entity, "setVersion")) {
+				$this->entity->setVersion($this->currentVersion);
+			} else if(method_exists($this->entity, "addVersion")) {
+				$this->entity->addVersion($this->currentVersion);
+			}
 		}
 	}
 
@@ -274,7 +271,7 @@ class entityListener implements EventSubscriber {
 	 * sur PreUpdate()
 	 */
 	public function PreUpdateUpload() {
-		if(method_exists($this->entity, 'getParentshortName')) {
+		if(method_exists($this->entity, '__call') || method_exists($this->entity, 'isImage')) {
 			if($this->entity->isImage()) {
 				// $this->imagetools->checkDeclinaisonsImage($this->entity);
 			}
@@ -288,7 +285,7 @@ class entityListener implements EventSubscriber {
 	 * sur PostUpdate()
 	 */
 	public function upload() {
-		if(method_exists($this->entity, 'getParentshortName')) {
+		if(method_exists($this->entity, '__call') || method_exists($this->entity, 'isImage')) {
 			if($this->entity->isImage()) {
 				if($this->creation === true) {
 					// persist
@@ -309,7 +306,7 @@ class entityListener implements EventSubscriber {
 	 */
 	public function preRemoveUpload() {
 		// mémorise l'image à supprimer
-		if(method_exists($this->entity, 'getParentshortName')) {
+		if(method_exists($this->entity, '__call') || method_exists($this->entity, 'isImage')) {
 			if($this->entity->isImage()) {
 				$this->entity->setTempFileName($this->entity->getFichierNom());
 			}
@@ -323,7 +320,7 @@ class entityListener implements EventSubscriber {
 	 */
 	public function removeUpload() {
 		// Supprime l'image
-		if(method_exists($this->entity, 'getParentshortName')) {
+		if(method_exists($this->entity, '__call') || method_exists($this->entity, 'isImage')) {
 			if($this->entity->isImage()) {
 				$this->imagetools->unlinkEverywhereImage($this->entity->getTempFileName());
 			}

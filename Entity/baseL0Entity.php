@@ -177,13 +177,13 @@ abstract class baseL0Entity implements baseL0Interface {
 		return $verif;
 	}
 
-	/**
-	 * Renvoie une représentation texte de l'objet.
-	 * @return string
-	 */
-	public function __toString() {
-		return __CLASS__.'@'.spl_object_hash($this);
-	}
+	// /**
+	//  * Renvoie une représentation texte de l'objet.
+	//  * @return string
+	//  */
+	// public function __toString() {
+	// 	return __CLASS__.'@'.spl_object_hash($this);
+	// }
 
 
 	public function __call($method, $args) {
@@ -196,6 +196,14 @@ abstract class baseL0Entity implements baseL0Interface {
 				break;
 		}
 	}
+
+	///**
+	//  * Renvoie le nom de l'entité -> SLUG
+	//  * @return string
+	//  */
+	// public function __toString() {
+	// 	return $this->getSlug();
+	// }
 
 // FONCTIONNALITÉS ---------------------
 

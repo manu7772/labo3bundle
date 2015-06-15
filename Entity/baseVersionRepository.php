@@ -58,7 +58,7 @@ class baseVersionRepository extends EntityRepository {
 				->setParameter('val', $valeur);
 			$errorMessage = "La version ".$valeur." (".$champ.") n'a pu être trouvée.";
 		} else {
-			$qb = $this->getQbWithDefaultVersion($qb);
+			$qb = $this->getQbWithDefaultVersion();
 			$errorMessage = "Il n'existe pas de version par défaut.";
 		}
 		if($adds === null) $adds = $this->getElementsForSession();
@@ -68,16 +68,23 @@ class baseVersionRepository extends EntityRepository {
 		throw new Exception($errorMessage, 1);
 	}
 
+	/**
+	 * jointures leftJoin d'après un array
+	 * @param QueryBuilder $qb
+	 * @param array $adds
+	 * @param string $champ
+	 * @return QueryBuilder
+	 */
 	protected function addJoins(QueryBuilder $qb, $adds, $joined = null) {
 		if($joined === null || !is_string($joined)) $joined = self::ELEMENT;
 		if(!($qb instanceOf QueryBuilder)) $qb = $this->createQueryBuilder($joined);
 		if(is_array($adds)) foreach ($adds as $field => $childs) {
 			$itemField = $joined.'.'.$field;
 			if(!is_array($childs)) $childs = array();
-			$qb->leftJoin($itemField, $field)
-				->addSelect($field)
+			$qb->leftJoin($itemField, $joined.$field)
+				->addSelect($joined.$field)
 				;
-			if(count($childs) > 0) $qb = $this->addJoins($qb, $childs, $field);
+			if(count($childs) > 0) $qb = $this->addJoins($qb, $childs, $joined.$field);
 		}
 		return $qb;
 	}

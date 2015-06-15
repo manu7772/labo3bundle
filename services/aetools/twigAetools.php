@@ -48,7 +48,9 @@ class twigAetools extends Twig_Extension {
 			'paramsByUrl'		=> new \Twig_Function_Method($this, 'paramsByUrl'),
 			'implode'			=> new \Twig_Function_Method($this, 'implode'),
 			'valueOfObject'		=> new \Twig_Function_Method($this, 'valueOfObject'),
-			);
+			// fonctionnalités articles
+			'prix'				=> new \Twig_Function_Method($this, 'prix'),
+		);
 	}
 
 	public function getName() {
@@ -535,6 +537,9 @@ class twigAetools extends Twig_Extension {
 		return false;
 	}
 
-
+	public function prix($article) {
+		$parts = explode('.', $article['prix']);
+		return $parts[0].'<small>,'.$parts[1].'<sup>€</sup><span>/'.$article['unite']['nomcourt'].'</span></small>';
+	}
 
 }
