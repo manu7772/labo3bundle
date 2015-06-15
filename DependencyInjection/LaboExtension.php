@@ -22,5 +22,12 @@ class LaboExtension extends Extension {
 
 		$loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 		$loader->load('services.yml');
+
+		/** Ajoute les données de config pour les services aeTools
+		 * @link http://stackoverflow.com/questions/4821692/how-do-i-read-configuration-settings-from-symfony2-config-yml
+		 */
+		$container->getDefinition('labobundle.aetools')->addMethodCall('setConfig', array('labo' => $config));
+		$container->getDefinition('labobundle.entities')->addMethodCall('setConfig', array('labo' => $config));
+		$container->getDefinition('labobundle.version')->addMethodCall('setConfig', array('labo' => $config));
 	}
 }

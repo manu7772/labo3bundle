@@ -40,6 +40,9 @@ class baseVersionRepository extends EntityRepository {
 		return $result;
 	}
 
+	protected function getElementsForSession() {
+		return array();
+	}
 
 	/**
 	* Renvoie les données de version en array
@@ -58,7 +61,8 @@ class baseVersionRepository extends EntityRepository {
 			$qb = $this->getQbWithDefaultVersion($qb);
 			$errorMessage = "Il n'existe pas de version par défaut.";
 		}
-		if(is_array($adds)) $qb = $this->addJoins($qb, $adds);
+		if($adds === null) $adds = $this->getElementsForSession();
+		$qb = $this->addJoins($qb, $adds);
 		$result = $qb->getQuery()->getArrayResult();
 		if(is_array($result) && count($result) > 0) return reset($result);
 		throw new Exception($errorMessage, 1);
@@ -67,7 +71,7 @@ class baseVersionRepository extends EntityRepository {
 	protected function addJoins(QueryBuilder $qb, $adds, $joined = null) {
 		if($joined === null || !is_string($joined)) $joined = self::ELEMENT;
 		if(!($qb instanceOf QueryBuilder)) $qb = $this->createQueryBuilder($joined);
-		foreach ($adds as $field => $childs) {
+		if(is_array($adds)) foreach ($adds as $field => $childs) {
 			$itemField = $joined.'.'.$field;
 			if(!is_array($childs)) $childs = array();
 			$qb->leftJoin($itemField, $field)

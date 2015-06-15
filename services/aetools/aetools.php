@@ -55,6 +55,7 @@ class aetools {
 	protected $memo = '__self';						// memo pour savePath pour ce service
 	protected $pathMemo = array();					// contenu des mémo pour savePath
 
+	protected $labo_parameters = array();			// paramètres du bundle / aetools
 
 
 
@@ -118,6 +119,10 @@ class aetools {
 		}
 		// nom du mémo
 		$this->memo = $this->getName().$this->memo;
+	}
+
+	public function setConfig($parameters) {
+		$this->labo_parameters = $parameters;
 	}
 
 	/**

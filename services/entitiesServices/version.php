@@ -119,25 +119,9 @@ class version extends entitesService {
 	*/
 	public function serviceEventInit(FilterControllerEvent $event, $reLoad = false) {
 		// $this->event = $event;
+		// $controller = $this->event->getController();
 		if($this->doReload($reLoad) === true) {
-			$adds = array(
-				'favicon' 			=> array(),
-				'logo'				=> array(),
-				'telephones'		=> array(
-					'typeTelephone'			=> array(),
-					'typeNatureTelephone'	=> array(),
-				),
-				'emails'			=> array(
-					'typeEmail'		=> array(),
-				),
-				'reseausocials'		=> array(
-					'typeReseau'			=> array(),
-				),
-				'imageEntete'		=> array(),
-				'adresses'			=> array(
-					'typeAdresse'			=> array(),
-				),
-			);
+			isset($this->labo_parameters['version_in_session']) ? $adds = $this->labo_parameters['version_in_session'] : $adds = array();
 			// Chargement de version
 			if($this->newVersionHote !== null) {
 				// changements d'hôte en priorité
@@ -152,13 +136,14 @@ class version extends entitesService {
 			// ajoute les infos des autres versions
 			$allVersions = $this->getRepo()->findAll();
 			$this->service['allVersions'] = array();
+			$fields = array('nom', 'slug', 'defaultVersion', 'nomDomaine', 'templateIndex');
 			if(is_array($allVersions)) {
 				foreach ($allVersions as $key => $version) {
-					$this->service['allVersions'][$key]['nom'] = $version->getNom();
-					$this->service['allVersions'][$key]['slug'] = $version->getSlug();
-					$this->service['allVersions'][$key]['defaultVersion'] = $version->getDefaultVersion();
-					$this->service['allVersions'][$key]['nomDomaine'] = $version->getNomDomaine();
-					$this->service['allVersions'][$key]['templateIndex'] = $version->getTemplateIndex();
+					$this->service['allVersions'][$key] = array();
+					foreach ($fields as $field) {
+						$method = $this->getMethodNameWith($field, 'get');
+						$this->service['allVersions'][$key][] = $version->$method();
+					}
 				}
 			}
 			$this->siteListener_InSession();
