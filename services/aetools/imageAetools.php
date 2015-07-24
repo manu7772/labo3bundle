@@ -64,7 +64,7 @@ class imageAetools extends aetools {
 			// x et y : dimensions en pixels
 			// mode : mode de rééchantillonnage (voir méthode "thumb_image()")
 			self::NOM_DOSSIER_ORIGINAL	=> array("nom"	=> self::NOM_DOSSIER_ORIGINAL,	"x"	=> null,		"y"	=> null,		"mode"	=> null,	"type" => null,				"ext" => null),
-			"article"	=> array("nom"	=> "article",	"x"	=> 205,		"y"	=> 156,		"mode"	=> "cut",	"type" => null,				"ext" => null),
+			"article"	=> array("nom"	=> "article",	"x"	=> 240,		"y"	=> 142,		"mode"	=> "cut",	"type" => null,				"ext" => null),
 			"tn152"		=> array("nom"	=> "tn152",		"x"	=> 152,		"y"	=> 152,		"mode"	=> "cut",	"type" => null,				"ext" => null),
 			"tn265in"	=> array("nom"	=> "tn265in",	"x"	=> 265,		"y"	=> 265,		"mode"	=> "in",	"type" => null,				"ext" => null),
 			"tn200"		=> array("nom"	=> "tn200",		"x"	=> 200,		"y"	=> 200,		"mode"	=> "cut",	"type" => null,				"ext" => null),
@@ -75,17 +75,17 @@ class imageAetools extends aetools {
 			"tn32"		=> array("nom"	=> "tn32",		"x"	=> 32,		"y"	=> 32,		"mode"	=> "cut",	"type" => null,				"ext" => null),
 			"logo"		=> array("nom"	=> "logo",		"x"	=> 172,		"y"	=> 55,		"mode"	=> "in",	"type" => null,				"ext" => null),
 			"optim"		=> array("nom"	=> "optim",		"x"	=> 800,		"y"	=> 600,		"mode"	=> "in",	"type" => null,				"ext" => null),
-			"favicons"	=> array("nom"	=> "favicons",	"x"	=> 16,		"y"	=> 16,		"mode"	=> "in",	"type" => "image/png",		"ext" => 'ico')
+			"favicon"	=> array("nom"	=> "favicon",	"x"	=> 16,		"y"	=> 16,		"mode"	=> "in",	"type" => "image/png",		"ext" => 'ico')
 		);
 		$this->declinaison = array(
 			"universel"		=> array(self::NOM_DOSSIER_ORIGINAL, "optim", "tn200", "tn128", "tn64"),
 			"user"			=> array(self::NOM_DOSSIER_ORIGINAL, "optim", "tn200", "tn128", "tn64"),
 			"avatar"		=> array(self::NOM_DOSSIER_ORIGINAL, "optim", "tn200", "tn128", "tn64", "tn32"),
-			"favicon"		=> array(self::NOM_DOSSIER_ORIGINAL, "favicons", "tn64"),
+			"favicon"		=> array(self::NOM_DOSSIER_ORIGINAL, "favicon"),
 			"ambiance"		=> array(self::NOM_DOSSIER_ORIGINAL, "optim", "tn200", "tn128", "tn64"),
 			"article"		=> array(self::NOM_DOSSIER_ORIGINAL, "optim", "article", "tn200", "tn128", "tn64"),
 			"diaporama"		=> array(self::NOM_DOSSIER_ORIGINAL, "optim", "tn200", "tn128", "tn64"),
-			"logo"			=> array(self::NOM_DOSSIER_ORIGINAL, "optim", "tn200", "tn128", "tn64", "tn64in", "logo", "favicons"),
+			"logo"			=> array(self::NOM_DOSSIER_ORIGINAL, "optim", "tn200", "tn128", "tn64", "tn64in", "logo", "favicon"),
 			"site"			=> array(self::NOM_DOSSIER_ORIGINAL, "optim", "tn200in", "tn64"),
 			"fiche"			=> array(self::NOM_DOSSIER_ORIGINAL, "optim", "tn265in", "tn200in", "tn152", "tn64"),
 			"evenement"		=> array(self::NOM_DOSSIER_ORIGINAL, "optim", "tn200in", "tn64"),

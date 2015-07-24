@@ -538,8 +538,14 @@ class twigAetools extends Twig_Extension {
 	}
 
 	public function prix($article) {
-		$parts = explode('.', $article['prix']);
-		return $parts[0].'<small>,'.$parts[1].'<sup>€</sup><span>/'.$article['unite']['nomcourt'].'</span></small>';
+		if(is_array($article)) {
+			$parts = explode('.', $article['prix']);
+			return $parts[0].'<small>,'.$parts[1].'<sup>€</sup><span>/'.$article['unite']['nomcourt'].'</span></small>';
+		}
+		if(is_object($article)) {
+			$parts = explode('.', $article->getPrix());
+			return $parts[0].'<small>,'.$parts[1].'<sup>€</sup><span>/'.$article->getUnite()->getNomcourt().'</span></small>';
+		}
 	}
 
 }

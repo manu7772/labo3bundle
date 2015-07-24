@@ -15,6 +15,6 @@ interface baseAttributsInterface {
 	public function removeAttributs();
 	public function existsAttribut($nom);
 	public function getAttributs();
-	public function getAttributsToArray();
+	public function getAttributsInArrayCollection();
 
 }

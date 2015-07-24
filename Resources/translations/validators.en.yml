@@ -1,0 +1,7 @@
+loader:
+    no_service:         "Labo : no service has been defined. Indicate some services to load, please."
+    services_disabled:  "Labo : loader is not enabled (to true). Please turn it to true."
+
+aetools:
+    labo_parameters:
+        not_an_array:   "Labo : labo_parameters is not an array."

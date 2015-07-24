@@ -13,6 +13,9 @@ use Symfony\Component\DependencyInjection\Loader;
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html}
  */
 class LaboExtension extends Extension {
+
+	const LABO_NAME = 'labo';
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -26,8 +29,8 @@ class LaboExtension extends Extension {
 		/** Ajoute les données de config pour les services aeTools
 		 * @link http://stackoverflow.com/questions/4821692/how-do-i-read-configuration-settings-from-symfony2-config-yml
 		 */
-		$container->getDefinition('labobundle.aetools')->addMethodCall('setConfig', array('labo' => $config));
-		$container->getDefinition('labobundle.entities')->addMethodCall('setConfig', array('labo' => $config));
-		$container->getDefinition('labobundle.version')->addMethodCall('setConfig', array('labo' => $config));
+		$container->getDefinition('labobundle.aetools')->addMethodCall('setConfig', array(self::LABO_NAME => $config));
+		$container->getDefinition('labobundle.entities')->addMethodCall('setConfig', array(self::LABO_NAME => $config));
+		// $container->getDefinition('labobundle.version')->addMethodCall('setConfig', array(self::LABO_NAME => $config));
 	}
 }

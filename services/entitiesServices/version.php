@@ -15,58 +15,44 @@ use \DateTime;
 class version extends entitesService {
 	// protected $service = array();
 	// protected $serviceData = false; // objet version
+	const ALLVERSIONS_NAME = 'allVersions';
+	const CURRENTVERSION_NAME = 'currentVersion';
 
-	protected $versionClassName;
-	// protected $actualVersion = null;
 	protected $container;
-
 
 	protected $newVersionHote = null;
 	protected $newVersionSlug = null;
-	protected $actualDomaine = null;
 	protected $previousDomaine = null;
 	protected $do_load = false;
 
 	public function __construct(ContainerInterface $container) {
 		parent::__construct($container);
-		// if(($this->init["categorie"] === false) || ($this->modeFixtures === true))
-		$this->versionClassName = $this->getVersionEntityClassName();
-		$this->defineEntity($this->versionClassName);
-		// $this->initDataVersion();
+		// $this->getCurrentVersion();
+		$this->consoleLog("SERVICE Version : ".$this->getVersionEntityShortName());
+		$this->defineEntity($this->getVersionEntityShortName());
+		$this->initDataVersion();
+		return $this;
 	}
 
+	/**
+	 * Initialise les données pour le service
+	 * @return version
+	 */
 	protected function initDataVersion() {
+		return $this;
+	}
+
+	/**
+	 * Initialise les données pour Listener
+	 * @return version
+	 */
+	protected function initDataVersionForListener() {
 		$this->do_load = !$this->isSiteListener_InSession();
 		$this->newVersionHote = null;
 		$this->newVersionSlug = null;
 		$this->memoriseActualDomaine();
 		$this->verifyChangedDomaine();
 		$this->verifyRequestChangeDomaine();
-	}
-
-	protected function getActualDomaine() {
-		// !!!!! remplacer par un preg_replace
-		if($this->actualDomaine === null) $this->actualDomaine = str_replace(array("http://www.","https://www.","www."), "", $this->serviceRequ->getHost());
-		return $this->actualDomaine;
- 	}
-
-	/**
-	 * Mémorise le domaine dans le flashbag
-	 * @return tring
-	 */
-	protected function getMemorisedDomaine() {
-		if($this->previousDomaine === null) $this->previousDomaine = $this->sessionData->get("hote");
-		return $this->previousDomaine;
-	}
-
-	/**
-	 * Mémorise le domaine dans la session / le flashbag
-	 * @return version
-	 */
-	protected function memoriseActualDomaine() {
-		$this->getMemorisedDomaine();
-		$this->sessionData->set("hote", $this->getActualDomaine());
-		// $this->flashBag->add("hote", $this->getActualDomaine());
 		return $this;
 	}
 
@@ -105,7 +91,7 @@ class version extends entitesService {
 	 * @return boolean
 	 */
 	protected function doReload($reLoad = false) {
-		$this->initDataVersion();
+		$this->initDataVersionForListener();
 		if($reLoad === true) $this->do_load = true;
 		return $this->do_load;
 	}
@@ -121,28 +107,32 @@ class version extends entitesService {
 		// $this->event = $event;
 		// $controller = $this->event->getController();
 		if($this->doReload($reLoad) === true) {
-			isset($this->labo_parameters['version_in_session']) ? $adds = $this->labo_parameters['version_in_session'] : $adds = array();
+			$adds = $this->getConfig('version_in_session');
+			$this->service = array();
+			// echo('<pre><h3>VERSION</h3>');
+			// var_dump($adds);
+			// echo('</pre>');
 			// Chargement de version
 			if($this->newVersionHote !== null) {
 				// changements d'hôte EN PRIORITÉ
-				$this->service = $this->getRepo()->getVersionArray($this->newVersionHote, "hote", $adds);
+				$this->service[self::CURRENTVERSION_NAME] = $this->getRepo()->findVersionWithLinks($this->newVersionHote, "hote", $adds);
 			} else if($this->newVersionSlug !== null) {
 				// si changement par requête
-				$this->service = $this->getRepo()->getVersionArray($this->newVersionSlug, 'slug', $adds);
+				$this->service[self::CURRENTVERSION_NAME] = $this->getRepo()->findVersionWithLinks($this->newVersionSlug, 'slug', $adds);
 			} else {
 				// version par défaut
-				$this->service = $this->getRepo()->getVersionArray(null, null, $adds);
+				$this->service[self::CURRENTVERSION_NAME] = $this->getRepo()->findVersionWithLinks(null, null, $adds);
 			}
 			// ajoute les infos des autres versions
 			$allVersions = $this->getRepo()->findAll();
-			$this->service['allVersions'] = array();
+			$this->service[self::ALLVERSIONS_NAME] = array();
 			$fields = array('nom', 'slug', 'defaultVersion', 'nomDomaine', 'templateIndex');
 			if(is_array($allVersions)) {
 				foreach ($allVersions as $key => $version) {
-					$this->service['allVersions'][$key] = array();
+					$this->service[self::ALLVERSIONS_NAME][$key] = array();
 					foreach ($fields as $field) {
 						$method = $this->getMethodNameWith($field, 'get');
-						$this->service['allVersions'][$key][] = $version->$method();
+						$this->service[self::ALLVERSIONS_NAME][$key][$field] = $version->$method();
 					}
 				}
 			}

@@ -3,5 +3,16 @@
 {% block navbar %}{{ parent() }}{% endblock navbar %}
 
 {% block body_container %}
-	<p>BONJOUR !<br>vous êtes sur labo3 !!</p>
+<div class="row">
+	<div class="col-xs-12">
+		<div class="jumbotron">
+			<h2><i class='fa fa-cube fa-3x text-navy'></i> <strong>{{ 'root.labo'|trans({}, 'labo')|capitalize }}</strong></h2>
+			<p>{{ 'intro.paragraphe1'|trans({}, 'labo')|capitalize }}</p>
+			<p><a role="button" class="btn btn-primary btn-md">{{ 'root.savoirplus'|trans({}, 'labo')|capitalize }}</a></p>
+		</div>
+	</div>
+	{% include('laboBundle:blocks:menu_commerce.html.twig') %}
+</div>
 {% endblock body_container %}
+
+{% block iBoxs %}{{ parent() }}{% endblock iBoxs %}

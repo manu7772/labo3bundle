@@ -1,0 +1,101 @@
+root:
+    labo:                       "Labo v.3.0"
+    savoirplus:                 "en savoir plus"
+    webportail:                 "portail web"
+    copyright:                  "copyright"
+    homepage:                   "sommaire"
+    site_main:                  "web site"
+    retour:                     "retour au"
+
+intro:
+    paragraphe1:                "Environnement de gestion de site"
+
+traduction:
+    traduction:                 traduction
+    texte:                      texte
+    helper:                     saisissez un texte afin d'en afficher la traduction
+    request:                    entrez un texte à traduire…
+    traduire:                   traduire
+    original:                   texte original
+    traduit:                    texte traduit
+
+dashTopMenu:
+    langues:                    langues
+    bienvenue:                  bienvenue sur
+
+search:
+    resultats:                  "résultats pour"
+    recherche:                  "recherche"
+    aucun_element:              "aucun élément"
+    filtre:                     "filtre"
+
+tag:
+    index:
+        addSpeech: "Pour ajouter plusieurs tags en une fois, séparez-les par des virgules."
+
+menu:
+    commerce:                   "commerce"
+    articles:                   "articles"
+    commandes:                  "commandes"
+    categories:                 "catégories"
+    medias:                     "medias"
+    images:                     "images"
+    videos:                     "videos"
+    fichiers:                   "fichiers"
+
+français:                       "français"
+anglais:                        "anglais"
+espagnol:                       "espagnol"
+italien:                        "italien"
+russe:                          "russe"
+américain:                      "américain"
+site en:                        "site en"
+quitter:                        "quitter"
+paramètres:                     "paramètres"
+profil:                         "profil"
+connexion:                      "connexion"
+informations:                   "informations"
+télécharger:                    "télécharger"
+tags:                           "tags"
+tag:                            "tag"
+homepage:                       "accueil"
+arborescence:                   "arborescence"
+parents:                        "parents"
+parent:                         "parent"
+enfants:                        "enfants"
+enfant:                         "enfant"
+
+# items
+dossier:                        "dossier"
+fichier:                        "fichier"
+
+# site public : homepage
+consultation documentaire:      "consultation documentaire"
+gestion documentaire:           "gestion documentaire"
+site web public:                "site web public"
+
+acceuil:                        accueil
+utilisateurs:                   utilisateurs
+utilisateur:                    utilisateur
+groupes:                        groupes
+documents:                      documents
+fichiers:                       files
+dossiers:                       dossiers
+racine:                         racine
+tous:                           tous
+versions:                       versions
+réglages:                       configuration
+formats de fichiers:            "files types"
+
+tables:
+    actions:                     "actions"
+
+article:
+    nom:                        "nom"
+    unite:                      "unité"
+    prix:                       "prix"
+    tva:                        "tva"
+    image:                      "image"
+    tags:                       "tags"
+    dateCreation:               "date création"
+    dateMaj:                    "date modification"

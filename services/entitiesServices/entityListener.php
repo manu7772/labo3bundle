@@ -8,6 +8,8 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+// aetools
+use laboBundle\services\aetools\aetools;
 
 use AcmeGroup\LaboBundle\Entity\version;
 
@@ -17,24 +19,24 @@ class entityListener implements EventSubscriber {
 
 	// const ENTITY_IMAGE_BASENAME = 'base_entity_image';
 
-	private $eventArgs;
-	private $em;
-	private $repoVersion;
-	private $currentVersion;
-	private $ession;
-	private $repo;
-	private $entity;
-	private $container;
-	private $entityName;
-	private $entityNameSpace;
-	private $uow;
+	protected $eventArgs;
+	protected $em;
+	protected $repoVersion;
+	protected $currentVersion;
+	protected $ession;
+	protected $repo;
+	protected $entity;
+	protected $container;
+	protected $entityName;
+	protected $entityNameSpace;
+	protected $uow;
 
 	protected $entityService;		// service entité
-	// private $aetools;
-	private $imagetools;
-	private $creation = false;
-	private $EmSaved = true;
-	private $savedEm;
+	protected $aetools;
+	protected $imagetools;
+	protected $creation = false;
+	protected $EmSaved = true;
+	protected $savedEm;
 
 	public function __construct(ContainerInterface $container) {
 		// parent::__construct();
@@ -91,6 +93,7 @@ class entityListener implements EventSubscriber {
 		$this->entityNameSpace = get_class($this->entity);
 		$this->em = $eventArgs->getEntityManager();
 		$this->eventArgs = $eventArgs;
+		$this->aetools = $this->container->get("labobundle.aetools");
 		$this->entityService = $this->container->get("labobundle.entities");
 		$this->entityService->defineEntity($this->entityNameSpace);
 		$this->entityName = $this->entityService->getEntityShortName();
@@ -98,7 +101,7 @@ class entityListener implements EventSubscriber {
 		$this->uow = $this->em->getUnitOfWork();
 		// détection fixtures :
 		$this->currentVersion = false;
-		if($this->entityService->isControllerPresent()) {
+		if($this->aetools->isControllerPresent()) {
 			// pas en mode fixtures
 			// $this->session = $this->container->get('session')->get($this->entityService->getVersionEntityShortName());
 			// $ver = $this->entityService->getCurrentVersionSlug();
@@ -214,25 +217,29 @@ class entityListener implements EventSubscriber {
 	 * sur PrePersist()
 	 */
 	public function PreUpload() {
-		// $this->SPYwrite('- preUpload() sur '.$this->entityName);
-		if(method_exists($this->entity, '__call') || method_exists($this->entity, 'isImage')) {
+		// if(method_exists($this->entity, '__call') || method_exists($this->entity, 'isImage')) {
+		if(method_exists($this->entity, '__call')) {
 			if($this->entity->isImage()) {
-				if(null === $this->entity->getFile() && $this->entityService->isControllerPresent()) {
-					// $this->SPYwrite('- Pas d\'image pour '.$this->entityName);
+				if(null === $this->entity->getFile() && $this->aetools->isControllerPresent()) {
+					// image optionnelle
 					return;
 				} else {
-					// $this->SPYwrite('- Remplissage des données image');
 					$this->creation = true;
 					if($this->entity->getFichierOrigine() === null) {
 						// formualaire ou file
-						$fichOrig = $this->entity->getFile()->getClientOriginalName();
-						$this->entity->setFichierOrigine($fichOrig);
+						$this->entity->setFichierOrigine($this->entity->getFile()->getClientOriginalName());
 						$this->entity->setExt($this->entity->getFile()->guessExtension());
 						$GFile = $this->entity->getFile();
 					} else {
 						// fixtures
-						$path = "src/AcmeGroup/SiteBundle/Resources/public/images_fixtures/";
-						$GFile = $path.$this->entity->getFichierOrigine();
+						$dossiersXML = $this->aetools->exploreDir('src/', '^(images_fixtures)$', 'dossiers', true, false);
+						// $path = "src/AcmeGroup/SiteBundle/Resources/public/images_fixtures/";
+						$GFile = array();
+						foreach ($dossiersXML as $path) {
+							if(file_exists($path['full'].'/'.$this->entity->getFichierOrigine())) $GFile[] = $path['full'].'/'.$this->entity->getFichierOrigine();
+						}
+						$GFile = reset($GFile);
+						$this->aetools->writeConsole($GFile);
 					}
 					// nom
 					if($this->entity->getNom() === null) $this->entity->setNom($this->entity->getFichierOrigine());
@@ -245,7 +252,7 @@ class entityListener implements EventSubscriber {
 						$ext = explode("/", image_type_to_mime_type($size[2]));
 						$this->entity->setExt($ext[1]);
 						// $ext = explode(".", $this->entity->getFichierOrigine());
-						// $this->entity->setExt($ext[count($ext) - 1]);
+						// $this->entity->setExt(end($ext));
 					}
 					// Création du nom d'enregistrement de l'image / enregistrement du fichier original
 					$date = new DateTime();
@@ -256,11 +263,13 @@ class entityListener implements EventSubscriber {
 	}
 
 	public function addCurrentVersion() {
-		if($this->currentVersion instanceOf version) {
-			if(method_exists($this->entity, "setVersion")) {
-				$this->entity->setVersion($this->currentVersion);
-			} else if(method_exists($this->entity, "addVersion")) {
-				$this->entity->addVersion($this->currentVersion);
+		if($this->aetools->isControllerPresent()) {
+			if($this->currentVersion instanceOf version) {
+				if(method_exists($this->entity, "setVersion")) {
+					$this->entity->setVersion($this->currentVersion);
+				} else if(method_exists($this->entity, "addVersion")) {
+					$this->entity->addVersion($this->currentVersion);
+				}
 			}
 		}
 	}
@@ -271,7 +280,7 @@ class entityListener implements EventSubscriber {
 	 * sur PreUpdate()
 	 */
 	public function PreUpdateUpload() {
-		if(method_exists($this->entity, '__call') || method_exists($this->entity, 'isImage')) {
+		if(method_exists($this->entity, '__call')) {
 			if($this->entity->isImage()) {
 				// $this->imagetools->checkDeclinaisonsImage($this->entity);
 			}
@@ -285,7 +294,7 @@ class entityListener implements EventSubscriber {
 	 * sur PostUpdate()
 	 */
 	public function upload() {
-		if(method_exists($this->entity, '__call') || method_exists($this->entity, 'isImage')) {
+		if(method_exists($this->entity, '__call')) {
 			if($this->entity->isImage()) {
 				if($this->creation === true) {
 					// persist
@@ -306,7 +315,7 @@ class entityListener implements EventSubscriber {
 	 */
 	public function preRemoveUpload() {
 		// mémorise l'image à supprimer
-		if(method_exists($this->entity, '__call') || method_exists($this->entity, 'isImage')) {
+		if(method_exists($this->entity, '__call')) {
 			if($this->entity->isImage()) {
 				$this->entity->setTempFileName($this->entity->getFichierNom());
 			}
@@ -320,7 +329,7 @@ class entityListener implements EventSubscriber {
 	 */
 	public function removeUpload() {
 		// Supprime l'image
-		if(method_exists($this->entity, '__call') || method_exists($this->entity, 'isImage')) {
+		if(method_exists($this->entity, '__call')) {
 			if($this->entity->isImage()) {
 				$this->imagetools->unlinkEverywhereImage($this->entity->getTempFileName());
 			}

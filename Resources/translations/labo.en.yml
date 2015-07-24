@@ -1,0 +1,101 @@
+root:
+    labo:                       "Labo v.3.0"
+    savoirplus:                 "learn more"
+    webportail:                 "web portal"
+    copyright:                  "copyright"
+    homepage:                   "labo home"
+    site_main:                  "web site"
+    retour:                     "back to"
+
+intro:
+    paragraphe1:                "Website manager"
+
+traduction:
+    traduction:                 translation
+    texte:                      text
+    helper:                     enter your text up to translate it below
+    request:                    submit a text for translation…
+    traduire:                   translate
+    original:                   original text
+    traduit:                    translated text
+
+dashTopMenu:
+    langues:                    languages
+    bienvenue:                  welcome on
+
+search:
+    resultats:                  "results for"
+    recherche:                  "search"
+    aucun_element:              "no result"
+    filtre:                     "filter"
+
+tag:
+    index:
+        addSpeech: "For adding multiple tags, separate them with coma."
+
+menu:
+    commerce:                   "marketing"
+    articles:                   "products"
+    commandes:                  "sales"
+    categories:                 "categories"
+    medias:                     "media"
+    images:                     "pictures"
+    videos:                     "videos"
+    fichiers:                   "files"
+
+français:                       "french"
+anglais:                        "english"
+espagnol:                       "spanish"
+italien:                        "italian"
+russe:                          "russian"
+américain:                      "US english"
+site en:                        "View site in"
+quitter:                        "Exit"
+paramètres:                     "parameters"
+profil:                         "profile"
+connexion:                      "connexion"
+informations:                   "informations"
+télécharger:                    "download"
+tags:                           "tags"
+tag:                            "tag"
+homepage:                       "homepage"
+arborescence:                   "tree"
+parents:                        "parents"
+parent:                         "parent"
+enfants:                        "children"
+enfant:                         "child"
+
+# items
+dossier:                        "folder"
+fichier:                        "file"
+
+# site public : homepage
+consultation documentaire:      "Consult documents"
+gestion documentaire:           "Documents manager"
+site web public:                "Public website"
+
+acceuil:                        home
+utilisateurs:                   users
+utilisateur:                    user
+groupes:                        groups
+documents:                      documents
+fichiers:                       files
+dossiers:                       folders
+racine:                         root
+tous:                           all
+versions:                       versions
+réglages:                       configuration
+formats de fichiers:            "files types"
+
+tables:
+    actions:                     "actions"
+
+article:
+    nom:                        "name"
+    unite:                      "unit"
+    prix:                       "price"
+    tva:                        "tva"
+    image:                      "picture"
+    tags:                       "tags"
+    dateCreation:               "date creation"
+    dateMaj:                    "date update"

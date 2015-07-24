@@ -1,0 +1,63 @@
+{% extends "laboBundle::laboHomepage.html.twig" %}
+
+{% block navbar %}{{ parent() }}{% endblock navbar %}
+
+{% block body_container %}
+<div class="row">
+	<div class="col-xs-12">
+		<div class="ibox float-e-margins">
+			<div class="ibox-title">
+				<h2><i class="fa {{ menu_Admin.commerce.level2.articles.icon|default(default_icon) }}"></i> {{ menu_Admin.commerce.level2.articles.nom|trans({}, 'labo')|capitalize }}</h2>
+			</div>
+			{% if articles|length > 0 %}
+			<div class="ibox-content">
+				<table class="table table-striped table-bordered table-hover dataTables dataTable dtr-inline" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info">
+					<thead>
+						<tr>
+							{% if app.environment in ['dev','test'] or is_granted(restrict_admin_bko) %}<th>id</th>{% endif %}
+							<th>{{ 'article.nom'|trans({}, 'labo')|capitalize }}</th>
+							<th>{{ 'tables.actions'|trans({}, 'labo')|capitalize }}</th>
+							<th>{{ 'article.prix'|trans({}, 'labo')|capitalize }}&nbsp;<sup>TTC/U</sup></th>
+							<th>{{ 'article.unite'|trans({}, 'labo')|capitalize }}</th>
+							<th>{{ 'article.tva'|trans({}, 'labo')|capitalize }}&nbsp;%</th>
+							<th>{{ 'article.image'|trans({}, 'labo')|capitalize }}</th>
+							<th>{{ 'article.tags'|trans({}, 'labo')|capitalize }}</th>
+							<th>{{ 'article.dateCreation'|trans({}, 'labo')|capitalize }}</th>
+							<th>{{ 'article.dateMaj'|trans({}, 'labo')|capitalize }}</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for article in articles %}
+						<tr>
+							{% if app.environment in ['dev','test'] or is_granted(restrict_admin_bko) %}<td class="text-center">{{ article.id }}</td>{% endif %}
+							<td><strong>{{ article.nom }}</strong></td>
+							<td></td>
+							<td class="text-right">{{ article.prix|number_format(2, ',', '') }}<sup>€/{{ article.unite.nomcourt }}</sup></td>
+							<td class="text-center">{{ article.unite.nom }}</td>
+							<td class="text-right">{{ article.tva.taux|default('-')|number_format(2, ',', '') }}&nbsp;%</td>
+							<td class="text-center">
+								{% if article.imagePpale.fichierNom is defined %}
+								<img src="{{ asset('images/original/' ~ article.imagePpale.fichierNom) }}" class="img-thumbnail" style="width:100px;">
+								{% else %}
+								<i class='fa fa-ban fa-3x text-muted'></i>
+								{% endif %}
+							</td>
+							<td>{% for tag in article.tags %}<span class="label">{{ tag.nom }}</span>{% endfor %}</td>
+							<td class="text-center">{{ article.dateCreation|date('d/m/Y') }}</td>
+							<td class="text-center">{{ article.dateMaj|date('d/m/Y') }}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+			{% else %}
+			<div class="ibox-content">
+				<h3 class="alert alert-danger"><i class="fa fa-ban"></i> {{ 'search.aucun_element'|trans({}, 'labo')|capitalize }}</h3>
+			</div>
+			{% endif %}
+		</div>
+	</div>
+</div>
+{% endblock body_container %}
+
+{% block iBoxs %}{{ parent() }}{% endblock iBoxs %}

@@ -8,30 +8,41 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+// services
+use laboBundle\services\framework\pagesModules\primarydata;
+
+use \Exception;
 
 class siteListener {
 
 	const SERVICE_METHODE = "serviceEventInit";
 
-	private $container;
-	private $itClass = array();
-	private $serviceMethode;
-	private $items = array(	// entités à initialiser
-		"labobundle.aetools",
-		// "labobundle.entities",
-		// "labobundle.parametre",
-		"labobundle.version",
-		// "labobundle.pageweb",
-		// "labobundle.categorie",
-		// "labobundle.directeditor",
-		);
+	protected $container;
+	protected $itClass = array();
+	protected $serviceMethode;
+	protected $translator;
 
 	public function __construct(ContainerInterface $container) {
 		$this->container = $container;
+		$this->aetools = $this->container->get('labobundle.aetools');
 		$this->serviceSess = $this->container->get('request')->getSession();
 		$this->serviceMethode = self::SERVICE_METHODE;
-		foreach($this->items as $item) {
-			$this->itClass[$item] = $this->container->get($item);
+		$this->translator = $this->container->get('translator');
+		// chargement des paramètres
+		$launch_service = $this->aetools->getConfig('launch_service');
+		// echo('<pre><h3>SERVICES</h3>');
+		// var_dump($launch_service);
+		// echo('</pre>');
+		if(isset($launch_service['activate'])) {
+			if($launch_service['activate'] === true) {
+				foreach($launch_service['resources']['services'] as $item) {
+					$this->itClass[$item['name']] = $this->container->get($item['name']);
+				}
+			} else {
+				throw new Exception($this->translator->trans("loader.services_disabled", array(), 'validators'), 1);
+			}
+		} else {
+			throw new Exception($this->translator->trans("loader.no_service", array(), 'validators'), 1);
 		}
 	}
 
@@ -44,6 +55,12 @@ class siteListener {
 		// Chargement des services, dans l'ordre de $this->items
 		$serviceMethode = $this->serviceMethode;
 		if(HttpKernelInterface::MASTER_REQUEST === $event->getRequestType()) {
+			// primarydata
+			$primarydata = new primarydata();
+			if(method_exists($primarydata, $serviceMethode) && ($this->aetools->getBundleShortName() === $this->aetools->getConfig('labo_bundle'))) {
+				// echo('Init Primary -> only for Labo');
+				$primarydata->$serviceMethode($event);
+			}
 			// initialisation des services
 			foreach($this->itClass as $nom => $item) {
 				if(method_exists($this->itClass[$nom], $serviceMethode)) {
@@ -61,7 +78,7 @@ class siteListener {
 	// }
 
 	// TEST DEV
-	// private function aff($event) {
+	// protected function aff($event) {
 	// 	// affichage :
 	// 	if(strtolower($this->container->get('acmeGroup.aetools')->getEnv()) !== "prod") {
 	// 		echo('MASTER_REQUEST : '.HttpKernelInterface::MASTER_REQUEST."<br >");

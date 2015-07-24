@@ -1,0 +1,57 @@
+<div class="row border-bottom white-bg">
+	<nav class="navbar navbar-static-top" role="navigation">
+		<div class="navbar-header">
+			<button aria-controls="navbar" aria-expanded="false" data-target="#navbar" data-toggle="collapse" class="navbar-toggle collapsed" type="button">
+				<i class="fa fa-reorder"></i>
+			</button>
+			<a href="{{ path('acme_site_home') }}" class="navbar-brand">{{ 'root.homepage'|trans({}, 'labo')|capitalize }}</a>
+		</div>
+		<div class="navbar-collapse collapse" id="navbar">
+			<ul class="nav navbar-nav">
+				<li>
+					<a aria-expanded="false" role="button" href="{{ path('labo_home') }}"> {{ 'root.site_main'|trans({}, 'labo')|capitalize }}</a>
+				</li>
+			</ul>
+			<ul class="nav navbar-top-links navbar-right">
+				<li class="dropdown">
+					<a aria-expanded="false" role="button" class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
+						<i class="fa fa-flag"></i> {{ 'dashTopMenu.langues'|trans({}, 'labo')|capitalize }} <span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu dropdown-alerts">
+						{% set current_locale = 'labo' %}
+						{% set route_params = app.request.attributes.get('_route_params') %}
+						{% if route_params is not iterable %}{% set route_params = {} %}{% endif %}
+						{% for langue in list_locales[current_locale]|split('|') %}
+						{% set route_params = route_params|merge({_locale: langue}) %}
+						<li>
+							<a href="{{ path('app.request.attributes.get('_route')', route_params) }}">
+								<div>
+									{{ languename[langue]|trans({}, 'labo')|capitalize }}
+									<span class="pull-right text-muted small">{{ 'site en'|trans({}, 'labo', langue)|capitalize }} {{ languename[langue]|trans({}, 'labo', langue) }}</span>
+								</div>
+							</a>
+						</li>
+						{% endfor %}
+					</ul>
+				</li>
+				<li class="dropdown">
+					<a aria-expanded="false" role="button" class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
+						<i class="fa fa-user"></i> {{ app.user.username }} <span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu dropdown-alerts">
+						<li>
+							<a href="{{ path('fos_user_profile_show') }}">
+								<div><i class="fa fa-user"></i> {{ 'profil'|trans({}, 'labo')|capitalize }}</div>
+							</a>
+						</li>
+						<li>
+							<a href="{{ path('fos_user_security_logout') }}">
+								<div><i class="fa fa-sign-out"></i> {{ 'quitter'|trans({}, 'labo')|capitalize }}</div>
+							</a>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</nav>
+</div><h1>NAVBAR</h1>

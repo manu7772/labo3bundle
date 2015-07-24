@@ -1,6 +1,8 @@
 parameters:
     labo_bundle.aetools.route:    laboBundle\services\aetools
     labo_bundle.entities.route:   laboBundle\services\entitiesServices
+    labo_bundle.framework.route:   laboBundle\services\framework
+    labo_bundle.framework.modules.route:   laboBundle\services\framework\pagesModules
 
 services:
 
@@ -14,10 +16,10 @@ services:
         arguments: [@service_container]
 
     # Formalisation de format de réponse
-    labobundle.aeReponse:
-        class: %labo_bundle.aetools.route%\aeReponse
-        arguments: [@service_container]
-        scope: prototype
+    # labobundle.aeReponse:
+    #     class: %labo_bundle.aetools.route%\aeReponse
+    #     arguments: [@service_container]
+    #     scope: prototype
 
     # Fonctions textes utiles et pratiques pour utilisation dans TWIG
     labobundle.textutilities:
@@ -38,6 +40,7 @@ services:
 #         class: %labo_bundle.aetools.route%\parametre
 #         arguments: [@service_container]
 
+
 #     ###################################
 #     ### OUTILS IMAGES
 #     ###################################
@@ -57,6 +60,7 @@ services:
         class: %labo_bundle.aetools.route%\CSVreader
         arguments: []
 
+
 #     ###################################
 #     ### OUTILS ENTITÉS
 #     ###################################
@@ -66,88 +70,38 @@ services:
         class: %labo_bundle.entities.route%\entitesService
         arguments: [@service_container]
 
+    # # Fonctionnalités de gestion des versions (sociétés)
+    # labobundle.version:
+    #     class: %labo_bundle.entities.route%\version
+    #     arguments: [@service_container]
+
     # Fonctionnalités de gestion des versions (sociétés)
-    labobundle.version:
-        class: %labo_bundle.entities.route%\version
+    labobundle.categorie:
+        class: %labo_bundle.entities.route%\categorie
         arguments: [@service_container]
 
-#     # Fonctionnalités de gestion des pages web
-#     labobundle.pageweb:
-#         class: %labo_bundle.entities.route%\pageweb
-#         arguments: [@service_container]
 
-#     # Fonctionnalités de gestion des collections
-#     labobundle.collection:
-#         class: %labo_bundle.entities.route%\collection
-#         arguments: [@service_container]
+#     ###################################
+#     ### TEMPLATE PAGES
+#     ###################################
 
-#     # Fonctionnalités de gestion des votes
-#     labobundle.votes:
-#         class: %labo_bundle.entities.route%\votes
-#         arguments: [@service_container]
+    # gestion des données primaires
+    labobundle.primarydata:
+        class: %labo_bundle.framework.modules.route%\primarydata
+        # arguments: [@service_container]
+        # tags:
+        #     - { name: kernel.event_listener, event: kernel.controller, method: serviceEventInit }
 
-#     # Fonctionnalités de gestion des visites sur le site
-#     labobundle.visite:
-#         class: %labo_bundle.entities.route%\visite
-#         arguments: [@service_container]
+    # gestion des pages
+    labobundle.pages:
+        class: %labo_bundle.framework.route%\pages
+        arguments: [@service_container]
 
-#     # Fonctionnalités de categorie
-#     labobundle.categorie:
-#         class: %labo_bundle.entities.route%\categorie
-#         arguments: [@service_container]
+    # gestion des pages
+    labobundle.pages.labo:
+        class: %labo_bundle.framework.route%\pageslabo
+        arguments: [@service_container]
 
-#     # Fonctionnalités pour articles
-#     labobundle.article:
-#         class: %labo_bundle.entities.route%\article
-#         arguments: [@service_container]
-
-#     # Atelier créatif et fiches
-#     labobundle.atelierCreatif:
-#         class: %labo_bundle.entities.route%\atelierCreatif
-#         arguments: [@service_container]
-
-#     # magasins
-#     labobundle.magasin:
-#         class: %labo_bundle.entities.route%\magasin
-#         arguments: [@service_container]
-
-#     # videos
-#     labobundle.video:
-#         class: %labo_bundle.entities.route%\video
-#         arguments: [@service_container]
-
-#     # évènements
-#     labobundle.events:
-#         class: %labo_bundle.entities.route%\evenement
-#         arguments: [@service_container]
-
-#     # presse
-#     labobundle.presse:
-#         class: %labo_bundle.entities.route%\presse
-#         arguments: [@service_container]
-
-#     # factures
-#     labobundle.facture:
-#         class: %labo_bundle.entities.route%\facture
-#         arguments: [@service_container]
-
-#     # aelogs
-#     labobundle.aelog:
-#         class: %labo_bundle.entities.route%\aelog
-#         arguments: [@service_container]
-
-#     # Fonctionnalités de gestion du panier d'achat
-#     # -> synthèses, ajouts, suppressions, etc. de produits dans le panier
-#     labobundle.panier:
-#         class: %labo_bundle.entities.route%\panier
-#         arguments: [@service_container]
-#         # scope: request
-
-#     labobundle.directeditor:
-#         class: %labo_bundle.entities.route%\directeditor
-#         arguments: [@service_container]
-#         tags:
-#             - { name: twig.extension }
 
 #     ###################################
 #     ### EVENT LISTENER AU DÉMARRAGE DE REQUETE PRINCIPALE

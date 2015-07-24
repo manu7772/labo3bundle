@@ -3,6 +3,7 @@
 namespace laboBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\ORM\QueryBuilder;
 use \Exception;
 use \DateTime;
@@ -17,25 +18,32 @@ class baseVersionRepository extends EntityRepository {
 
 	const ELEMENT = 'element';
 
+	protected $versionSlug = null;
+	// valeurs possibles :
+	// null = version par défaut (defaultVersion = true)
+	// false = pas de test de version
+	// string = slug de la version à recherche
+
 	/**
-	* defaultVal
-	* Renvoie l'instance de la version par défaut (ou null)
-	*/
+	 * defaultVal
+	 * Renvoie l'instance de la version par défaut (ou null)
+	 * @return version / false si non trouvée
+	 */
 	public function defaultVal() {
 		return $this->defaultVersion();
 	}
 
 	/**
-	* defaultVersion
-	* Renvoie l'instance de la version par défaut (ou null)
-	*/
+	 * Renvoie l'instance de la version par défaut (ou null)
+	 * @return version / false si non trouvée
+	 */
 	public function defaultVersion() {
 		$qb = $this->getQbWithDefaultVersion();
 		try {
 			$result = $qb->getQuery()->getSingleResult();
 		} catch (Exception $e) {
 			// printf("Aucun résultat pour la version par défaut…\n");
-			$result = null;
+			$result = false;
 		}
 		return $result;
 	}
@@ -45,14 +53,14 @@ class baseVersionRepository extends EntityRepository {
 	}
 
 	/**
-	* Renvoie les données de version en array
-	* @param string $valeur - valeur recherchée
-	* @param string $champ - champ dans lequel la valeur est recherchée
-	* @param array $adds - éléments associés à ajouter (leftJoin) sous forme d'array (multiples niveaux possibles)
-	* @return array
-	*/
-	public function getVersionArray($valeur = null, $champ = 'slug', $adds = null) {
-		if(is_string($valeur) && strlen($valeur) > 0) {
+	 * Renvoie les données de version en array
+	 * @param string $valeur - valeur recherchée
+	 * @param string $champ - champ dans lequel la valeur est recherchée
+	 * @param array $adds - éléments associés à ajouter (leftJoin) sous forme d'array (multiples niveaux possibles)
+	 * @return array
+	 */
+	public function findVersionWithLinks($valeur = null, $champ = 'slug', $adds = null) {
+		if($valeur !== null) {
 			$qb = $this->createQueryBuilder(self::ELEMENT);
 			$qb->where(self::ELEMENT.'.'.$champ.' = :val')
 				->setParameter('val', $valeur);
@@ -61,10 +69,12 @@ class baseVersionRepository extends EntityRepository {
 			$qb = $this->getQbWithDefaultVersion();
 			$errorMessage = "Il n'existe pas de version par défaut.";
 		}
-		if($adds === null) $adds = $this->getElementsForSession();
+		// if($adds === null) $adds = $this->getElementsForSession();
 		$qb = $this->addJoins($qb, $adds);
-		$result = $qb->getQuery()->getArrayResult();
-		if(is_array($result) && count($result) > 0) return reset($result);
+		$version = $qb->getQuery()->getOneOrNullResult();
+		// echo('<p>recherche version : '.$version->getNom().'</p>');
+		return $version;
+		// if(count($versions) > 0) return reset($versions);
 		throw new Exception($errorMessage, 1);
 	}
 
@@ -77,22 +87,42 @@ class baseVersionRepository extends EntityRepository {
 	 */
 	protected function addJoins(QueryBuilder $qb, $adds, $joined = null) {
 		if($joined === null || !is_string($joined)) $joined = self::ELEMENT;
-		if(!($qb instanceOf QueryBuilder)) $qb = $this->createQueryBuilder($joined);
-		if(is_array($adds)) foreach ($adds as $field => $childs) {
+		if(is_array($adds)) foreach($adds as $field => $childs) {
 			$itemField = $joined.'.'.$field;
 			if(!is_array($childs)) $childs = array();
 			$qb->leftJoin($itemField, $joined.$field)
-				->addSelect($joined.$field)
-				;
+				->addSelect($joined.$field);
+			// echo('$qb->leftJoin('.$itemField.', '.$joined.$field.')<br>->addSelect('.$joined.$field.')'.'<br>');
 			if(count($childs) > 0) $qb = $this->addJoins($qb, $childs, $joined.$field);
 		}
 		return $qb;
 	}
 
+	/**
+	 * Définit la version à utiliser pour les requêtes
+	 * @param string $versionSlug
+	 * @return QueryBuilder
+	 */
+	public function setVersion($versionSlug = null) {
+		$this->versionSlug = $versionSlug;
+	}
+
+	/**
+	 * filtre la version à utiliser par défaut dans le qb
+	 * @param QueryBuilder $qb
+	 * @return QueryBuilder
+	 */
 	protected function getQbWithDefaultVersion(QueryBuilder $qb = null) {
-		if(!($qb instanceOf QueryBuilder)) $qb = $this->createQueryBuilder(self::ELEMENT);
-		$qb->where(self::ELEMENT.'.defaultVersion = :true')
-			->setParameter('true', 1);
+		if($qb === null) $qb = $this->createQueryBuilder(self::ELEMENT);
+		// if($this->versionSlug === false) return $qb;
+		// if($this->versionSlug === null) {
+			$qb->where(self::ELEMENT.'.defaultVersion = :val')
+				->setParameter('val', 1);
+		// }
+		// if(is_string($this->versionSlug)) {
+		// 	$qb->where(self::ELEMENT.'.slug = :version')
+		// 		->setParameter('version', $this->versionSlug);
+		// }
 		return $qb;
 	}
 

@@ -1,20 +1,64 @@
-<!DOCTYPE html> <!-- HTML 5 -->
-<html lang="fr">
+<!DOCTYPE html>
+<html>
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>{% block title %}Labo{% endblock %}</title>
-		<link rel="icon" type="image/x-icon" href="{# asset(app.session.get('version').favicon) #}" />
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>{% block title %}Labo{% endblock title %}</title>
+		<!-- Favicone Icon -->
+		<link rel="shortcut icon" type="image/x-icon" href="{{ asset('bundles/labo/images/favicon.ico') }}">
+		<link rel="icon" type="image/x-icon" href="{{ asset('bundles/labo/images/favicon.ico') }}" />
+		<link rel="apple-touch-icon" href="{{ asset('bundles/labo/images/favicon.png') }}">
+		{% block styles %}
 		{% stylesheets filter='cssrewrite, lessphp, ?yui_css'
-		 %}
+		'bundles/labo/framework/css/bootstrap.min.css'
+		'bundles/labo/framework/font-awesome/css/font-awesome.css'
+		'bundles/labo/framework/css/plugins/toastr/toastr.min.css'
+		'bundles/labo/framework/css/animate.css'
+		'bundles/labo/framework/css/style.less.css'
+		'bundles/labo/ae-icons/style.css'
+		'bundles/labo/framework/css/plugins/dataTables/dataTables.bootstrap.css'
+		'bundles/labo/framework/css/plugins/dataTables/dataTables.responsive.css'
+		'bundles/labo/framework/css/plugins/dataTables/dataTables.tableTools.min.css'
+		%}
 		<link rel="stylesheet" href="{{ asset_url }}" type="text/css" />
 		{% endstylesheets %}
+		{% endblock styles %}
 	</head>
-	<body>
+	<body{% block bodyattr %} class="{{ page.skin|default('skin-1')}}"{% endblock bodyattr %}>
 		{% block body %}
+		<!-- DEBUT : CONTENU BODY -->
+		<!-- FIN : CONTENU BODY -->
 		{% endblock body %}
+
+		{% block hiddendata %}
+		<!-- DEBUT : CONTENU HIDDEN DATA -->
+		{{ include('laboBundle:common:hiddendata.html.twig') }}
+		<!-- FIN : CONTENU HIDDEN DATA -->
+		{% endblock hiddendata %}
+
+		{% block js %}
 		{% javascripts filter='?yui_js'
-		 %}
+		'bundles/labo/framework/js/jquery-2.1.1.js'
+		'bundles/labo/framework/js/bootstrap.min.js'
+		'bundles/labo/framework/js/plugins/metisMenu/jquery.metisMenu.js'
+		'bundles/labo/framework/js/plugins/slimscroll/jquery.slimscroll.min.js'
+		'bundles/labo/framework/js/inspinia.js'
+		'bundles/labo/framework/js/plugins/pace/pace.min.js'
+		'bundles/labo/framework/js/plugins/jquery-ui/jquery-ui.min.js'
+		'bundles/labo/framework/js/plugins/toastr/toastr.min.js'
+		'bundles/labo/framework/js/plugins/chosen/chosen.jquery.js'
+		'bundles/labo/js/data-et-messages.js'
+		'bundles/labo/js/labo-chosen.js'
+		'bundles/labo/js/labo-modales.js'
+		'bundles/labo/js/labo-effects.js'
+		'bundles/labo/framework/js/plugins/dataTables/jquery.dataTables.js'
+		'bundles/labo/framework/js/plugins/dataTables/dataTables.bootstrap.js'
+		'bundles/labo/framework/js/plugins/dataTables/dataTables.responsive.js'
+		'bundles/labo/framework/js/plugins/dataTables/dataTables.tableTools.min.js'
+		'bundles/labo/js/labo-datatables.js'
+		%}
 		<script type="text/javascript" src="{{ asset_url }}"></script>
 		{% endjavascripts %}
+		{% endblock js %}
 	</body>
 </html>

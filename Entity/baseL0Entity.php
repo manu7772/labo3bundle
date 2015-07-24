@@ -58,6 +58,12 @@ abstract class baseL0Entity implements baseL0Interface {
 
 	/**
 	 * @var string
+	 * @ORM\Column(name="versionSlug", type="string", length=128, nullable=true, unique=false)
+	 */
+	protected $versionSlug;
+
+	/**
+	 * @var string
 	 * @ORM\Column(name="descriptif", type="text", nullable=true, unique=false)
 	 */
 	protected $descriptif;
@@ -175,6 +181,21 @@ abstract class baseL0Entity implements baseL0Interface {
 		// …
 		if(is_string($this->getSlug())) $this->addToUniqueField('slug', $this->getSlug());
 		return $verif;
+	}
+
+	/**
+	 * enregistre le slug de la version associée
+	 * @ORM\PreUpdate
+	 * @ORM\PrePersist
+	 * @return baseL0entity
+	 */
+	public function computeVersionSlug() {
+		// if(is_string($this->getVersion()->getSlug()))
+		if(method_exists($this, "getVersion")) {
+			$gs = $this->getVersion();
+			if(is_object($gs)) if(method_exists($gs, "getSlug")) $this->setVersionSlug($gs->getSlug());
+		}
+		return $this;
 	}
 
 	// /**
@@ -314,6 +335,24 @@ abstract class baseL0Entity implements baseL0Interface {
 	 */
 	public function getCible() {
 		return $this->cible;
+	}
+
+	/**
+	 * Set versionSlug
+	 * @param string $versionSlug
+	 * @return baseL0Entity
+	 */
+	public function setVersionSlug($versionSlug) {
+		$this->versionSlug = $versionSlug;
+		return $this;
+	}
+
+	/**
+	 * Get versionSlug
+	 * @return string 
+	 */
+	public function getVersionSlug() {
+		return $this->versionSlug;
 	}
 
 	/**

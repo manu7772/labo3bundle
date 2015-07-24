@@ -4,26 +4,41 @@
 namespace laboBundle\services\aetools;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\ArrayCollection;
+
+use laboBundle\services\framework\pagesModules\primarydata;
+
 use \Exception;
 
 class aeReponse {
-
-	const NOM_MESSAGES 			= 'info';
-	const NOM_NOTICES 			= 'notice';
-	const NOM_ERRORMESSAGES 	= 'error';
 
 	protected $container;		// container
 	protected $flashBag;		// session
 	protected $data = array();	// data
 	protected $textes;			// textes divers
+	// tools
+	protected $aetools;			// aetools
+	protected $messages;		// messages
 
-	public function __construct(ContainerInterface $container) {
-		$this->container 				= $container;
-		$this->flashBag 				= $this->container->get('request')->getSession()->getFlashBag();
-		$this->data["data"] 			= array();
-		$this->data["messages"] 		= array();
-		$this->data["notices"] 			= array();
-		$this->data["ERRORmessages"] 	= array();
+	public function __construct(ContainerInterface $container = null) {
+		$this->container = $container;
+		if($this->container instanceOf ContainerInterface) {
+			$this->flashBag 				= $this->container->get('request')->getSession()->getFlashBag();
+			// $this->aetools					= $this->container->get('aetools.aetools');
+			// $this->messages					= $this->container->get('aetools.messages');
+			$this->primarydata				= $this->container->get('aetools.primarydata');
+		} else {
+			$this->primarydata				= new primarydata();
+			$this->flashBag					= null;
+		}
+		$this->messagesTypes 				= $this->primarydata->getMessages_types_keys();
+		$this->default_messageType 			= $this->primarydata->getMessage_type_default();
+		// data
+		$this->data["data"] 				= array();
+		$this->data["messages"] 			= array();
+		$this->data["notices"] 				= array();
+		$this->data["ERRORmessages"] 		= array();
 		//
 		$this->setResult(true);
 		//
@@ -334,9 +349,11 @@ class aeReponse {
 	 * @return aeReponse
 	 */
 	public function putMessagesInFlashbag() {
-		foreach ($this->data['messages'] as $value) {
-			$this->flashBag->add(self::NOM_MESSAGES, $value);
-		}
+		if($this->flashBag !== null) {
+			foreach ($this->data['messages'] as $value) {
+				$this->flashBag->add(self::NOM_MESSAGES, $value);
+			}
+		} else return false;
 		return $this;
 	}
 
@@ -345,9 +362,11 @@ class aeReponse {
 	 * @return aeReponse
 	 */
 	public function putNoticesInFlashbag() {
-		foreach ($this->data['notices'] as $value) {
-			$this->flashBag->add(self::NOM_NOTICES, $value);
-		}
+		if($this->flashBag !== null) {
+			foreach ($this->data['notices'] as $value) {
+				$this->flashBag->add(self::NOM_NOTICES, $value);
+			}
+		} else return false;
 		return $this;
 	}
 
@@ -356,9 +375,11 @@ class aeReponse {
 	 * @return aeReponse
 	 */
 	public function putErrorMessagesInFlashbag() {
-		foreach ($this->data['ERRORmessages'] as $value) {
-			$this->flashBag->add(self::NOM_ERRORMESSAGES, $value);
-		}
+		if($this->flashBag !== null) {
+			foreach ($this->data['ERRORmessages'] as $value) {
+				$this->flashBag->add(self::NOM_ERRORMESSAGES, $value);
+			}
+		} else return false;
 		return $this;
 	}
 
@@ -368,7 +389,8 @@ class aeReponse {
 			foreach ($this->getAllMessages() as $key => $value) {
 				if(count($value) > 0) $message[$key] .= '<strong>'.$this->textes[$key].' :</strong><br>'.implode('<br>', $value);
 			}
-			throw new Exception(implode('<br>', $message), 1);		
+			$messages = implode('<br>', $message);
+			throw new Exception($messages, 1);		
 		}
 		return $this;
 	}

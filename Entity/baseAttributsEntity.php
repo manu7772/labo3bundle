@@ -115,19 +115,19 @@ abstract class baseAttributsEntity extends baseL1Entity implements baseAttributs
 	}
 
 	/**
-	 * Récupère tous les attributs
-	 * @return arrayCollection
-	 */
-	public function getAttributs() {
-		return $this->attributs;
-	}
-
-	/**
 	 * Récupère tous les attributs sous forme de tableau
 	 * @return array
 	 */
-	public function getAttributsToArray() {
+	public function getAttributs() {
 		return $this->attributs->toArray();
+	}
+
+	/**
+	 * Récupère tous les attributs
+	 * @return arrayCollection
+	 */
+	public function getAttributsInArrayCollection() {
+		return $this->attributs;
 	}
 
 

@@ -9,6 +9,8 @@ use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
 use laboBundle\services\entitiesServices\entitesService;
 // use Symfony\Component\Form\FormFactoryInterface;
 
+use \Exception;
+
 class categorie extends entitesService {
 
 	protected $actifPath;				// path de l'élément actif : liste des éléments parents
@@ -17,19 +19,21 @@ class categorie extends entitesService {
 	protected $sayIfChangeOrNo = null;
 	protected $container;
 	protected $menuSlug = null;
+	protected $translator;
 
 	public function __construct(ContainerInterface $container) {
 		$this->container = $container;
 		parent::__construct($this->container);
 		// récupération du paramètre de menu dans parameters.yml si existant
 		// tester : $this->container->getParameter( 'labo.default_menu_slug' );
+		$this->translator = $this->container->get('translator');
 		if($this->container->hasParameter('labo.default_menu_slug')) {
 			$this->menuSlug = $this->container->getParameter("labo.default_menu_slug");
 		} else $this->menuSlug = null;
 		// if($this->container->hasParameter('menu_slug')) {
 		// 	$this->menuSlug = $this->container->getParameter("menu_slug");
 		// } else $this->menuSlug = null;
-		if(($this->init["categorie"] === false) || ($this->modeFixtures === true)) $this->defineEntity("categorie");
+		// if(($this->init["categorie"] === false) || ($this->modeFixtures === true)) $this->defineEntity("categorie");
 	}
 
 	/**
@@ -39,9 +43,9 @@ class categorie extends entitesService {
 	* @param FilterControllerEvent $event
 	* @param boolean $reLoad
 	*/
-	public function serviceEventInit(FilterControllerEvent $event, $reLoad = false) {
+	public function INACTIVE_serviceEventInit(FilterControllerEvent $event, $reLoad = false) {
 		$this->defineEntity("categorie");
-		$this->init["categorie"] = true;
+		// $this->init["categorie"] = true;
 		$serviceData = false;
 		// Vérifie si la version a été changée : dans ce cas, on oblige le rechargement de ce service
 		// Vérifie également si le menu doit changer (premier paramètre est ou n'est plus "articles")
@@ -67,7 +71,7 @@ class categorie extends entitesService {
 			}
 			if(false === is_object($serviceData)) {
 				// Si aucune version trouvée, charge la première version trouvée
-				$f = $this->getAll();
+				$f = $this->findAll();
 				if(count($f) > 0) {
 					if(is_object($f[0])) $serviceData = $f[0];
 				}
@@ -116,9 +120,9 @@ class categorie extends entitesService {
 				// FIN : Lignes de personnalisation du service
 				//////////////////////////////////////////
 				$this->service['reloaded'] = true;
-				$this->service['defaut'] = $this->getRepo()->defaultMenu($this->menuSlug)->getSlug();
+				$this->service['default'] = $this->getRepo()->defaultMenu($this->menuSlug)->getSlug();
 				// --> éléments ayant un menu
-				$this->getRepo();
+				$this->getRepo(); // ?????????????
 				// echo($this->serviceNom." => Version getRepo() : ".$this->getRepo()->getVersion()."<br />");
 				$menus = $this->getRepo()->listOfMenus();
 				foreach($menus as $menu) {
@@ -132,9 +136,10 @@ class categorie extends entitesService {
 				// echo("</pre>");
 			} else {
 				// Aucune version disponible en BDD !!!
-				$this->container->get("session")->getFlashBag()->add('info', "Aucun élément \"".$this->serviceNom."\". Créez un nouveau \"".$this->serviceNom."\", s.v.p.");
-				$this->siteListener_changeDataSession('find', 'not reloaded');
-				$this->siteListener_changeDataSession('reloaded', false);
+				throw new Exception($this->translator->trans("loader.services_disabled", array(), 'validators'), 1);			
+				// $this->container->get("session")->getFlashBag()->add('info', "Aucun élément \"".$this->serviceNom."\". Créez un nouveau \"".$this->serviceNom."\", s.v.p.");
+				// $this->siteListener_changeDataSession('find', 'not reloaded');
+				// $this->siteListener_changeDataSession('reloaded', false);
 			}
 		} else {
 			// VERSION DÉJÀ CHARGÉE : OK
@@ -149,20 +154,23 @@ class categorie extends entitesService {
 	/**
 	* categorieInSession
 	* dépose les informations de société dans la session
+	* @param categorie $categorie
 	*
 	*/
-	private function menuCategories($objet, $menuspecifique = null) {
-		// echo("-> ".$objet->getSlug()."<br />");
-		if($menuspecifique === null) $menuspecifique = $objet->getNommenu();
-		$classObj = "AcmeGroup\\SiteBundle\\Classes\\".$menuspecifique;
-		$menuOptions = new $classObj($this->container);
-		return
-			$this->getRepo()->childrenHierarchy(
-				$this->getRepo()->findOneBySlug($objet->getSlug()),
+	public function menuCategories($categorie, $menuspecifique = null) {
+		if(is_string($categorie)) $categorie = $this->getRepo('categorie')->findOneBySlug($categorie);
+		if($menuspecifique === null) $menuspecifique = $categorie->getNommenu();
+		$menuOptions = new $menuspecifique($this->container);
+		// echo('<p>Catégorie : '.get_class($categorie).'</p>');
+		// echo('<p>menuOptions : '.get_class($menuOptions).'</p>');
+		$result = $this->getRepo('categorie')->childrenHierarchy(
+				$categorie,
+				// $this->getRepo()->find($categorie->getId()), // ????????????????
 				false,
 				$menuOptions->getOptions(),
 				true
 			);
+		return $result;
 	}
 
 	/**

@@ -1,0 +1,15 @@
+<span id="hiddendata" style="display:none;">
+{% block hiddendata %}
+	<!-- environnementMode : mode dev / test / prod -->
+	<span id="environnementMode" style="display:none;" data-for-js="{{ app.getEnvironment()|raw }}"></span>
+	<!-- actuelpath : chemin actuel -->
+	<span id="actuelpath" style="display:none;" data-for-js="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|default({})) }}"></span>
+	<!-- actuelURL : chemin actuel -->
+	<span id="actuelURL" style="display:none;" data-for-js="{{ app.request.uri }}"></span>
+	<!-- Messages -->
+	{% if app.session.get('primarydata').messages is defined %}
+	<span id="typeMessages" style="display:none;">{{ app.session.get('primarydata').messages.types.keys|json_encode()|raw }}</span>
+	<span id="defaultsMessages" style="display:none;">{{ app.session.get('primarydata').messages.params.defaults|json_encode()|raw }}</span>
+	{% endif %}
+{% endblock hiddendata %}
+</span>

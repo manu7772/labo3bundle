@@ -1,10 +1,43 @@
 {% extends "laboBundle::laboBasepage.html.twig" %}
-{% block body %}
-	{% block navbar %}
-		{{ render(controller("laboBundle:Labo:navbar")) }}
-	{% endblock navbar %}
-	<!-- DEBUT : CONTENU DE LA PAGE -->
-	{% block body_container %}
-	{% endblock body_container %}
-	<!-- FIN : CONTENU DE LA PAGE -->
+
+{% block body -%}
+{% import 'laboBundle:macros:page_macros.html.twig' as page_macros %}
+<div id="wrapper">
+	{% if page.navbar|default(true) != false %}{{ page_macros.navbar(page) }}{% endif %}
+	<div id="page-wrapper" class="gray-bg dashbard-1">
+		{% if page.headertop|default(false) != false %}{{ page_macros.headerTop(page, version) }}{% endif %}
+		{% if page.breadcrumb|default(false) != false %}{{ page_macros.breadcrumb(page) }}{% endif %}
+		{% if page.header|default(false) != false %}{{ page_macros.pageheader(page) }}{% endif %}
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="wrapper wrapper-content animated fadeInRight">
+					<!-- DEBUT : CONTENU DE LA PAGE -->
+					{% block body_container %}
+					{% endblock body_container %}
+					<!-- FIN : CONTENU DE LA PAGE -->
+
+					{% block iBoxs %}
+					<!-- DEBUT : CONTENU IBOX -->
+					{% if page.iBoxs|default({})|length > 0 %}
+					<div class="row">
+						{% set maxsize = 12 %}
+						{% set totalsize = 0 %}
+						{% for iBox in page.iBoxs|default({}) %}
+							{% set totalsize = totalsize + iBox.size %}
+							{% if totalsize > maxsize %}{% set totalsize = iBox.size %}</div><div class="row">{% endif %}
+							{{ page_macros.ibox(iBox) }}
+						{% endfor %}
+					</div>
+					{% endif %}
+					<!-- FIN : CONTENU IBOX -->
+					{% endblock iBoxs %}
+
+				</div>
+				{% if page.footer|default(false) == true %}{{ page_macros.footer(page, version) }}{% endif %}
+			</div>
+		</div>
+	</div>
+	{% if page.chat|default(false) != false %}{{ include('laboBundle:macros:chat.html.twig') }}{% endif %}
+	{% if page.rightsidebar|default(false) != false %}{{ include('laboBundle:macros:right-sidebar.html.twig') }}{% endif %}
+</div>
 {% endblock body %}

@@ -137,6 +137,20 @@ abstract class version extends baseAttributsEntity {
 		}
 	}
 
+	/**
+	 * enregistre le slug de la version associée
+	 * @ORM\PreUpdate
+	 * @ORM\PrePersist
+	 * @return baseL0entity
+	 */
+	public function computeVersionSlug() {
+		// if(is_string($this->getVersion()->getSlug()))
+		if(method_exists($this, "getSlug")) {
+			$this->setVersionSlug($this->getSlug());
+		}
+		return $this;
+	}
+
 // FIN --------------------- à inclure dans toutes les entités ------------------------
 
 

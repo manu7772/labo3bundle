@@ -1,0 +1,321 @@
+{###############################################}
+{### BREADCRUMB                              ###}
+{###############################################}
+
+{% macro breadcrumb(page) %}
+<div class="row wrapper border-bottom white-bg page-heading">
+	<div class="col-lg-10">
+		<h2>Basic Form</h2>
+		<ol class="breadcrumb">
+			<li>
+				<a href="{{ path('labo_home') }}">??????</a>
+			</li>
+			<li>
+				<a>Utilisateurs</a>
+			</li>
+			<li class="active">
+				<strong>Liste</strong>
+			</li>
+		</ol>
+	</div>
+	<div class="col-lg-2">
+
+	</div>
+</div>
+{% endmacro %}
+
+
+
+{###############################################}
+{### NAVBAR                                  ###}
+{###############################################}
+
+{% macro navbar(page) %}
+{% import _self as self %}
+<nav class="navbar-default navbar-static-side" role="navigation">
+	<div class="sidebar-collapse">
+		<ul class="nav" id="side-menu">
+			<li class="nav-header">
+				<div class="dropdown profile-element">
+					<span>
+						<img alt="image" class="img-rounded" src="{{ asset('bundles/labo/images/logoLabo100x79.png') }}" />
+					</span>
+					{% if app.user is not null %}
+					<a data-toggle="dropdown" class="dropdown-toggle" href="#">
+						<span class="clear">
+							<span class="block m-t-xs"> <strong class="font-bold">{{ app.user.username|default('anon.') }}</strong></span> 
+							<span class="text-muted text-xs block">{{ 'root.labo'|trans({}, 'labo')|capitalize }}<b class="caret"></b></span> 
+						</span>
+					</a>
+					<ul class="dropdown-menu animated fadeInRight m-t-xs">
+						<li><a href="#">{{ 'paramètres'|trans({}, 'labo')|capitalize }}</a></li>
+					</ul>
+					{% endif %}
+				</div>
+				<div class="logo-element">
+					<i class="fa fa-desktop fa-fw visible-lg"></i>
+					<i class="fa fa-laptop fa-fw visible-md"></i>
+					<i class="fa fa-tablet fa-fw visible-sm"></i>
+					<i class="fa fa-mobile-phone fa-fw visible-xs"></i>
+				</div>
+			</li>
+			{{ self.menu_Admin() }}
+		</ul>
+	</div>
+</nav>
+{% endmacro %}
+
+{% macro menu_Admin(menu) %}
+{% import _self as self %}
+{% for item in menu|default(menu_Admin) %}
+	{{ self.item_menu(item) }}
+{% endfor %}
+{% endmacro %}
+
+{% macro item_menu(level1) %}
+{% if (level1.environment|default('prod') == app.environment or app.environment in ['dev', 'test']) and (is_granted(level1.role|default(menu_Admin_default_role))) %}
+{% import _self as self %}
+{% set down = '' %}
+{% set active = '' %}
+{% if level1.path == '#' %}{% set level1path = '#' %}
+{% else %}{% set level1path = path(level1.path, level1.params|default({})) %}
+{% endif %}
+{% if level1.level2|default(null) is iterable %}
+	{% set down = '<span class="fa arrow"></span>' %}
+	{% set level1path = '#' %}
+	{% for item in level1.level2 if item.path != '#' %}
+	{% if path(item.path, item.params|default({})) == app.request.baseUrl ~ app.request.pathInfo %}{% set active = ' class="active"' %}{% endif %}
+	{% endfor %}
+{% endif %}
+{% if level1path == app.request.baseUrl ~ app.request.pathInfo %}{% set active = ' class="active"' %}{% endif %}
+<li{{ active|raw }}>
+	<a href="{{ level1path }}"><i class="fa {{ level1.icon|default(default_icon)|raw }}"></i> <span class="nav-label">{{ level1.nom|default('item')|trans({}, 'labo')|capitalize }}</span>{{ down|raw }}</a>
+	{% if level1.level2|default('') is iterable %}
+	<ul class="nav nav-second-level">
+		{% for itemL2 in level1.level2 %}
+		{{ self.level2(itemL2) }}
+		{% endfor %}
+	</ul>
+	{% endif %}
+</li>
+{% endif %}
+{% endmacro %}
+
+{% macro level2(item) %}
+	{% if is_granted(item.role|default(menu_Admin_default_role)) %}
+	{% set active = '' %}
+	{% if item.path != '#' %}{% set path = path(item.path, item.params|default({})) %}{% endif %}
+	{% if path|default('#') == app.request.baseUrl ~ app.request.pathInfo %}{% set active = ' class="active"' %}{% endif %}
+	<li{{ active|raw }}><a href="{{ path|default('#') }}">{{ item.nom|default('item')|trans({}, 'labo')|capitalize }}</a></li>
+	{% endif %}
+{% endmacro %}
+
+
+
+{###############################################}
+{### DASHBOARD HEADER TOP                    ###}
+{###############################################}
+
+{% macro headerTop(page, version) %}
+<div class="row border-bottom">
+	<nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+		<div class="navbar-header">
+			<a class="navbar-minimalize minimalize-styl-2 btn btn-primary" href="#"><i class="fa fa-bars"></i> </a>
+		</div>
+		<ul class="nav navbar-top-links navbar-right">
+			{% if app.user is not null %}
+			<li>
+				<span class="m-r-sm text-muted welcome-message">{{ 'dashTopMenu.bienvenue'|trans({}, 'labo')|capitalize }} <strong>{{ version.nom }}</strong>, {{ app.user.username|default('anon.') }}</span>
+			</li>
+			{% endif %}
+			{% if multilingue|default(false) == true %}
+			<li class="dropdown">
+				<a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
+					<i class="fa fa-flag"></i> {{ 'dashTopMenu.langues'|trans({}, 'labo')|capitalize}}
+				</a>
+				<ul class="dropdown-menu dropdown-alerts">
+					{% set current_locale = 'labo' %}
+					{% set route_params = app.request.attributes.get('_route_params') %}
+					{% if route_params is not iterable %}{% set route_params = {} %}{% endif %}
+					{% for langue in list_locales[current_locale]|split('|') %}
+					{% set route_params = route_params|merge({_locale: langue}) %}
+					<li>
+						<a href="{{ path(app.request.attributes.get('_route'), route_params) }}">
+							<div>
+								<!-- <i class="fa fa-flag fa-fw"></i>&nbsp; -->
+								{{ languename[langue]|trans({}, 'labo')|capitalize }}
+								<span class="pull-right text-muted small">{{ 'site en'|trans({}, 'labo', langue)|capitalize }} {{ languename[langue]|trans({}, 'labo', langue) }}</span>
+							</div>
+						</a>
+					</li>
+					{% endfor %}
+				</ul>
+			</li>
+			{% endif %}
+			<li class="dropdown">
+				<a aria-expanded="false" role="button" class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
+					<i class="fa fa-user"></i> {{ app.user.username|default('anon.') }} <span class="caret"></span>
+				</a>
+				<ul class="dropdown-menu dropdown-alerts">
+					<li>
+						<a href="{{ path('acme_site_home') }}">
+							<div><i class="fa fa-globe"></i> {{ 'root.retour'|trans({}, 'labo')|capitalize }} {{ 'root.site_main'|trans({}, 'labo') }}</div>
+						</a>
+					</li>
+<!-- 					<li>
+						<a href="{{ path('labo_home') }}">
+							<div><i class="fa fa-globe"></i> {{ 'root.labo'|trans({}, 'labo')|capitalize }}</div>
+						</a>
+					</li> -->
+					<li class="divider"></li>
+					<li>
+						<a href="{{ path('fos_user_profile_show') }}">
+							<div><i class="fa fa-user"></i> {{ 'profil'|trans({}, 'labo')|capitalize }}</div>
+						</a>
+					</li>
+					<li>
+						<a href="{{ path('fos_user_security_logout') }}">
+							<div><i class="fa fa-sign-out"></i> {{ 'quitter'|trans({}, 'labo')|capitalize }}</div>
+						</a>
+					</li>
+				</ul>
+			</li>
+			{% if page.rightsidebar|default(false) != false %}
+			<li>
+				<a class="right-sidebar-toggle"><i class="fa fa-tasks"></i></a>
+			</li>
+			{% endif %}
+		</ul>
+	</nav>
+</div>
+{% endmacro %}
+
+
+
+{###############################################}
+{### PAGE HEADER                             ###}
+{###############################################}
+
+{% macro pageheader(page) %}
+<div class="row border-bottom white-bg dashboard-header">
+	{% if page.header.type|default('html') == 'html' %}
+	{{ page.header.content|default('…')|raw }}
+	{% else %}
+	{% endif %}
+</div>
+{% endmacro %}
+
+
+
+{###############################################}
+{### FOOTER                                  ###}
+{###############################################}
+
+{% macro footer(page, version) %}
+<div class="footer fixed">
+	<div class="pull-right">{{ 'root.webportail'|trans({}, 'labo')|capitalize}}</div>
+	<div>{{ 'root.copyright'|trans({}, 'labo')|capitalize}} <strong>{{ version.nom }}</strong> &copy; {{ annee() }}</div>
+</div>
+{% endmacro %}
+
+
+
+{###############################################}
+{### IBOX                                    ###}
+{###############################################}
+
+{% macro ibox(elements) %}
+{% import _self as self %}
+{% set taille = 6 %}
+{% set affichenb = 1 %}
+<div id="{{ elements.nom }}" class="col-md-{{ elements.size }}">
+	<div class="ibox float-e-margins">
+		<div>
+			<div class="ibox-title">
+				<h5>{{ phraseCut(elements.title, elements.size * taille)|raw }}</h5>{% for label in elements.labels %} <span class="label label-{{ label.style|default('primary') }}">{{ phraseCut(label.texte, elements.size * taille)|raw }}</span>{% endfor %}
+				{{ self.tools(elements) }}
+			</div>
+			{% for heading in elements.headings if elements.headings is defined %}
+			<div class="ibox-content ibox-heading">
+				<h3>{{ heading.0|raw }}</h3>
+				<small><i class="fa fa-map-marker"></i> Rdv. à {{ heading.2|date("H:i:s") }} | {{ heading.1|raw }}</small>
+			</div>
+			{% endfor %}
+			{% if elements.type == "html" %}
+			<div class="ibox-content">
+				<div>
+					<h4>{{ elements.contentTitle|default('Message…')|raw }}</h4>
+					{{ elements.contentHtml|default('Aucun texte…')|raw }}
+				</div>
+			</div>
+			{% elseif elements.type == "twigblock" %}
+			<div class="ibox-content">
+				<div>
+					{% block iboxBlock %}
+					<h1>BLOCK TWIG</h1>
+					{% endblock iboxBlock %}
+				</div>
+			</div>
+			{% elseif elements.type == "list" %}
+			<div class="ibox-content no-padding">
+				<ul class="list-group">
+					{% for item in elements.content.list if elements.content.list|length > 0 %}
+					<li class="list-group-item">
+						<p>{{ item|raw }}</p>
+					</li>
+					{% else %}
+					<li class="list-group-item">
+						<p>Aucun élément de liste…</p>
+					</li>
+					{% endfor %}
+				</ul>
+			</div>
+			{% else %}
+			{% endif %}
+			{% if elements.bottomButtons|length > 0 %}
+			<div class="ibox-content">
+			{% for btbtn in elements.bottomButtons %}
+				<a href='{{ btbtn.url|default("#")|raw }}' class="btn btn-{{ btbtn.type|default('primary')|raw }} btn-block m-t min-margins" role="button"><i class="fa {{ btbtn.icon|default('fa-play')|raw }}"></i>{% if elements.size > affichenb %} {{ phraseCut(btbtn.texte|default('Voir'), elements.size * (taille - 1))|raw }}{% endif %}</a>
+			{% endfor %}
+			</div>
+			{% endif %}
+		</div>
+	</div>
+</div>
+{% endmacro %}
+
+
+
+{###############################################}
+{### TOOLS                                   ###}
+{###############################################}
+
+{% macro tools(elements) %}
+<div class="ibox-tools">
+	<a class="collapse-link">
+		<i class="fa fa-chevron-up"></i>
+	</a>
+	{% if elements.tools is defined %}
+	{% if elements.tools is iterable and elements.tools|length > 0 %}
+	<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+		<i class="fa fa-wrench"></i>
+	</a>
+	<ul class="dropdown-menu dropdown-user">
+		{% for key,option in elements.tools %}
+		{% if option == "divider" %}
+		<li class="divider"></li>
+		{% else %}
+		<li><a href="{{ option }}">{{ key }}</a></li>
+		{% endif %}
+		{% endfor %}
+	</ul>
+	{% endif %}
+	{% endif %}
+	<a class="close-link">
+		<i class="fa fa-times"></i>
+	</a>
+</div>
+{% endmacro %}
+
+
+

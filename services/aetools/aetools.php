@@ -19,6 +19,7 @@ class aetools {
 	const SERVEUR_TYPE			= 'UNIX/LINUX';		// Type de serveur
 	const SLASH					= '/';				// slash
 	const ASLASH 				= '\\';				// anti-slashes
+	const DBLPOINT 				= '::';				// double point
 	const WIN_ASLASH			= '/';				// anti-slashes Windows
 	const ALL_FILES 			= "^.+$";			// motif PCRE pour tous textes
 	const EOLine				= "\n";				// End of line Terminal
@@ -29,6 +30,10 @@ class aetools {
 	const WEB_PATH				= 'web/';
 	// Dossiers
 	const DEFAULT_CHMOD			= 0755;
+	// DateTime
+	const FORMAT_DATETIME_SQL	= "Y-m-d H:i:s";
+	const DATE_ZERO				= "0000-00-00";
+	const TIME_ZERO				= "0:0:0";
 
 	protected $ctrlDefined 		= null;				// boolean : controller dénini ?
 	protected $container;							// container
@@ -52,6 +57,9 @@ class aetools {
 	protected $actionName;							// nom de la méthode appelée
 	protected $singleActionName;					// nom de la méthode appelée, sans "Action"
 
+	protected $actualDomaine;						// domaine en cours (actuel)
+	protected $localDomaines = array('localhost', '127.0.0.1', 'fe80::1', '::1');
+
 	protected $memo = '__self';						// memo pour savePath pour ce service
 	protected $pathMemo = array();					// contenu des mémo pour savePath
 
@@ -70,11 +78,13 @@ class aetools {
 	protected $groupeName;			// nom du groupe
 	protected $bundleName;			// nom du bundle
 	protected $gotoroot;
+	protected $console;
 
 	protected $listP = array("groupeName", "bundleName", "ctrlFolder", "controllerName");
 	protected $nP;
 
 	public function __construct(ContainerInterface $container = null) {
+		$this->console 			= array();
 		$this->container 		= $container;
 		// initialisation de données nécessaires au service
 		$this->initAllData();
@@ -84,6 +94,25 @@ class aetools {
 
 	public function __destruct() {
 		$this->close();
+		// $this->printConsole();
+	}
+
+	protected function printConsole() {
+		if(count($this->console) > 0) {
+			print('<script type="text/javascript">');
+			foreach ($this->console as $console) print($console);
+			print('</script>');
+		}
+	}
+
+	public function consoleLog($ind, $txt = null) {
+		if($this->isDev()) {
+			if($txt === null) {
+				$txt = $ind;
+				$ind = 'info';
+			}
+			$this->console[] = "console.log('".key($this->console).":".$ind." =', '".$txt."');";
+		}
 	}
 
 	/**
@@ -92,6 +121,7 @@ class aetools {
 	 * @return string
 	 */
 	protected function initAllData() {
+		$this->consoleLog(">>> Load Service", "SERVICE classe : ".$this->getShortName());
 		$this->gotoroot 			= __DIR__.self::GO_TO_ROOT;
 		if($this->container !== null) {
 			$this->router 			= $this->container->get('router');
@@ -108,6 +138,8 @@ class aetools {
 			$this->sessionData			= $this->container->get("session");
 			$this->flashBag 			= $this->sessionData->getFlashBag();
 			$this->securityContext 		= $this->container->get('security.context');
+			$this->actualDomaine		= $this->getActualDomaine();
+			// echo($this->actualDomaine); // localhost ou 127.0.0.1
 			// $this->setWebPath();
 		}
 		// slashes
@@ -128,6 +160,14 @@ class aetools {
 	}
 
 	/**
+	 * add configuration from app/config/config.yml (labo)
+	 */
+	public function addConfig($name, $parameters) {
+		if(is_array($this->labo_parameters)) $this->labo_parameters[$name] = $parameters;
+			else throw new Exception($this->translator->trans("aetools.labo_parameters.not_an_array", array(), 'validators'), 1);
+	}
+
+	/**
 	 * get configuration
 	 * @param string $item
 	 * @return mixed
@@ -135,6 +175,7 @@ class aetools {
 	public function getConfig($item = null) {
 		if(is_string($item) && array_key_exists($item, $this->labo_parameters)) $params = $this->labo_parameters[$item];
 			else $params = $this->labo_parameters;
+		if(!is_array($this->labo_parameters)) throw new Exception($this->translator->trans("aetools.labo_parameters.not_an_array", array(), 'validators'), 1);
 		return $params;
 	}
 
@@ -175,26 +216,7 @@ class aetools {
 		if($this->container !== null) {
 			$this->controllerPath = $this->container->get('request')->attributes->get('_controller');
 		} else $this->controllerPath === null;
-		if($this->controllerPath === null) {
-			// pas de controller
-			$this->ctrlDefined = false;
-		} else {
-			// controller présent
-			$this->ctrlDefined = true;
-			$d = explode("::", $this->controllerPath."");
-			if(count($d) < 2)
-				$d = explode(":", $this->controllerPath."");
-			$this->actionName = $d[1];
-			$this->singleActionName = preg_replace("#Action$#", "", $d[1]);
-			$e = explode(self::ASLASH, $d[0]);
-			if(count($e) < 2) $e = explode(".", $d[0]);
-			foreach($e as $idx => $nom) {
-				if($idx < (count($this->listP) + 1)) {
-					if(isset($this->listP[$idx])) $nP = $this->listP[$idx];
-					$this->$nP = $nom;
-				}
-			}
-		}
+		$this->ctrlDefined = $this->controllerPath !== null;
 		return $this->ctrlDefined;
 	}
 
@@ -746,7 +768,7 @@ class aetools {
 	 * @param FilterControllerEvent $event
 	 * @param boolean $reLoad
 	 */
-	public function serviceEventInit(FilterControllerEvent $event, $reLoad = false) {
+	public function serviceEventInit(FilterControllerEvent $event) {
 		$this->service = array();
 		// paramètres URL et route
 		$this->service['actuelpath'] 		= $this->getURL();
@@ -768,8 +790,9 @@ class aetools {
 	* Dépose les informations de l'entité dans la session
 	* @return aetools
 	*/
-	public function siteListener_InSession() {
-		$this->serviceSess->set($this->getShortName(), $this->service);
+	public function siteListener_InSession($name = null) {
+		if($name === null) $name = $this->getShortName();
+		$this->serviceSess->set($name, $this->service);
 		return $this;
 	}
 
@@ -777,8 +800,18 @@ class aetools {
 	* Renvoie true si les informations de l'entité sont bien dans la session
 	* @return boolean
 	*/
-	public function isSiteListener_InSession() {
-		return $this->serviceSess->get($this->getShortName()) !== null ? true : false;
+	public function isSiteListener_InSession($name = null) {
+		if($name === null) $name = $this->getShortName();
+		return $this->getSiteListener_InSession($name) !== null ? true : false;
+	}
+
+	/**
+	* Renvoie true si les informations de l'entité sont bien dans la session
+	* @return boolean
+	*/
+	public function getSiteListener_InSession($name = null) {
+		if($name === null) $name = $this->getShortName();
+		return $this->serviceSess->get($name);
 	}
 
 
@@ -866,7 +899,27 @@ class aetools {
 	 * @return string
 	 */
 	public function getBundleName() {
-		return $this->isControllerPresent() ? $this->bundleName : null;
+		if($this->isControllerPresent()) {
+			$a = explode(self::DBLPOINT, $this->getController());
+			$b = explode(self::ASLASH, $a[0]);
+			$this->bundleName = implode(self::ASLASH, array_slice($b, 0, -2));
+			return $this->bundleName;
+		}
+		return null;
+	}
+
+	/**
+	 * Renvoie le nom du bundle courant
+	 * @return string
+	 */
+	public function getBundleShortName() {
+		if($this->isControllerPresent()) {
+			$a = explode(self::DBLPOINT, $this->getController());
+			$b = explode(self::ASLASH, $a[0]);
+			$this->bundleName = implode('', array_slice($b, 0, -2));
+			return $this->bundleName;
+		}
+		return null;
 	}
 
 	/**
@@ -894,7 +947,13 @@ class aetools {
 	 * @return string
 	 */
 	public function getCtrlFolder() {
-		return $this->isControllerPresent() ? $this->ctrlFolder : null;
+		if($this->isControllerPresent()) {
+			$a = explode(self::DBLPOINT, $this->getController());
+			$b = explode(self::ASLASH, $a[0]);
+			$this->ctrlFolder = $b[count($b) - 2];
+			return $this->ctrlFolder;
+		}
+		return null;
 	}
 
 	/**
@@ -902,7 +961,13 @@ class aetools {
 	 * @return string
 	 */
 	public function getControllerName() {
-		return $this->isControllerPresent() ? $this->controllerName : null;
+		if($this->isControllerPresent()) {
+			$a = explode(self::DBLPOINT, $this->getController());
+			$b = explode(self::ASLASH, $a[0]);
+			$this->controllerName = end($b);
+			return $this->controllerName;
+		}
+		return null;
 	}
 
 	/**
@@ -910,7 +975,13 @@ class aetools {
 	 * @return string
 	 */
 	public function getGroupeName() {
-		return $this->isControllerPresent() ? $this->groupeName : null;
+		if($this->isControllerPresent()) {
+			$a = explode(self::DBLPOINT, $this->getController());
+			$b = explode(self::ASLASH, $a[0]);
+			$this->groupeName = reset($b);
+			return $this->groupeName;
+		}
+		return null;
 	}
 
 	/**
@@ -918,7 +989,12 @@ class aetools {
 	 * @return string
 	 */
 	public function getActionName() {
-		return $this->isControllerPresent() ? $this->actionName : null;
+		if($this->isControllerPresent()) {
+			$a = explode(self::DBLPOINT, $this->getController());
+			$this->actionName = end($a);
+			return $this->actionName;
+		}
+		return null;
 	}
 
 	/**
@@ -926,8 +1002,35 @@ class aetools {
 	 * @return string
 	 */
 	public function getSingleActionName() {
-		return $this->isControllerPresent() ? $this->singleActionName : null;
+		if($this->isControllerPresent()) {
+			$this->singleActionName = preg_replace('#Action$#', '', $this->getActionName());
+			return $this->singleActionName;
+		}
+		return null;
 	}
+
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// DOMAINE
+	////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	/**
+	 * Renvoie le domaine actuel
+	 * @return string
+	 */
+	protected function getActualDomaine() {
+		// !!!!! remplacer par un preg_replace
+		return str_replace(array("http://www.","https://www.","www."), "", $this->serviceRequ->getHost());
+	}
+
+	/**
+	 * Le domaine actuel est-il "local" ?
+	 * @return string
+	 */
+	protected function isLocalDomaine() {
+		return in_array($this->getActualDomaine(), $this->localDomaines);
+	}
+
 
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -953,6 +1056,14 @@ class aetools {
 	 */
 	public function getEnv() {
 		return $this->isControllerPresent() ? $this->container->get('kernel')->getEnvironment() : null;
+	}
+
+	/**
+	 * Renvoie mode d'environnement (dev, test, prod…)
+	 * @return string
+	 */
+	public function isDev() {
+		return $this->getEnv() === 'dev' ? true : false;
 	}
 
 
@@ -1028,7 +1139,7 @@ class aetools {
 			$treeB = $treeB['parent'];
 		} while ($treeB !== false);
 		unset($treeB);
-		return strtolower($format) === 'string' ? implode(self::SLASH, $parents) : $parents;
+		return strtolower($format) === 'string' ? implode(" ".self::SLASH." ", $parents) : $parents;
 	}
 
 	public function getClassTree($className) {
@@ -1087,6 +1198,7 @@ class aetools {
 	 * @return string
 	 */
 	public function getMethodNameWith($attribute, $prefix = "set") {
+		if(in_array($prefix, array("remove", "add"))) $attribute = preg_replace("#s$#i", "", $attribute);
 		return $prefix.ucfirst($attribute);
 	}
 
@@ -1126,36 +1238,43 @@ class aetools {
 	// AFFICHAGES HORS CONTROLLER (pour Terminal ou Fixtures)
 	////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	protected function writeConsole($t, $color = "normal", $rt = true) {
+	public function writeConsole($t, $color = "normal", $rt = true) {
 		if($this->isControllerAbsent()) {
 			if(is_string($t)) printf($this->returnConsole($t, $color, $rt));
 			if(is_array($t)) var_dump($t);
 		}
 	}
 
-	protected function echoMemoryHorsController($texte) {
+	public function echoMemoryHorsController($texte) {
 		$this->writeConsole('Mémoire PHP : '.memory_get_usage().' '.$texte);
 	}
 
-	protected function writeTableConsole($titre, $table) {
-		$this->afficheTitre($titre);
+	public function writeTableConsole($titre, $table, $l1 = 50, $l2 = 25) {
+		$this->afficheTitre($titre, $l1, $l2);
 		if(is_array($table)) {
 			foreach($table as $nom => $value) {
-				$this->afficheLine($nom, $value);
+				if(is_object($value)) $value = gettype($value)." (".count($value).")";
+				if(is_array($value)) {
+					$st1 = implode("\", \"", $value);
+					$str = substr($st1, 0, $l2 - 10);
+					if(strlen($st1) > strlen($str)) $cont = "…"; else $cont = "";
+					$value = gettype($value)." (".count($value).") \"".$str.$cont."\"";
+				}
+				$this->afficheLine($nom, $value, $l1, $l2);
 			}
 		} else throw new Exception('Élément fourni n\'est pas un array : '.gettype($table));
 		$this->echoRT();
 	}
 
-	protected function afficheTitre($texte) {
-		$this->writeConsole($this->texttools->fillOfChars($texte, 81), "table_titre", true);
+	public function afficheTitre($texte, $l1 = 50, $l2 = 25) {
+		$this->writeConsole($this->texttools->fillOfChars($texte, $l1 + $l2 + 6), "table_titre", true);
 	}
 
-	protected function afficheLine($name, $value) {
-		$this->writeConsole($this->texttools->fillOfChars($name, 50)." | ".$this->texttools->fillOfChars($value, 25), "table_line", true);
+	public function afficheLine($name, $value, $l1 = 50, $l2 = 25) {
+		$this->writeConsole($this->texttools->fillOfChars($name, $l1)." | ".$this->texttools->fillOfChars($value, $l2), "table_line", true);
 	}
 
-	protected function returnConsole($t, $color = "normal", $rt = true) {
+	public function returnConsole($t, $color = "normal", $rt = true) {
 		switch ($color) {
 			case 'error':
 				return "\033[1;7;31m".$t."\033[00m".$this->getXRT($rt);
@@ -1178,7 +1297,7 @@ class aetools {
 		}		
 	}
 
-	protected function getXRT($n = 1) {
+	public function getXRT($n = 1) {
 		$rt = "";
 		if($n !== false) {
 			if($n === true) $n = 1;
@@ -1189,7 +1308,7 @@ class aetools {
 		return $rt;
 	}
 
-	protected function echoRT($n = 1) {
+	public function echoRT($n = 1) {
 		if($this->isControllerAbsent()) printf($this->getXRT($n));
 	}
 
